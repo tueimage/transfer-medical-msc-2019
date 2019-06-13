@@ -130,7 +130,7 @@ if fine_tuning:
     # build classifier model to put on top of the base model
     top_model = base_model.output
     top_model = Flatten()(top_model)
-    top_model = Dense(64, activation="relu")(top_model)
+    top_model = Dense(32, activation="relu")(top_model)
     top_model = Dropout(0.5)(top_model)
     top_model = Dense(len(config_ISIC.CLASSES), activation="softmax")(top_model)
 
@@ -154,7 +154,7 @@ if fine_tuning:
         steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
         validation_data = gen_validation,
         validation_steps = num_validation // config_ISIC.BATCH_SIZE,
-        epochs=50,
+        epochs=5,
         verbose=1)
 
     # reset the testing generator for network evaluation using the test data
@@ -165,10 +165,14 @@ if fine_tuning:
     preds = model.predict_generator(gen_test, steps=(num_test//config_ISIC.BATCH_SIZE), verbose=1)
     preds = np.argmax(preds, axis=1)
 
-    # print classification report and plot training progress
+    # print classification report
     print(classification_report(gen_test.classes, preds, target_names=gen_test.class_indices.keys()))
+
+    # create plot directory if it doesn't exist and plot training progress
+    if not os.path.exists(config_ISIC.PLOT_PATH):
+        os.makedirs(config_ISIC.PLOT_PATH)
     plotpath = os.path.join(config_ISIC.PLOT_PATH, "warmup_training.png")
-    plot_training(hist, 50, plotpath)
+    plot_training(hist, 5, plotpath)
 
     # now we can unfreeze base model layers to train more
     # unfreeze the last convolutional layer in VGG16
@@ -195,7 +199,7 @@ if fine_tuning:
         steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
         validation_data = gen_validation,
         validation_steps = num_validation // config_ISIC.BATCH_SIZE,
-        epochs=20,
+        epochs=5,
         verbose=1)
 
     # and evaluate again
@@ -205,4 +209,4 @@ if fine_tuning:
     preds = np.argmax(preds, axis=1)
     print(classification_report(gen_test.classes, preds, target_names=gen_test.class_indices.keys()))
     plotpath = os.path.join(config_ISIC.PLOT_PATH, "unfrozen_training.png")
-    plot_training(hist, 20, plotpath)
+    plot_training(hist, 5, plotpath)
