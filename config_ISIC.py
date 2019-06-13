@@ -24,3 +24,6 @@ BASE_CSV_PATH = os.path.join(PARENT_PATH, "outputs/output_ISIC")
 
 # path for serialized model after training
 MODEL_PATH = os.path.join(PARENT_PATH, "outputs/output_ISIC", "model.cpickle")
+
+# path to save training plots for fine-tuning
+PLOT_PATH = os.path.join(PARENT_PATH, "outputs/output_ISIC/training.png")
