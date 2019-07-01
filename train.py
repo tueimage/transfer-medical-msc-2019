@@ -5,13 +5,17 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Model
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers import Input
-from keras.optimizers import SGD
+from keras.optimizers import SGD, RMSprop
 import matplotlib.pyplot as plt
 import numpy as np
 import config_ISIC
 import os
 import pickle
 import glob
+import models
+
+# choose GPU for training
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 def load_data(splitpath):
     data, labels = [], []
@@ -46,8 +50,97 @@ def plot_training(hist, epochs, plotpath):
     plt.legend(loc="upper right")
     plt.savefig(plotpath)
 
-fine_tuning = True
+from_scratch = True
 feature_extraction = False
+fine_tuning = False
+
+if from_scratch:
+    # get paths to training, validation and testing directories
+    trainingpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TRAIN)
+    validationpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.VAL)
+    testpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TEST)
+
+    # get total number of images in each split, needed to train in batches
+    num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
+    num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
+    num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
+
+    # initialize image data generator objects
+    gen_obj_training = ImageDataGenerator(rescale=1./255)
+    gen_obj_test = ImageDataGenerator(rescale=1./255)
+
+    # initialize the image generators that load batches of images
+    gen_training = gen_obj_training.flow_from_directory(
+        trainingpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=True,
+        batch_size=config_ISIC.BATCH_SIZE)
+
+    gen_validation = gen_obj_test.flow_from_directory(
+        validationpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=False,
+        batch_size=config_ISIC.BATCH_SIZE)
+
+    gen_test = gen_obj_test.flow_from_directory(
+        testpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=False,
+        batch_size=config_ISIC.BATCH_SIZE)
+
+    # set input tensor for VGG16 model
+    input_tensor = Input(shape=(224,224,3))
+
+    # load VGG16 model architecture
+    model_VGG16 = models.model_VGG16(input_tensor)
+    print(model_VGG16.summary())
+
+    # set optimizer and compile model
+    print("compiling model...")
+    sgd = SGD(lr=0.01, momentum=0.9)
+    RMSprop = RMSprop(lr=0.01)
+    model_VGG16.compile(loss="binary_crossentropy", optimizer=RMSprop, metrics=["accuracy"])
+
+    # train the model
+    print("training model...")
+    hist = model_VGG16.fit_generator(
+        gen_training,
+        steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
+        validation_data = gen_validation,
+        validation_steps = num_validation // config_ISIC.BATCH_SIZE,
+        epochs=10,
+        verbose=1)
+
+    # create save directory if it doesn't exist and save trained model
+    print("saving model...")
+    if not os.path.exists(config_ISIC.MODEL_SAVEPATH):
+        os.makedirs(config_ISIC.MODEL_SAVEPATH)
+    savepath = os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5")
+    model_VGG16.save(savepath)
+
+    # create plot directory if it doesn't exist and plot training progress
+    print("saving plots...")
+    if not os.path.exists(config_ISIC.PLOT_PATH):
+        os.makedirs(config_ISIC.PLOT_PATH)
+    plotpath = os.path.join(config_ISIC.PLOT_PATH, "training.png")
+    plot_training(hist, 10, plotpath)
+
+    # now we need to check the model on the validation data and use this for tweaking (not on test data)
+    # this is for checking the best training settings; afterwards we can test on test set
+    print("evaluating model...")
+
+    # make predictions and take highest predicted value as class label
+    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//config_ISIC.BATCH_SIZE), verbose=1)
+    preds = np.argmax(preds, axis=1)
+
+    # make a classification report (ROC/AUC?)
+
 
 if feature_extraction:
     # get paths to training and test csv files
