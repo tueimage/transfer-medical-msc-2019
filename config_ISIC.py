@@ -27,3 +27,6 @@ MODEL_PATH = os.path.join(PARENT_PATH, "outputs/output_ISIC", "model.cpickle")
 
 # path to save training plots for fine-tuning
 PLOT_PATH = os.path.join(PARENT_PATH, "outputs/output_ISIC/plots")
+
+# path for trained model after training
+MODEL_SAVEPATH = os.path.join(PARENT_PATH, "outputs/output_ISIC/models")
