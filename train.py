@@ -107,6 +107,17 @@ if from_scratch:
     RMSprop = RMSprop(lr=0.01)
     model_VGG16.compile(loss="binary_crossentropy", optimizer=RMSprop, metrics=["accuracy"])
 
+    # calculate relative class weights for the imbalanced training data
+    class_weights = {}
+    for i in range(len(config_ISIC.CLASSES)):
+        # get path to the class images and get number of samples for that class
+        classpath = os.path.join(trainingpath, config_ISIC.CLASSES[i])
+        num_class = len(glob.glob(os.path.join(classpath, '*.jpg')))
+
+        # calculate relative class weight and add to dictionary
+        class_weight = num_training/num_class - 1
+        class_weights[i] = class_weight
+
     # train the model
     print("training model...")
     hist = model_VGG16.fit_generator(
@@ -114,6 +125,7 @@ if from_scratch:
         steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
         validation_data = gen_validation,
         validation_steps = num_validation // config_ISIC.BATCH_SIZE,
+        class_weight=class_weights,
         epochs=10,
         verbose=1)
 
