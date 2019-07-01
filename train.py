@@ -114,9 +114,12 @@ if from_scratch:
         classpath = os.path.join(trainingpath, config_ISIC.CLASSES[i])
         num_class = len(glob.glob(os.path.join(classpath, '*.jpg')))
 
-        # calculate relative class weight and add to dictionary
-        class_weight = num_training/num_class - 1
-        class_weights[i] = class_weight
+        # add number of samples to dictionary
+        class_weights[i] = num_class
+
+    # find the biggest class and use that number of samples to calculate class weights
+    maxval = max(class_weights.values())
+    class_weights = {label:maxval/val for (label,val) in class_weights.items()}
 
     # train the model
     print("training model...")
