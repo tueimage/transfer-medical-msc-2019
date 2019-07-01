@@ -34,7 +34,7 @@ def model_VGG16(input_tensor=Input(shape=(224,224,3)), activation='relu'):
     flatten = Flatten()(conv13)
     fc1 = Dense(4096, activation=activation)(flatten)
     fc2 = Dense(4096, activation=activation)(fc1)
-    predictions = Dense(1000, activation='softmax')(fc2)
+    predictions = Dense(2, activation='softmax')(fc2)
 
     model_VGG16 = Model(inputs=inputs, outputs=predictions)
 
