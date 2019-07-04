@@ -16,7 +16,7 @@ TEST = "test"
 CLASSES = ["melanoma", "nevus_sk"]
 
 # set batch size
-BATCH_SIZE = 8
+BATCH_SIZE = 1
 
 # initialize label encoder path and output directory for extracted features
 LE_PATH = os.path.join(PARENT_PATH, "outputs/output_ISIC", "le.cpickle")

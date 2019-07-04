@@ -54,6 +54,8 @@ from_scratch = True
 feature_extraction = False
 fine_tuning = False
 
+train = True
+
 if from_scratch:
     # get paths to training, validation and testing directories
     trainingpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TRAIN)
@@ -66,8 +68,8 @@ if from_scratch:
     num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
 
     # initialize image data generator objects
-    gen_obj_training = ImageDataGenerator(rescale=1./255)
-    gen_obj_test = ImageDataGenerator(rescale=1./255)
+    gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+    gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
 
     # initialize the image generators that load batches of images
     gen_training = gen_obj_training.flow_from_directory(
@@ -83,7 +85,7 @@ if from_scratch:
         class_mode="binary",
         target_size=(224,224),
         color_mode="rgb",
-        shuffle=False,
+        shuffle=True,
         batch_size=config_ISIC.BATCH_SIZE)
 
     gen_test = gen_obj_test.flow_from_directory(
@@ -93,6 +95,12 @@ if from_scratch:
         color_mode="rgb",
         shuffle=False,
         batch_size=config_ISIC.BATCH_SIZE)
+
+    #print filenames in batches
+    # for i in gen_training:
+    #     idx = (gen_training.batch_index - 1) * gen_training.batch_size
+    #     print(gen_training.filenames[idx : idx + gen_training.batch_size])
+    #     print("aaaa")
 
     # set input tensor for VGG16 model
     input_tensor = Input(shape=(224,224,3))
@@ -104,7 +112,7 @@ if from_scratch:
     # set optimizer and compile model
     print("compiling model...")
     sgd = SGD(lr=0.01, momentum=0.9)
-    RMSprop = RMSprop(lr=0.01)
+    RMSprop = RMSprop(lr=1e-6)
     model_VGG16.compile(loss="binary_crossentropy", optimizer=RMSprop, metrics=["accuracy"])
 
     # calculate relative class weights for the imbalanced training data
@@ -121,40 +129,44 @@ if from_scratch:
     maxval = max(class_weights.values())
     class_weights = {label:maxval/val for (label,val) in class_weights.items()}
 
-    # train the model
-    print("training model...")
-    hist = model_VGG16.fit_generator(
-        gen_training,
-        steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
-        validation_data = gen_validation,
-        validation_steps = num_validation // config_ISIC.BATCH_SIZE,
-        class_weight=class_weights,
-        epochs=10,
-        verbose=1)
+    if train:
+        # train the model
+        print("training model...")
+        hist = model_VGG16.fit_generator(
+            gen_training,
+            steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
+            validation_data = gen_validation,
+            validation_steps = num_validation // config_ISIC.BATCH_SIZE,
+            class_weight=class_weights,
+            epochs=10,
+            verbose=1)
 
-    # create save directory if it doesn't exist and save trained model
-    print("saving model...")
-    if not os.path.exists(config_ISIC.MODEL_SAVEPATH):
-        os.makedirs(config_ISIC.MODEL_SAVEPATH)
-    savepath = os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5")
-    model_VGG16.save(savepath)
+        # create save directory if it doesn't exist and save trained model
+        print("saving model...")
+        if not os.path.exists(config_ISIC.MODEL_SAVEPATH):
+            os.makedirs(config_ISIC.MODEL_SAVEPATH)
+        savepath = os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5")
+        model_VGG16.save(savepath)
 
-    # create plot directory if it doesn't exist and plot training progress
-    print("saving plots...")
-    if not os.path.exists(config_ISIC.PLOT_PATH):
-        os.makedirs(config_ISIC.PLOT_PATH)
-    plotpath = os.path.join(config_ISIC.PLOT_PATH, "training.png")
-    plot_training(hist, 10, plotpath)
+        # create plot directory if it doesn't exist and plot training progress
+        print("saving plots...")
+        if not os.path.exists(config_ISIC.PLOT_PATH):
+            os.makedirs(config_ISIC.PLOT_PATH)
+        plotpath = os.path.join(config_ISIC.PLOT_PATH, "training.png")
+        plot_training(hist, 10, plotpath)
+
+    else:
+        model_VGG16 = load_model(os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5")
 
     # now we need to check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
     print("evaluating model...")
 
-    # make predictions and take highest predicted value as class label
-    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//config_ISIC.BATCH_SIZE), verbose=1)
-    preds = np.argmax(preds, axis=1)
+    # make predictions
+    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//config_ISIC.BATCH_SIZE))
 
     # make a classification report (ROC/AUC?)
+
 
 
 if feature_extraction:
