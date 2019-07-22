@@ -2,7 +2,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 from keras.applications import VGG16
 from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers import Input
 from keras.optimizers import SGD, RMSprop
@@ -13,9 +13,10 @@ import os
 import pickle
 import glob
 import models
+from evaluate import ROC_AUC
 
 # choose GPU for training
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 def load_data(splitpath):
     data, labels = [], []
@@ -54,7 +55,7 @@ from_scratch = True
 feature_extraction = False
 fine_tuning = False
 
-train = True
+train = False
 
 if from_scratch:
     # get paths to training, validation and testing directories
@@ -85,7 +86,7 @@ if from_scratch:
         class_mode="binary",
         target_size=(224,224),
         color_mode="rgb",
-        shuffle=True,
+        shuffle=False,
         batch_size=config_ISIC.BATCH_SIZE)
 
     gen_test = gen_obj_test.flow_from_directory(
@@ -156,16 +157,22 @@ if from_scratch:
         plot_training(hist, 10, plotpath)
 
     else:
-        model_VGG16 = load_model(os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5")
+        # load model
+        print("loading model...")
+        model_VGG16 = load_model(os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5"))
 
     # now we need to check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
     print("evaluating model...")
 
     # make predictions
-    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//config_ISIC.BATCH_SIZE))
+    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//config_ISIC.BATCH_SIZE), verbose=1)
 
-    # make a classification report (ROC/AUC?)
+    # get true labels
+    true_labels = gen_validation.classes
+
+    # plot ROC and calculate AUC
+    ROC_AUC(preds, true_labels)
 
 
 
