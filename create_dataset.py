@@ -4,7 +4,8 @@
 import config_ISIC
 import os
 import glob
-from shutil import copy2
+import cv2
+import numpy as np
 
 for split in (config_ISIC.TRAIN, config_ISIC.VAL, config_ISIC.TEST):
     print("processing '{} split'...".format(split))
@@ -36,14 +37,28 @@ for split in (config_ISIC.TRAIN, config_ISIC.VAL, config_ISIC.TEST):
             label1 = row[1]
             label2 = row[2]
 
-            # 0 for nevus or seborrheic keratosis
-            if int(float(label1)) == 0:
-                # copy images belonging to class 'nevus or seborrheic keratosis'
-                impath = os.path.join(imdir, '{}.jpg'.format(im))
-                copy2(impath, target_impath_0)
+            # get image file path and read image
+            impath = os.path.join(imdir, '{}.jpg'.format(im))
+            image = cv2.imread(impath)
 
-            # 1 for melanoma
+            # find smallest and biggest dimension of the x- and y- dims
+            s_dim = np.min((image.shape[0], image.shape[1]))
+            m_dim = np.max((image.shape[0], image.shape[1]))
+
+            # randomly crop image to [smallest dimension x smallest dimension]
+            offset = np.random.random_integers(0, high=m_dim-s_dim)
+            if s_dim == image.shape[0]:
+                cropped_image = image[:,offset:offset+s_dim,:]
+            if s_dim == image.shape[1]:
+                cropped_image = image[offset:offset+s_dim,:,:]
+
+            # now resize the cropped images to 224x224
+            resized_image = cv2.resize(cropped_image, dsize=(224, 224), interpolation=cv2.INTER_LINEAR)
+
+            if int(float(label1)) == 0:
+                # save images which belong to nevus or seborrheic keratosis class (label 0)
+                cv2.imwrite(os.path.join(target_impath_0, '{}.jpg'.format(im)), resized_image)
+
             elif int(float(label1)) == 1:
-                # copy images belonging to class 'melanoma'
-                impath = os.path.join(imdir, '{}.jpg'.format(im))
-                copy2(impath, target_impath_1)
+                # save images which belong to nevus or seborrheic keratosis class (label 0)
+                cv2.imwrite(os.path.join(target_impath_1, '{}.jpg'.format(im)), resized_image)
