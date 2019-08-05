@@ -6,17 +6,43 @@ from keras.models import Model, load_model
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers import Input
 from keras.optimizers import SGD, RMSprop
+import json
+import argparse
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
-import config_ISIC
 import os
 import pickle
 import glob
 import models
-from evaluate import ROC_AUC
+#from evaluate import ROC_AUC
 
 # choose GPU for training
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# construct argument parser and parse the arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-m',
+    '--mode',
+    choices=['from_scratch', 'feature_extraction', 'fine_tuning', 'evaluate'],
+    required=True,
+    help='training mode')
+parser.add_argument('-d',
+    '--dataset',
+    choices=['isic_2017'],
+    required=True,
+    help='dataset to use')
+# parser.add_argument('-t', '--train', default=True, help='load already trained model if False')
+parser.add_argument('-i',
+    '--input',
+    required='evaluate' in sys.argv,
+    help='name of trained model to load when evaluating')
+parser.add_argument('-bs', '--batchsize', default=1, help='batch size')
+args = vars(parser.parse_args())
+
+# read parameters for wanted dataset from config file
+with open('config.json') as json_file:
+    config = json.load(json_file)[args['dataset']]
 
 def load_data(splitpath):
     data, labels = [], []
@@ -51,17 +77,13 @@ def plot_training(hist, epochs, plotpath):
     plt.legend(loc="upper right")
     plt.savefig(plotpath)
 
-from_scratch = True
-feature_extraction = False
-fine_tuning = False
+if args['mode'] == 'from_scratch':
+    dataset = args['dataset']
 
-train = False
-
-if from_scratch:
     # get paths to training, validation and testing directories
-    trainingpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TRAIN)
-    validationpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.VAL)
-    testpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TEST)
+    trainingpath = config['trainingpath']
+    validationpath = config['validationpath']
+    testpath = config['testpath']
 
     # get total number of images in each split, needed to train in batches
     num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
@@ -79,7 +101,7 @@ if from_scratch:
         target_size=(224,224),
         color_mode="rgb",
         shuffle=True,
-        batch_size=config_ISIC.BATCH_SIZE)
+        batch_size=batchsize)
 
     gen_validation = gen_obj_test.flow_from_directory(
         validationpath,
@@ -87,7 +109,7 @@ if from_scratch:
         target_size=(224,224),
         color_mode="rgb",
         shuffle=False,
-        batch_size=config_ISIC.BATCH_SIZE)
+        batch_size=batchsize)
 
     gen_test = gen_obj_test.flow_from_directory(
         testpath,
@@ -95,7 +117,7 @@ if from_scratch:
         target_size=(224,224),
         color_mode="rgb",
         shuffle=False,
-        batch_size=config_ISIC.BATCH_SIZE)
+        batch_size=batchsize)
 
     #print filenames in batches
     # for i in gen_training:
@@ -118,9 +140,9 @@ if from_scratch:
 
     # calculate relative class weights for the imbalanced training data
     class_weights = {}
-    for i in range(len(config_ISIC.CLASSES)):
+    for i in range(len(config['classes'])):
         # get path to the class images and get number of samples for that class
-        classpath = os.path.join(trainingpath, config_ISIC.CLASSES[i])
+        classpath = os.path.join(trainingpath, config['classes'][i])
         num_class = len(glob.glob(os.path.join(classpath, '*.jpg')))
 
         # add number of samples to dictionary
@@ -135,38 +157,38 @@ if from_scratch:
         print("training model...")
         hist = model_VGG16.fit_generator(
             gen_training,
-            steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
+            steps_per_epoch = num_training // batchsize,
             validation_data = gen_validation,
-            validation_steps = num_validation // config_ISIC.BATCH_SIZE,
+            validation_steps = num_validation // batchsize,
             class_weight=class_weights,
             epochs=10,
             verbose=1)
 
         # create save directory if it doesn't exist and save trained model
         print("saving model...")
-        if not os.path.exists(config_ISIC.MODEL_SAVEPATH):
-            os.makedirs(config_ISIC.MODEL_SAVEPATH)
-        savepath = os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5")
+        if not os.path.exists(config['model_savepath']):
+            os.makedirs(config['model_savepath'])
+        savepath = os.path.join(config['model_savepath'], "model_VGG16.h5")
         model_VGG16.save(savepath)
 
         # create plot directory if it doesn't exist and plot training progress
         print("saving plots...")
-        if not os.path.exists(config_ISIC.PLOT_PATH):
-            os.makedirs(config_ISIC.PLOT_PATH)
-        plotpath = os.path.join(config_ISIC.PLOT_PATH, "training.png")
+        if not os.path.exists(config['plot_path']):
+            os.makedirs(config['plot_path'])
+        plotpath = os.path.join(config['plot_path'], "training.png")
         plot_training(hist, 10, plotpath)
 
     else:
         # load model
         print("loading model...")
-        model_VGG16 = load_model(os.path.join(config_ISIC.MODEL_SAVEPATH, "model_VGG16.h5"))
+        model_VGG16 = load_model(os.path.join(config['model_savepath'], "model_VGG16.h5"))
 
     # now we need to check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
     print("evaluating model...")
 
     # make predictions
-    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//config_ISIC.BATCH_SIZE), verbose=1)
+    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//batchsize), verbose=1)
 
     # get true labels
     true_labels = gen_validation.classes
@@ -174,9 +196,7 @@ if from_scratch:
     # plot ROC and calculate AUC
     ROC_AUC(preds, true_labels)
 
-
-
-if feature_extraction:
+if args['mode'] == 'feature_extraction':
     # get paths to training and test csv files
     trainingpath = os.path.join(config_ISIC.BASE_CSV_PATH, "{}.csv".format(config_ISIC.TRAIN))
     testpath = os.path.join(config_ISIC.BASE_CSV_PATH, "{}.csv".format(config_ISIC.TEST))
@@ -204,11 +224,11 @@ if feature_extraction:
     with open(config_ISIC.MODEL_PATH, 'wb') as model_file:
         model_file.write(pickle.dumps(model))
 
-if fine_tuning:
+if args['mode'] == 'fine_tuning':
     # get paths to training, validation and testing directories
-    trainingpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TRAIN)
-    validationpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.VAL)
-    testpath = os.path.join(config_ISIC.DATASET_PATH, config_ISIC.TEST)
+    trainingpath = config['trainingpath']
+    validationpath = config['validationpath']
+    testpath = config['testpath']
 
     # get total number of images in each split, needed to train in batches
     num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
@@ -231,7 +251,7 @@ if fine_tuning:
         target_size=(224,224),
         color_mode="rgb",
         shuffle=True,
-        batch_size=config_ISIC.BATCH_SIZE)
+        batch_size=batchsize)
 
     gen_validation = gen_obj_test.flow_from_directory(
         validationpath,
@@ -239,7 +259,7 @@ if fine_tuning:
         target_size=(224,224),
         color_mode="rgb",
         shuffle=False,
-        batch_size=config_ISIC.BATCH_SIZE)
+        batch_size=batchsize)
 
     gen_test = gen_obj_test.flow_from_directory(
         testpath,
@@ -247,7 +267,7 @@ if fine_tuning:
         target_size=(224,224),
         color_mode="rgb",
         shuffle=False,
-        batch_size=config_ISIC.BATCH_SIZE)
+        batch_size=batchsize)
 
     # now load the VGG16 network with ImageNet weights
     # without last fully connected layer with softmax
@@ -259,7 +279,7 @@ if fine_tuning:
     top_model = Flatten()(top_model)
     top_model = Dense(32, activation="relu")(top_model)
     top_model = Dropout(0.5)(top_model)
-    top_model = Dense(len(config_ISIC.CLASSES), activation="softmax")(top_model)
+    top_model = Dense(len(config['classes']), activation="softmax")(top_model)
 
     # add the model on top of the base model
     model = Model(inputs=base_model.input, outputs=top_model)
@@ -278,9 +298,9 @@ if fine_tuning:
     print("training top model...")
     hist = model.fit_generator(
         gen_training,
-        steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
+        steps_per_epoch = num_training // batchsize,
         validation_data = gen_validation,
-        validation_steps = num_validation // config_ISIC.BATCH_SIZE,
+        validation_steps = num_validation // batchsize,
         epochs=5,
         verbose=1)
 
@@ -289,16 +309,16 @@ if fine_tuning:
     gen_test.reset()
 
     # make predictions and take highest predicted value as class label
-    preds = model.predict_generator(gen_test, steps=(num_test//config_ISIC.BATCH_SIZE), verbose=1)
+    preds = model.predict_generator(gen_test, steps=(num_test//batchsize), verbose=1)
     preds = np.argmax(preds, axis=1)
 
     # print classification report
     print(classification_report(gen_test.classes, preds, target_names=gen_test.class_indices.keys()))
 
     # create plot directory if it doesn't exist and plot training progress
-    if not os.path.exists(config_ISIC.PLOT_PATH):
-        os.makedirs(config_ISIC.PLOT_PATH)
-    plotpath = os.path.join(config_ISIC.PLOT_PATH, "warmup_training.png")
+    if not os.path.exists(config['plot_path']):
+        os.makedirs(config['plot_path'])
+    plotpath = os.path.join(config['plot_path'], "warmup_training.png")
     plot_training(hist, 5, plotpath)
 
     # now we can unfreeze base model layers to train more
@@ -323,17 +343,17 @@ if fine_tuning:
     print("training recompiled model...")
     hist = model.fit_generator(
         gen_training,
-        steps_per_epoch = num_training // config_ISIC.BATCH_SIZE,
+        steps_per_epoch = num_training // batchsize,
         validation_data = gen_validation,
-        validation_steps = num_validation // config_ISIC.BATCH_SIZE,
+        validation_steps = num_validation // batchsize,
         epochs=5,
         verbose=1)
 
     # and evaluate again
     print("evaluating after fine-tuning network...")
     gen_test.reset()
-    preds = model.predict_generator(gen_test, steps=(num_test//config_ISIC.BATCH_SIZE), verbose=1)
+    preds = model.predict_generator(gen_test, steps=(num_test//batchsize), verbose=1)
     preds = np.argmax(preds, axis=1)
     print(classification_report(gen_test.classes, preds, target_names=gen_test.class_indices.keys()))
-    plotpath = os.path.join(config_ISIC.PLOT_PATH, "unfrozen_training.png")
+    plotpath = os.path.join(config['plot_path'], "unfrozen_training.png")
     plot_training(hist, 5, plotpath)
