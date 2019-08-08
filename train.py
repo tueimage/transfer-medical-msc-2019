@@ -15,7 +15,8 @@ import os
 import pickle
 import glob
 import models
-#from evaluate import ROC_AUC
+import datetime
+from evaluate import ROC_AUC
 
 # choose GPU for training
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -80,6 +81,9 @@ def plot_training(hist, epochs, plotpath):
 if args['mode'] == 'from_scratch':
     dataset = args['dataset']
 
+    # get timestamp for saving stuff
+    timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
+
     # get paths to training, validation and testing directories
     trainingpath = config['trainingpath']
     validationpath = config['validationpath']
@@ -118,12 +122,6 @@ if args['mode'] == 'from_scratch':
         color_mode="rgb",
         shuffle=False,
         batch_size=batchsize)
-
-    #print filenames in batches
-    # for i in gen_training:
-    #     idx = (gen_training.batch_index - 1) * gen_training.batch_size
-    #     print(gen_training.filenames[idx : idx + gen_training.batch_size])
-    #     print("aaaa")
 
     # set input tensor for VGG16 model
     input_tensor = Input(shape=(224,224,3))
@@ -168,20 +166,20 @@ if args['mode'] == 'from_scratch':
         print("saving model...")
         if not os.path.exists(config['model_savepath']):
             os.makedirs(config['model_savepath'])
-        savepath = os.path.join(config['model_savepath'], "model_VGG16.h5")
+        savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp)
         model_VGG16.save(savepath)
 
         # create plot directory if it doesn't exist and plot training progress
         print("saving plots...")
         if not os.path.exists(config['plot_path']):
             os.makedirs(config['plot_path'])
-        plotpath = os.path.join(config['plot_path'], "training.png")
+        plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
         plot_training(hist, 10, plotpath)
 
     else:
         # load model
         print("loading model...")
-        model_VGG16 = load_model(os.path.join(config['model_savepath'], "model_VGG16.h5"))
+        model_VGG16 = load_model(os.path.join(config['model_savepath'], args['input']))
 
     # now we need to check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
@@ -194,7 +192,7 @@ if args['mode'] == 'from_scratch':
     true_labels = gen_validation.classes
 
     # plot ROC and calculate AUC
-    ROC_AUC(preds, true_labels)
+    ROC_AUC(preds, true_labels, config['plot_path'], timestamp)
 
 if args['mode'] == 'feature_extraction':
     # get paths to training and test csv files

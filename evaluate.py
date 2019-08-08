@@ -1,9 +1,8 @@
 import numpy as np
-import config_ISIC
 import os
 import matplotlib.pyplot as plt
 
-def ROC_AUC(preds, true_labels):
+def ROC_AUC(preds, true_labels, plotpath, timestamp):
     # initialize TPR, FPR, ACC and AUC lists
     TPR_list, FPR_list, ACC_list = [], [], []
     AUC_score = []
@@ -47,7 +46,7 @@ def ROC_AUC(preds, true_labels):
     plt.xlim(0,1)
     plt.ylim(0,1)
     plt.title("ROC Curve, AUC = {}".format(AUC))
-    plt.savefig(os.path.join(config_ISIC.PLOT_PATH, "ROC.png"))
+    plt.savefig(plotpath, "{}_ROC.png".format(timestamp)))
 
     # also plot accuracies for each threshold
     plt.figure()
@@ -58,4 +57,4 @@ def ROC_AUC(preds, true_labels):
     plt.xlim(0,1)
     plt.ylim(0,1)
     plt.title("Accuracy per threshold")
-    plt.savefig(os.path.join(config_ISIC.PLOT_PATH, "ACC.png"))
+    plt.savefig(plotpath, "{}_ACC.png".format(timestamp)))
