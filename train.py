@@ -16,10 +16,17 @@ import pickle
 import glob
 import models
 import datetime
+import random
 from evaluate import ROC_AUC
 
 # choose GPU for training
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+# set random seed for result reproducability
+sd=28
+os.environ['PYTHONHASHSEED'] = str(sd)
+np.random.seed(sd)
+random.seed(sd)
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -28,7 +35,6 @@ parser.add_argument('-m',
     choices=['from_scratch', 'feature_extraction', 'fine_tuning', 'evaluate'],
     required=True,
     help='training mode')
-parser.add_argument('-t', '--train', default=True, help='do not train model but load already trained model if set to False')
 parser.add_argument('-d',
     '--dataset',
     choices=['isic_2017'],
@@ -41,13 +47,12 @@ parser.add_argument('-i',
 parser.add_argument('-bs', '--batchsize', default=1, help='batch size')
 args = vars(parser.parse_args())
 
-# assign batch size and train boolean
-batchsize = args['batchsize']
-train = args['train']
-
 # read parameters for wanted dataset from config file
 with open('config.json') as json_file:
     config = json.load(json_file)[args['dataset']]
+
+# assign batch size
+batchsize = args['batchsize']
 
 def load_data(splitpath):
     data, labels = [], []
@@ -82,50 +87,51 @@ def plot_training(hist, epochs, plotpath):
     plt.legend(loc="upper right")
     plt.savefig(plotpath)
 
+# get paths to training, validation and testing directories
+trainingpath = config['trainingpath']
+validationpath = config['validationpath']
+testpath = config['testpath']
+
+# get total number of images in each split, needed to train in batches
+num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
+num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
+num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
+
+# initialize image data generator objects
+gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+
+# initialize the image generators that load batches of images
+gen_training = gen_obj_training.flow_from_directory(
+    trainingpath,
+    class_mode="binary",
+    target_size=(224,224),
+    color_mode="rgb",
+    shuffle=True,
+    batch_size=batchsize)
+
+gen_validation = gen_obj_test.flow_from_directory(
+    validationpath,
+    class_mode="binary",
+    target_size=(224,224),
+    color_mode="rgb",
+    shuffle=False,
+    batch_size=batchsize)
+
+gen_test = gen_obj_test.flow_from_directory(
+    testpath,
+    class_mode="binary",
+    target_size=(224,224),
+    color_mode="rgb",
+    shuffle=False,
+    batch_size=batchsize)
+
+
 if args['mode'] == 'from_scratch':
     dataset = args['dataset']
 
     # get timestamp for saving stuff
     timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
-
-    # get paths to training, validation and testing directories
-    trainingpath = config['trainingpath']
-    validationpath = config['validationpath']
-    testpath = config['testpath']
-
-    # get total number of images in each split, needed to train in batches
-    num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
-    num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
-    num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
-
-    # initialize image data generator objects
-    gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-    gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-
-    # initialize the image generators that load batches of images
-    gen_training = gen_obj_training.flow_from_directory(
-        trainingpath,
-        class_mode="binary",
-        target_size=(224,224),
-        color_mode="rgb",
-        shuffle=True,
-        batch_size=batchsize)
-
-    gen_validation = gen_obj_test.flow_from_directory(
-        validationpath,
-        class_mode="binary",
-        target_size=(224,224),
-        color_mode="rgb",
-        shuffle=False,
-        batch_size=batchsize)
-
-    gen_test = gen_obj_test.flow_from_directory(
-        testpath,
-        class_mode="binary",
-        target_size=(224,224),
-        color_mode="rgb",
-        shuffle=False,
-        batch_size=batchsize)
 
     # set input tensor for VGG16 model
     input_tensor = Input(shape=(224,224,3))
@@ -154,38 +160,54 @@ if args['mode'] == 'from_scratch':
     maxval = max(class_weights.values())
     class_weights = {label:maxval/val for (label,val) in class_weights.items()}
 
-    if train:
-        # train the model
-        print("training model...")
-        hist = model_VGG16.fit_generator(
-            gen_training,
-            steps_per_epoch = num_training // batchsize,
-            validation_data = gen_validation,
-            validation_steps = num_validation // batchsize,
-            class_weight=class_weights,
-            epochs=10,
-            verbose=1)
+    # train the model
+    print("training model...")
+    hist = model_VGG16.fit_generator(
+        gen_training,
+        steps_per_epoch = num_training // batchsize,
+        validation_data = gen_validation,
+        validation_steps = num_validation // batchsize,
+        class_weight=class_weights,
+        epochs=10,
+        verbose=1)
 
-        # create save directory if it doesn't exist and save trained model
-        print("saving model...")
-        if not os.path.exists(config['model_savepath']):
-            os.makedirs(config['model_savepath'])
-        savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp))
-        model_VGG16.save(savepath)
+    # create save directory if it doesn't exist and save trained model
+    print("saving model...")
+    if not os.path.exists(config['model_savepath']):
+        os.makedirs(config['model_savepath'])
+    savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp))
+    model_VGG16.save(savepath)
 
-        # create plot directory if it doesn't exist and plot training progress
-        print("saving plots...")
-        if not os.path.exists(config['plot_path']):
-            os.makedirs(config['plot_path'])
-        plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
-        plot_training(hist, 10, plotpath)
+    # create plot directory if it doesn't exist and plot training progress
+    print("saving plots...")
+    if not os.path.exists(config['plot_path']):
+        os.makedirs(config['plot_path'])
+    plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
+    plot_training(hist, 10, plotpath)
 
-    else:
-        # load model
-        print("loading model...")
-        model_VGG16 = load_model(os.path.join(config['model_savepath'], args['input']))
+    # check the model on the validation data and use this for tweaking (not on test data)
+    # this is for checking the best training settings; afterwards we can test on test set
+    print("evaluating model...")
 
-    # now we need to check the model on the validation data and use this for tweaking (not on test data)
+    # make predictions
+    preds = model_VGG16.predict_generator(gen_validation, steps=(num_validation//batchsize), verbose=1)
+
+    # get true labels
+    true_labels = gen_validation.classes
+
+    # plot ROC and calculate AUC
+    ROC_AUC(preds, true_labels, config['plot_path'], timestamp)
+
+if args['mode'] == 'evaluate':
+    # load model
+    print("loading model...")
+    model_VGG16 = load_model(os.path.join(config['model_savepath'], args['input']))
+
+    # if evaluating from saved model, timestamp is retrieved from saved model's
+    # name so saved plots will have same timestamp in name as trained model
+    timestamp = args['input'][:12]
+
+    # check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
     print("evaluating model...")
 
