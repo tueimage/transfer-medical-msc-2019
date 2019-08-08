@@ -46,7 +46,7 @@ def ROC_AUC(preds, true_labels, plotpath, timestamp):
     plt.xlim(0,1)
     plt.ylim(0,1)
     plt.title("ROC Curve, AUC = {}".format(AUC))
-    plt.savefig(plotpath, "{}_ROC.png".format(timestamp)))
+    plt.savefig(plotpath, "{}_ROC.png".format(timestamp))
 
     # also plot accuracies for each threshold
     plt.figure()
@@ -57,4 +57,4 @@ def ROC_AUC(preds, true_labels, plotpath, timestamp):
     plt.xlim(0,1)
     plt.ylim(0,1)
     plt.title("Accuracy per threshold")
-    plt.savefig(plotpath, "{}_ACC.png".format(timestamp)))
+    plt.savefig(plotpath, "{}_ACC.png".format(timestamp))

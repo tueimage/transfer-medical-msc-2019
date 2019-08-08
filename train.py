@@ -28,18 +28,22 @@ parser.add_argument('-m',
     choices=['from_scratch', 'feature_extraction', 'fine_tuning', 'evaluate'],
     required=True,
     help='training mode')
+parser.add_argument('-t', '--train', default=True, help='do not train model but load already trained model if set to False')
 parser.add_argument('-d',
     '--dataset',
     choices=['isic_2017'],
     required=True,
     help='dataset to use')
-# parser.add_argument('-t', '--train', default=True, help='load already trained model if False')
 parser.add_argument('-i',
     '--input',
     required='evaluate' in sys.argv,
     help='name of trained model to load when evaluating')
 parser.add_argument('-bs', '--batchsize', default=1, help='batch size')
 args = vars(parser.parse_args())
+
+# assign batch size and train boolean
+batchsize = args['batchsize']
+train = args['train']
 
 # read parameters for wanted dataset from config file
 with open('config.json') as json_file:
@@ -166,7 +170,7 @@ if args['mode'] == 'from_scratch':
         print("saving model...")
         if not os.path.exists(config['model_savepath']):
             os.makedirs(config['model_savepath'])
-        savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp)
+        savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp))
         model_VGG16.save(savepath)
 
         # create plot directory if it doesn't exist and plot training progress
