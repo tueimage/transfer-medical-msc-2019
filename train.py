@@ -6,6 +6,7 @@ from keras.models import Model, load_model
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers import Input
 from keras.optimizers import SGD, RMSprop
+import tensorflow as tf
 import json
 import argparse
 import sys
@@ -17,16 +18,19 @@ import glob
 import models
 import datetime
 import random
+import pandas
+import cv2
 from evaluate import ROC_AUC
 
 # choose GPU for training
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # set random seed for result reproducability
 sd=28
 os.environ['PYTHONHASHSEED'] = str(sd)
 np.random.seed(sd)
 random.seed(sd)
+tf.set_random_seed(sd)
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -87,6 +91,18 @@ def plot_training(hist, epochs, plotpath):
     plt.legend(loc="upper right")
     plt.savefig(plotpath)
 
+def load_training_data(trainingpath):
+    # function to load training data
+    images = []
+    imagepaths = glob.glob(os.path.join(trainingpath, '**/*.jpg'))
+
+    for path in imagepaths:
+        images.append(cv2.imread(path))
+
+    images = np.array(images)
+    return images
+
+
 # get paths to training, validation and testing directories
 trainingpath = config['trainingpath']
 validationpath = config['validationpath']
@@ -100,6 +116,12 @@ num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
 # initialize image data generator objects
 gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
 gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+
+# we need to fit generators to training data
+# from this mean and std, featurewise_center is calculated in the generator
+x_train = load_training_data(trainingpath)
+gen_obj_training.fit(x_train)
+gen_obj_test.fit(x_train)
 
 # initialize the image generators that load batches of images
 gen_training = gen_obj_training.flow_from_directory(
@@ -128,8 +150,6 @@ gen_test = gen_obj_test.flow_from_directory(
 
 
 if args['mode'] == 'from_scratch':
-    dataset = args['dataset']
-
     # get timestamp for saving stuff
     timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
 
@@ -146,19 +166,19 @@ if args['mode'] == 'from_scratch':
     RMSprop = RMSprop(lr=1e-6)
     model_VGG16.compile(loss="binary_crossentropy", optimizer=RMSprop, metrics=["accuracy"])
 
-    # calculate relative class weights for the imbalanced training data
-    class_weights = {}
-    for i in range(len(config['classes'])):
-        # get path to the class images and get number of samples for that class
-        classpath = os.path.join(trainingpath, config['classes'][i])
-        num_class = len(glob.glob(os.path.join(classpath, '*.jpg')))
-
-        # add number of samples to dictionary
-        class_weights[i] = num_class
-
-    # find the biggest class and use that number of samples to calculate class weights
-    maxval = max(class_weights.values())
-    class_weights = {label:maxval/val for (label,val) in class_weights.items()}
+    # # calculate relative class weights for the imbalanced training data
+    # class_weights = {}
+    # for i in range(len(config['classes'])):
+    #     # get path to the class images and get number of samples for that class
+    #     classpath = os.path.join(trainingpath, config['classes'][i])
+    #     num_class = len(glob.glob(os.path.join(classpath, '*.jpg')))
+    #
+    #     # add number of samples to dictionary
+    #     class_weights[i] = num_class
+    #
+    # # find the biggest class and use that number of samples to calculate class weights
+    # maxval = max(class_weights.values())
+    # class_weights = {label:maxval/val for (label,val) in class_weights.items()}
 
     # train the model
     print("training model...")
@@ -167,9 +187,13 @@ if args['mode'] == 'from_scratch':
         steps_per_epoch = num_training // batchsize,
         validation_data = gen_validation,
         validation_steps = num_validation // batchsize,
-        class_weight=class_weights,
-        epochs=10,
+        # class_weight=class_weights,
+        epochs=50,
         verbose=1)
+
+
+    # save history
+    pandas.DataFrame(hist.history).to_csv(os.path.join(config['model_savepath'], '{}_history.csv'.format(timestamp)))
 
     # create save directory if it doesn't exist and save trained model
     print("saving model...")
@@ -183,7 +207,7 @@ if args['mode'] == 'from_scratch':
     if not os.path.exists(config['plot_path']):
         os.makedirs(config['plot_path'])
     plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
-    plot_training(hist, 10, plotpath)
+    plot_training(hist, 50, plotpath)
 
     # check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
@@ -196,7 +220,7 @@ if args['mode'] == 'from_scratch':
     true_labels = gen_validation.classes
 
     # plot ROC and calculate AUC
-    ROC_AUC(preds, true_labels, config['plot_path'], timestamp)
+    ROC_AUC(preds, true_labels, config, timestamp)
 
 if args['mode'] == 'evaluate':
     # load model
@@ -218,7 +242,7 @@ if args['mode'] == 'evaluate':
     true_labels = gen_validation.classes
 
     # plot ROC and calculate AUC
-    ROC_AUC(preds, true_labels, config['plot_path'], timestamp)
+    ROC_AUC(preds, true_labels, config, timestamp)
 
 if args['mode'] == 'feature_extraction':
     # get paths to training and test csv files
