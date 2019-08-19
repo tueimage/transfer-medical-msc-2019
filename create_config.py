@@ -9,9 +9,21 @@ data['isic_2017'] = {
   'dataset_path': 'dataset_ISIC',
   'output_path': 'output_ISIC'
   }
+data['isic_2017_adj'] = {
+  'classes': ['melanoma', 'nevus_sk'],
+  'orig_path': 'ISIC_2017_adj',
+  'dataset_path': 'dataset_ISIC_adj',
+  'output_path': 'output_ISIC_adj'
+  }
+data['cats_and_dogs'] = {
+  'classes': ['cat', 'dog'],
+  'orig_path': 'cats_and_dogs',
+  'dataset_path': 'dataset_cats_and_dogs',
+  'output_path': 'output_cats_and_dogs'
+  }
 
 # list with all datasets; so certain paths can be added automatically to the data dictionary
-datasets = ['isic_2017']
+datasets = ['isic_2017', 'isic_2017_adj', 'cats_and_dogs']
 for dataset in datasets:
     # path to original dataset, use parent path so data is not in same repo as code
     parent_path = os.path.dirname(os.getcwd())
