@@ -1,16 +1,23 @@
 import numpy as np
 import os
+import pandas
 import matplotlib.pyplot as plt
+import json
+from sklearn.metrics import roc_curve, confusion_matrix, roc_auc_score
 
-def ROC_AUC(preds, true_labels, plotpath, timestamp):
+def ROC_AUC(preds, true_labels, config, timestamp):
     # initialize TPR, FPR, ACC and AUC lists
     TPR_list, FPR_list, ACC_list = [], [], []
     AUC_score = []
+
+    # preds is an array like [[x] [x] [x]], make it into array like [x x x]
+    preds = np.asarray([label for sublist in preds for label in sublist])
+
     # calculate for different thresholds
-    thresholds = np.linspace(1.0, 0.0, num=21, endpoint=True)
+    thresholds = -np.sort(-(np.unique(preds)))
     for threshold in thresholds:
-        pred_labels = preds
-        pred_labels = np.where(pred_labels > threshold, 1, 0)
+        # apply threshold to predictions
+        pred_labels = np.where(preds > threshold, 1, 0).astype(int)
 
         # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
         # False Negative (FN)
@@ -30,11 +37,13 @@ def ROC_AUC(preds, true_labels, plotpath, timestamp):
 
         AUC_score.append((1-FPR+TPR)/2)
 
-    print(TPR_list)
-    print(FPR_list)
-    print(ACC_list)
+        pred_labels = []
 
-    AUC = sum(AUC_score)/len(thresholds)
+    AUC = round(sum(AUC_score)/len(thresholds),3)
+    print("AUC: {}".format(AUC))
+
+    AUC2 = round(roc_auc_score(true_labels, preds),3)
+    print("sk AUC: {}".format(AUC2))
 
     # plot and save ROC curve
     plt.style.use("ggplot")
@@ -46,7 +55,7 @@ def ROC_AUC(preds, true_labels, plotpath, timestamp):
     plt.xlim(0,1)
     plt.ylim(0,1)
     plt.title("ROC Curve, AUC = {}".format(AUC))
-    plt.savefig(os.path.join(plotpath, "{}_ROC.png".format(timestamp)))
+    plt.savefig(os.path.join(config['plot_path'], "{}_ROC.png".format(timestamp)))
 
     # also plot accuracies for each threshold
     plt.figure()
@@ -57,4 +66,8 @@ def ROC_AUC(preds, true_labels, plotpath, timestamp):
     plt.xlim(0,1)
     plt.ylim(0,1)
     plt.title("Accuracy per threshold")
-    plt.savefig(os.path.join(plotpath, "{}_ACC.png".format(timestamp)))
+    plt.savefig(os.path.join(config['plot_path'], "{}_ACC.png".format(timestamp)))
+
+    # save plot data in csv file
+    csvpath = os.path.join(config['model_savepath'], '{}_eval.csv'.format(timestamp))
+    pandas.DataFrame([TPR_list, FPR_list, ACC_list]).to_csv(csvpath)
