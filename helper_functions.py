@@ -71,3 +71,47 @@ def ROC_AUC(preds, true_labels, config, timestamp):
     # save plot data in csv file
     csvpath = os.path.join(config['model_savepath'], '{}_eval.csv'.format(timestamp))
     pandas.DataFrame([TPR_list, FPR_list, ACC_list]).to_csv(csvpath)
+
+def load_data(splitpath):
+    data, labels = [], []
+
+    # loop over the rows in data split file with extracted features
+    for row in open(splitpath):
+        # extract class label and features and add to lists
+        row = row.strip().split(",")
+        label = row[0]
+        features = np.array(row[1:], dtype="float")
+
+        data.append(features)
+        labels.append(label)
+
+    # convert lists to numpy arrays
+    data = np.array(data)
+    labels = np.array(labels)
+
+    return (data, labels)
+
+def plot_training(hist, epochs, plotpath):
+    # plot and save training history
+    plt.style.use("ggplot")
+    plt.figure()
+    plt.plot(np.arange(0, epochs), hist.history["loss"], label="train_loss")
+    plt.plot(np.arange(0, epochs), hist.history["val_loss"], label="val_loss")
+    plt.plot(np.arange(0, epochs), hist.history["acc"], label="train_acc")
+    plt.plot(np.arange(0, epochs), hist.history["val_acc"], label="val_acc")
+    plt.title("Training Loss and Accuracy")
+    plt.xlabel("Epoch #")
+    plt.ylabel("Loss/Accuracy")
+    plt.legend(loc="upper right")
+    plt.savefig(plotpath)
+
+def load_training_data(trainingpath):
+    # function to load training data
+    images = []
+    imagepaths = glob.glob(os.path.join(trainingpath, '**/*.jpg'))
+
+    for path in imagepaths:
+        images.append(cv2.imread(path))
+
+    images = np.array(images)
+    return images
