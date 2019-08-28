@@ -1,11 +1,14 @@
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, roc_auc_score
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from keras.applications import VGG16
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Model, load_model
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers import Input
-from keras.optimizers import SGD, RMSprop
+from keras.optimizers import SGD, RMSprop, Adam
+from keras.callbacks import TensorBoard, EarlyStopping
+from keras import backend as K
 import tensorflow as tf
 import json
 import argparse
@@ -18,30 +21,24 @@ import glob
 import models
 import datetime
 import random
-import pandas
+import pandas as pd
 import cv2
-from evaluate import ROC_AUC
+from time import time
+from helper_functions import ROC_AUC, load_data, load_training_data, plot_training, build_model
 
 # choose GPU for training
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
-
-# set random seed for result reproducability
-sd=28
-os.environ['PYTHONHASHSEED'] = str(sd)
-np.random.seed(sd)
-random.seed(sd)
-tf.set_random_seed(sd)
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-m',
     '--mode',
-    choices=['from_scratch', 'feature_extraction', 'fine_tuning', 'evaluate'],
+    choices=['from_scratch', 'feature_extraction', 'fine_tuning', 'evaluate', 'random_search'],
     required=True,
     help='training mode')
 parser.add_argument('-d',
     '--dataset',
-    choices=['isic_2017'],
+    choices=['isic_2017', 'isic_2017_adj'],
     required=True,
     help='dataset to use')
 parser.add_argument('-i',
@@ -56,102 +53,150 @@ with open('config.json') as json_file:
     config = json.load(json_file)[args['dataset']]
 
 # assign batch size
-batchsize = args['batchsize']
+batchsize = int(args['batchsize'])
 
-def load_data(splitpath):
-    data, labels = [], []
+# batches_per_epoch = gen_training.samples // gen_training.batch_size + (gen_training.samples % gen_training.batch_size > 0)
+# for i in range(batches_per_epoch):
+#     batch = next(gen_training)
+#     current_index = ((gen_training.batch_index-1) * gen_training.batch_size)
+#     if current_index < 0:
+#         if gen_training.samples % gen_training.batch_size > 0:
+#             current_index = max(0,gen_training.samples - gen_training.samples % gen_training.batch_size)
+#         else:
+#             current_index = max(0,gen_training.samples - gen_training.batch_size)
+#     index_array = gen_training.index_array[current_index:current_index + gen_training.batch_size].tolist()
+#     img_paths = [gen_training.filepaths[idx] for idx in index_array]
 
-    # loop over the rows in data split file with extracted features
-    for row in open(splitpath):
-        # extract class label and features and add to lists
-        row = row.strip().split(",")
-        label = row[0]
-        features = np.array(row[1:], dtype="float")
+# function for randomized search for optimal hyperparameters
+if args['mode'] == 'random_search':
 
-        data.append(features)
-        labels.append(label)
+    # get paths to training, validation and testing directories
+    trainingpath = config['trainingpath']
+    validationpath = config['validationpath']
+    testpath = config['testpath']
 
-    # convert lists to numpy arrays
-    data = np.array(data)
-    labels = np.array(labels)
+    # get total number of images in each split, needed to train in batches
+    num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
+    num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
+    num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
 
-    return (data, labels)
+    # test multiple models
+    for i in range(100):
+        # get timestamp for saving stuff
+        timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
 
-def plot_training(hist, epochs, plotpath):
-    # plot and save training history
-    plt.style.use("ggplot")
-    plt.figure()
-    plt.plot(np.arange(0, epochs), hist.history["loss"], label="train_loss")
-    plt.plot(np.arange(0, epochs), hist.history["val_loss"], label="val_loss")
-    plt.plot(np.arange(0, epochs), hist.history["acc"], label="train_acc")
-    plt.plot(np.arange(0, epochs), hist.history["val_acc"], label="val_acc")
-    plt.title("Training Loss and Accuracy")
-    plt.xlabel("Epoch #")
-    plt.ylabel("Loss/Accuracy")
-    plt.legend(loc="upper right")
-    plt.savefig(plotpath)
+        # get start time
+        start_time = time()
 
-def load_training_data(trainingpath):
-    # function to load training data
-    images = []
-    imagepaths = glob.glob(os.path.join(trainingpath, '**/*.jpg'))
+        # need a different random seed everytime, otherwise will still get same parameters every iteration
+        np.random.seed(random.randint(0, 100000))
 
-    for path in imagepaths:
-        images.append(cv2.imread(path))
+        # get random params
+        learning_rate = 10 ** np.random.uniform(-6,1)
+        dropout_rate = np.random.uniform(0,1)
+        l2_rate = 10 ** np.random.uniform(-2,-.3)
+        batchsize = 2 ** np.random.randint(6)
 
-    images = np.array(images)
-    return images
+        # build the model
+        model, gen_training, gen_validation, gen_test, gen_obj_training, gen_obj_test = build_model(config, learning_rate, dropout_rate, l2_rate, batchsize)
+
+        search_records = pd.DataFrame(columns=['epochs', 'train_time', 'AUC', 'skl_AUC', 'train_accuracy', 'val_accuracy', 'learning_rate', 'dropout_rate', 'l2_rate', 'batchsize'])
+
+        # define early stopping criterion
+        early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='auto', baseline=None, restore_best_weights=True)
+
+        # train model
+        print("training model...")
+        hist = model.fit_generator(
+            gen_training,
+            steps_per_epoch = num_training // batchsize,
+            validation_data = gen_validation,
+            validation_steps = num_validation // batchsize,
+            # class_weight=class_weights,
+            epochs=50,
+            verbose=1,
+            callbacks=[early_stopping])
+
+        # get training time
+        train_time = time() - start_time
+
+        # get number of epochs the training lasted for
+        training_epochs = len(hist.history['loss'])
+
+        # # create save directory if it doesn't exist and save trained model
+        # print("saving model...")
+        # if not os.path.exists(config['model_savepath']):
+        #     os.makedirs(config['model_savepath'])
+        # savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp))
+        # model.save(savepath)
+
+        # create plot directory if it doesn't exist and plot training progress
+        print("saving plots...")
+        if not os.path.exists(config['plot_path']):
+            os.makedirs(config['plot_path'])
+        plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
+        plot_training(hist, training_epochs, plotpath)
+
+        # reinitialize validation generator with batch size 1 so all validation images are used
+        gen_validation = gen_obj_test.flow_from_directory(
+            validationpath,
+            class_mode="binary",
+            target_size=(224,224),
+            color_mode="rgb",
+            shuffle=False,
+            batch_size=1)
+
+        # check the model on the validation data and use this for tweaking (not on test data)
+        # this is for checking the best training settings; afterwards we can test on test set
+        print("evaluating model...")
+
+        # make predictions
+        preds = model.predict_generator(gen_validation, verbose=1)
+
+        # get true labels
+        true_labels = gen_validation.classes
+
+        # plot ROC and calculate AUC
+        AUC, AUC2 = ROC_AUC(preds, true_labels, config, timestamp)
+
+        # get train acc and val acc from training history
+        validation_acc = hist.history.get('val_acc')[-1]
+        train_acc = hist.history.get('acc')[-1]
+
+        # add results to the dataframe
+        row = pd.Series({'epochs': training_epochs,
+                        'train_time': train_time,
+                        'AUC': AUC,
+                        'skl_AUC': AUC2,
+                        'train_accuracy': train_acc,
+                        'val_accuracy': validation_acc,
+                        'learning_rate': learning_rate,
+                        'dropout_rate': dropout_rate,
+                        'l2_rate': l2_rate,
+                        'batchsize': batchsize}, name=timestamp)
+        search_records = search_records.append(row)
+
+        print(search_records)
+
+        # clear session to prevent memory from overflowing
+        K.clear_session()
+
+    # when searching is done, save dataframe as csv
+    csvpath = os.path.join(config['model_savepath'], 'randomsearch.csv')
+    search_records.to_csv(csvpath)
 
 
-# get paths to training, validation and testing directories
-trainingpath = config['trainingpath']
-validationpath = config['validationpath']
-testpath = config['testpath']
-
-# get total number of images in each split, needed to train in batches
-num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
-num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
-num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
-
-# initialize image data generator objects
-gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-
-# we need to fit generators to training data
-# from this mean and std, featurewise_center is calculated in the generator
-x_train = load_training_data(trainingpath)
-gen_obj_training.fit(x_train)
-gen_obj_test.fit(x_train)
-
-# initialize the image generators that load batches of images
-gen_training = gen_obj_training.flow_from_directory(
-    trainingpath,
-    class_mode="binary",
-    target_size=(224,224),
-    color_mode="rgb",
-    shuffle=True,
-    batch_size=batchsize)
-
-gen_validation = gen_obj_test.flow_from_directory(
-    validationpath,
-    class_mode="binary",
-    target_size=(224,224),
-    color_mode="rgb",
-    shuffle=False,
-    batch_size=batchsize)
-
-gen_test = gen_obj_test.flow_from_directory(
-    testpath,
-    class_mode="binary",
-    target_size=(224,224),
-    color_mode="rgb",
-    shuffle=False,
-    batch_size=batchsize)
-
-
+# train model from scratch
 if args['mode'] == 'from_scratch':
     # get timestamp for saving stuff
     timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
+
+    # set random seed for result reproducability
+    sd=28
+    os.environ['PYTHONHASHSEED'] = str(sd)
+    np.random.seed(sd)
+    random.seed(sd)
+    tf.set_random_seed(sd)
 
     # set input tensor for VGG16 model
     input_tensor = Input(shape=(224,224,3))
@@ -162,11 +207,15 @@ if args['mode'] == 'from_scratch':
 
     # set optimizer and compile model
     print("compiling model...")
-    sgd = SGD(lr=0.01, momentum=0.9)
+    sgd = SGD(lr=1e-6, momentum=0.9, nesterov=True)
     RMSprop = RMSprop(lr=1e-6)
-    model_VGG16.compile(loss="binary_crossentropy", optimizer=RMSprop, metrics=["accuracy"])
+    adam = Adam(lr=1e-2, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 
-    # # calculate relative class weights for the imbalanced training data
+    model_VGG16.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
+
+    tensorboard = TensorBoard(log_dir="logs/{}".format(time()), batch_size=batchsize, write_graph=True, write_grads=False, write_images=True, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
+
+    # #calculate relative class weights for the imbalanced training data
     # class_weights = {}
     # for i in range(len(config['classes'])):
     #     # get path to the class images and get number of samples for that class
@@ -189,11 +238,11 @@ if args['mode'] == 'from_scratch':
         validation_steps = num_validation // batchsize,
         # class_weight=class_weights,
         epochs=50,
-        verbose=1)
-
+        verbose=1,
+        callbacks=[tensorboard])
 
     # save history
-    pandas.DataFrame(hist.history).to_csv(os.path.join(config['model_savepath'], '{}_history.csv'.format(timestamp)))
+    pd.DataFrame(hist.history).to_csv(os.path.join(config['model_savepath'], '{}_history.csv'.format(timestamp)))
 
     # create save directory if it doesn't exist and save trained model
     print("saving model...")

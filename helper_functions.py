@@ -3,7 +3,77 @@ import os
 import pandas
 import matplotlib.pyplot as plt
 import json
+import glob
+import cv2
+import random
+import tensorflow as tf
+import models
 from sklearn.metrics import roc_curve, confusion_matrix, roc_auc_score
+from keras.optimizers import SGD, RMSprop, Adam
+from keras.preprocessing.image import ImageDataGenerator
+from keras.layers import Input
+
+def build_model(config, learning_rate, dropout_rate, l2_rate, batchsize):
+    # set seed
+    sd = 28
+
+    # define the optimizer
+    adam = Adam(lr=learning_rate)
+
+    # get paths to training, validation and testing directories
+    trainingpath = config['trainingpath']
+    validationpath = config['validationpath']
+    testpath = config['testpath']
+
+    # get total number of images in each split, needed to train in batches
+    num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
+    num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
+    num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
+
+    # initialize image data generator objects
+    gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+    gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+
+    # we need to fit generators to training data
+    # from this mean and std, featurewise_center is calculated in the generator
+    x_train = load_training_data(trainingpath)
+    gen_obj_training.fit(x_train, seed=sd)
+    gen_obj_test.fit(x_train, seed=sd)
+
+    # initialize the image generators that load batches of images
+    gen_training = gen_obj_training.flow_from_directory(
+        trainingpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=True,
+        batch_size=batchsize)
+
+    gen_validation = gen_obj_test.flow_from_directory(
+        validationpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=False,
+        batch_size=batchsize)
+
+    gen_test = gen_obj_test.flow_from_directory(
+        testpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=False,
+        batch_size=batchsize)
+
+    input_tensor = Input(shape=(224,224,3))
+
+    # load VGG16 model architecture
+    model = models.model_VGG16(dropout_rate, l2_rate, input_tensor)
+
+    # compile model
+    model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
+
+    return model, gen_training, gen_validation, gen_test, gen_obj_training, gen_obj_test
 
 def ROC_AUC(preds, true_labels, config, timestamp):
     # initialize TPR, FPR, ACC and AUC lists
@@ -43,7 +113,7 @@ def ROC_AUC(preds, true_labels, config, timestamp):
     print("AUC: {}".format(AUC))
 
     AUC2 = round(roc_auc_score(true_labels, preds),3)
-    print("sk AUC: {}".format(AUC2))
+    print("sk_AUC: {}".format(AUC2))
 
     # plot and save ROC curve
     plt.style.use("ggplot")
@@ -71,6 +141,8 @@ def ROC_AUC(preds, true_labels, config, timestamp):
     # save plot data in csv file
     csvpath = os.path.join(config['model_savepath'], '{}_eval.csv'.format(timestamp))
     pandas.DataFrame([TPR_list, FPR_list, ACC_list]).to_csv(csvpath)
+
+    return AUC, AUC2
 
 def load_data(splitpath):
     data, labels = [], []
