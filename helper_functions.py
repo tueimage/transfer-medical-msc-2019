@@ -8,12 +8,37 @@ import cv2
 import random
 import tensorflow as tf
 import models
+import gc
+import datetime
 from sklearn.metrics import roc_curve, confusion_matrix, roc_auc_score
 from keras.optimizers import SGD, RMSprop, Adam
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Input
+from keras.backend.tensorflow_backend import set_session
+from keras.backend.tensorflow_backend import clear_session
+from keras.backend.tensorflow_backend import get_session
+from keras.callbacks import EarlyStopping
+from keras import backend as K
+from time import time
+import tensorflow
 
-def build_model(config, learning_rate, dropout_rate, l2_rate, batchsize):
+def limit_memory():
+    # release unused memory sources, force garbage collection
+    K.clear_session()
+    K.get_session().close()
+    tf.reset_default_graph()
+    gc.collect()
+    #cfg = tf.ConfigProto()
+    #cfg.gpu_options.allow_growth = True
+    #keras.backend.set_session(tf.Session(config=cfg))
+    K.set_session(tf.Session())
+    gc.collect()
+
+
+def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj_training, gen_obj_test):
+    # get timestamp for saving stuff
+    timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
+
     # set seed
     sd = 28
 
@@ -30,15 +55,6 @@ def build_model(config, learning_rate, dropout_rate, l2_rate, batchsize):
     num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
     num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
 
-    # initialize image data generator objects
-    gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-    gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-
-    # we need to fit generators to training data
-    # from this mean and std, featurewise_center is calculated in the generator
-    x_train = load_training_data(trainingpath)
-    gen_obj_training.fit(x_train, seed=sd)
-    gen_obj_test.fit(x_train, seed=sd)
 
     # initialize the image generators that load batches of images
     gen_training = gen_obj_training.flow_from_directory(
@@ -73,7 +89,59 @@ def build_model(config, learning_rate, dropout_rate, l2_rate, batchsize):
     # compile model
     model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 
-    return model, gen_training, gen_validation, gen_test, gen_obj_training, gen_obj_test
+    # define early stopping criterion
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='auto', baseline=None, restore_best_weights=True)
+
+    # get start time
+    start_time = time()
+
+    # train model
+    hist = model.fit_generator(
+        gen_training,
+        steps_per_epoch = num_training // batchsize,
+        validation_data = gen_validation,
+        validation_steps = num_validation // batchsize,
+        # class_weight=class_weights,
+        epochs=50,
+        verbose=2,
+        callbacks=[early_stopping])
+
+    # get training time
+    train_time = time() - start_time
+
+    # get number of epochs the training lasted for
+    training_epochs = len(hist.history['loss'])
+
+    # create plot directory if it doesn't exist and plot training progress
+    print("saving plots...")
+    if not os.path.exists(config['plot_path']):
+        os.makedirs(config['plot_path'])
+    plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
+    plot_training(hist, training_epochs, plotpath)
+
+    # reinitialize validation generator with batch size 1 so all validation images are used
+    gen_validation = gen_obj_test.flow_from_directory(
+        validationpath,
+        class_mode="binary",
+        target_size=(224,224),
+        color_mode="rgb",
+        shuffle=False,
+        batch_size=1)
+
+    # check the model on the validation data and use this for tweaking (not on test data)
+    # this is for checking the best training settings; afterwards we can test on test set
+    print("evaluating model...")
+
+    # make predictions
+    preds = model.predict_generator(gen_validation, verbose=1)
+
+    # get true labels
+    true_labels = gen_validation.classes
+
+    # plot ROC and calculate AUC
+    AUC, AUC2 = ROC_AUC(preds, true_labels, config, timestamp)
+
+    return hist, AUC, AUC2, train_time, training_epochs, timestamp
 
 def ROC_AUC(preds, true_labels, config, timestamp):
     # initialize TPR, FPR, ACC and AUC lists

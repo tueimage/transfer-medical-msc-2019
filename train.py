@@ -23,11 +23,12 @@ import datetime
 import random
 import pandas as pd
 import cv2
+import gc
 from time import time
-from helper_functions import ROC_AUC, load_data, load_training_data, plot_training, build_model
+from helper_functions import ROC_AUC, load_data, load_training_data, plot_training, train_model, limit_memory
 
 # choose GPU for training
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -55,131 +56,69 @@ with open('config.json') as json_file:
 # assign batch size
 batchsize = int(args['batchsize'])
 
-# batches_per_epoch = gen_training.samples // gen_training.batch_size + (gen_training.samples % gen_training.batch_size > 0)
-# for i in range(batches_per_epoch):
-#     batch = next(gen_training)
-#     current_index = ((gen_training.batch_index-1) * gen_training.batch_size)
-#     if current_index < 0:
-#         if gen_training.samples % gen_training.batch_size > 0:
-#             current_index = max(0,gen_training.samples - gen_training.samples % gen_training.batch_size)
-#         else:
-#             current_index = max(0,gen_training.samples - gen_training.batch_size)
-#     index_array = gen_training.index_array[current_index:current_index + gen_training.batch_size].tolist()
-#     img_paths = [gen_training.filepaths[idx] for idx in index_array]
-
 # function for randomized search for optimal hyperparameters
 if args['mode'] == 'random_search':
+    # set a random seed
+    sd = 28
 
-    # get paths to training, validation and testing directories
+    # initialize dataframe to save results for different hyperparameters
+    search_records = pd.DataFrame(columns=['epochs', 'train_time', 'AUC', 'skl_AUC', 'train_accuracy', 'val_accuracy', 'learning_rate', 'dropout_rate', 'l2_rate', 'batchsize'])
+
     trainingpath = config['trainingpath']
     validationpath = config['validationpath']
-    testpath = config['testpath']
 
-    # get total number of images in each split, needed to train in batches
-    num_training = len(glob.glob(os.path.join(trainingpath, '**/*.jpg')))
-    num_validation = len(glob.glob(os.path.join(validationpath, '**/*.jpg')))
-    num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
+    # initialize image data generator objects
+    gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+    gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+
+    # we need to fit generators to training data
+    # from this mean and std, featurewise_center is calculated in the generator
+    x_train = load_training_data(trainingpath)
+    gen_obj_training.fit(x_train, seed=sd)
+    gen_obj_test.fit(x_train, seed=sd)
 
     # test multiple models
     for i in range(100):
-        # get timestamp for saving stuff
-        timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
+        limit_memory()
+        session = tf.Session()
+        K.set_session(session)
+        with session.as_default():
+            with session.graph.as_default():
+                # need a different random seed everytime for hyperparameters, otherwise will still get same parameters every iteration
+                np.random.seed(random.randint(0, 100000))
 
-        # get start time
-        start_time = time()
+                # get random params
+                learning_rate = 10 ** np.random.uniform(-6,1)
+                dropout_rate = np.random.uniform(0,1)
+                l2_rate = 10 ** np.random.uniform(-2,-.3)
+                batchsize = 2 ** np.random.randint(6)
 
-        # need a different random seed everytime, otherwise will still get same parameters every iteration
-        np.random.seed(random.randint(0, 100000))
+                # now set a constant random seed, so things that may be variable are the same for every trained model, e.g. weight initialization
+                os.environ['PYTHONHASHSEED'] = str(sd)
+                np.random.seed(sd)
+                random.seed(sd)
+                tf.set_random_seed(sd)
 
-        # get random params
-        learning_rate = 10 ** np.random.uniform(-6,1)
-        dropout_rate = np.random.uniform(0,1)
-        l2_rate = 10 ** np.random.uniform(-2,-.3)
-        batchsize = 2 ** np.random.randint(6)
+                # build the model and train model using the given hyperparameters
+                hist, AUC, AUC2, train_time, training_epochs, timestamp = train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj_training, gen_obj_test)
 
-        # build the model
-        model, gen_training, gen_validation, gen_test, gen_obj_training, gen_obj_test = build_model(config, learning_rate, dropout_rate, l2_rate, batchsize)
+                # get train acc and val acc from training history
+                validation_acc = hist.history.get('val_acc')[-1]
+                train_acc = hist.history.get('acc')[-1]
 
-        search_records = pd.DataFrame(columns=['epochs', 'train_time', 'AUC', 'skl_AUC', 'train_accuracy', 'val_accuracy', 'learning_rate', 'dropout_rate', 'l2_rate', 'batchsize'])
-
-        # define early stopping criterion
-        early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='auto', baseline=None, restore_best_weights=True)
-
-        # train model
-        print("training model...")
-        hist = model.fit_generator(
-            gen_training,
-            steps_per_epoch = num_training // batchsize,
-            validation_data = gen_validation,
-            validation_steps = num_validation // batchsize,
-            # class_weight=class_weights,
-            epochs=50,
-            verbose=1,
-            callbacks=[early_stopping])
-
-        # get training time
-        train_time = time() - start_time
-
-        # get number of epochs the training lasted for
-        training_epochs = len(hist.history['loss'])
-
-        # # create save directory if it doesn't exist and save trained model
-        # print("saving model...")
-        # if not os.path.exists(config['model_savepath']):
-        #     os.makedirs(config['model_savepath'])
-        # savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(timestamp))
-        # model.save(savepath)
-
-        # create plot directory if it doesn't exist and plot training progress
-        print("saving plots...")
-        if not os.path.exists(config['plot_path']):
-            os.makedirs(config['plot_path'])
-        plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
-        plot_training(hist, training_epochs, plotpath)
-
-        # reinitialize validation generator with batch size 1 so all validation images are used
-        gen_validation = gen_obj_test.flow_from_directory(
-            validationpath,
-            class_mode="binary",
-            target_size=(224,224),
-            color_mode="rgb",
-            shuffle=False,
-            batch_size=1)
-
-        # check the model on the validation data and use this for tweaking (not on test data)
-        # this is for checking the best training settings; afterwards we can test on test set
-        print("evaluating model...")
-
-        # make predictions
-        preds = model.predict_generator(gen_validation, verbose=1)
-
-        # get true labels
-        true_labels = gen_validation.classes
-
-        # plot ROC and calculate AUC
-        AUC, AUC2 = ROC_AUC(preds, true_labels, config, timestamp)
-
-        # get train acc and val acc from training history
-        validation_acc = hist.history.get('val_acc')[-1]
-        train_acc = hist.history.get('acc')[-1]
-
-        # add results to the dataframe
-        row = pd.Series({'epochs': training_epochs,
-                        'train_time': train_time,
-                        'AUC': AUC,
-                        'skl_AUC': AUC2,
-                        'train_accuracy': train_acc,
-                        'val_accuracy': validation_acc,
-                        'learning_rate': learning_rate,
-                        'dropout_rate': dropout_rate,
-                        'l2_rate': l2_rate,
-                        'batchsize': batchsize}, name=timestamp)
-        search_records = search_records.append(row)
-
-        print(search_records)
-
-        # clear session to prevent memory from overflowing
-        K.clear_session()
+                # add results to the dataframe
+                row = pd.Series({'epochs': training_epochs,
+                                'train_time': train_time,
+                                'AUC': AUC,
+                                'skl_AUC': AUC2,
+                                'train_accuracy': train_acc,
+                                'val_accuracy': validation_acc,
+                                'learning_rate': learning_rate,
+                                'dropout_rate': dropout_rate,
+                                'l2_rate': l2_rate,
+                                'batchsize': batchsize}, name=timestamp)
+                search_records = search_records.append(row)
+        limit_memory()
 
     # when searching is done, save dataframe as csv
     csvpath = os.path.join(config['model_savepath'], 'randomsearch.csv')
