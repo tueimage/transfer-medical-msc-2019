@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 import itertools
 import random
+import sys
 
 # choose GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -22,9 +23,14 @@ parser.add_argument('-d',
     help='dataset to use')
 parser.add_argument('-m',
     '--modification',
-    choices=['balance_down', 'balance_up', 'image_rot', 'image_translation'],
+    choices=['balance_down', 'balance_up', 'image_rot', 'image_translation', 'image_zoom', 'add_noise'],
     required=True,
     help='modification to apply to dataset')
+parser.add_argument('-n',
+    '--noise',
+    choices=['gaussian', 'poisson', 'salt_and_pepper', 'speckle'],
+    required='add_noise' in sys.argv,
+    help='noise type to include to dataset')
 parser.add_argument('-f',
     '--fraction',
     choices=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
@@ -49,15 +55,25 @@ validationpaths = glob.glob(os.path.join(validationpath, '**/*.jpg'))
 testpaths = glob.glob(os.path.join(testpath, '**/*.jpg'))
 
 # first create necessary directories for modified dataset
+
+# IF NOISe...... iets
+
 for classname in config['classes']:
     # create save directories if they don't exist yet for each class
     train_savedir = os.path.join(trainingpath, classname)
     val_savedir = os.path.join(validationpath, classname)
     test_savedir = os.path.join(testpath, classname)
 
-    train_savedir2 = train_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
-    val_savedir2 = val_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
-    test_savedir2 = test_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+
+    if args['modification'] == 'add_noise':
+        train_savedir2 = train_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+        val_savedir2 = val_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+        test_savedir2 = test_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+
+    else:
+        train_savedir2 = train_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+        val_savedir2 = val_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+        test_savedir2 = test_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
     if not os.path.exists(train_savedir2):
         os.makedirs(train_savedir2)
@@ -136,7 +152,7 @@ if args['modification'] == 'image_rot':
         cv2.imwrite(newpath, rot_image)
 
 if args['modification'] == 'image_translation':
-    # rotates the images with random amounts of rotation
+    # translates images in x- and y-direction
     for imagepath in mod_paths:
         # load image
         image = cv2.imread(imagepath)
@@ -160,11 +176,56 @@ if args['modification'] == 'image_translation':
         print("Writing image {} ...".format(newpath))
         cv2.imwrite(newpath, translated_image)
 
+if args['modification'] == 'add_noise':
+    # adds noise to images
+    for imagepath in mod_paths:
+        # load image
+        image = cv2.imread(imagepath)
 
+        # create a new path to save modified image in
+        newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
 
+        # add gaussian noise
+        if args['noise'] == 'gaussian':
+            row, col, ch = image.shape
+            mean = 0
+            var = 0.5
+            sigma = var ** 0.5
+            gauss = np.random.normal(mean, sigma, (row, col, ch)).astype('uint8')
+            noisy_image = cv2.add(image, gauss)
 
+        # add poisson noise
+        if args['noise'] == 'poisson':
+            noise = (np.random.poisson(image / 255.0 * 0.1) / 0.1 * 255).astype('uint8')
+            noisy_image = cv2.add(image, noise)
 
+        # add salt and pepper noise
+        if args['noise'] == 'salt_and_pepper':
+            row, col, ch = image.shape
+            salt_vs_pepper = 0.5
+            amount = 0.005
+            noisy_image = np.copy(image)
+            # salt
+            num_salt = np.ceil(amount * image.size * salt_vs_pepper)
+            coords = [np.random.randint(0, i - 1, int(num_salt)) for i in image.shape]
+            noisy_image[tuple(coords)] = 255
 
+            # pepper
+            num_pepper = np.ceil(amount* image.size * (1. - salt_vs_pepper))
+            coords = [np.random.randint(0, i - 1, int(num_pepper)) for i in image.shape]
+            noisy_image[tuple(coords)] = 0
+
+        # add speckle noise
+        if args['noise'] == 'speckle':
+            row, col, ch = image.shape
+            gauss = np.random.randn(row, col, ch).astype('uint8')
+            gauss = gauss.reshape(row, col, ch)
+            noise = image * gauss
+            noisy_image = cv2.add(image, gauss)
+
+        # save image in the new path
+        print("Writing image {} ...".format(newpath))
+        cv2.imwrite(newpath, noisy_image)
 
 
 
@@ -173,7 +234,11 @@ if args['modification'] == 'image_translation':
 for imagepath in rest_paths:
     # do the same, but without modification
     image = cv2.imread(path)
-    newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+
+    if args['modification'] == 'add_noise':
+        newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+    else:
+        newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
     print("Writing image {} ...".format(newpath))
     cv2.imwrite(newpath, image)
@@ -184,7 +249,11 @@ for imagepath in itertools.chain(validationpaths, testpaths):
     image = cv2.imread(imagepath)
 
     # create a new path to save modified image in
-    newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+    if args['modification'] == 'add_noise':
+        newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+
+    else:
+        newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
     # save image in the new path
     print("Writing image {} ...".format(newpath))
