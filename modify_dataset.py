@@ -22,7 +22,7 @@ parser.add_argument('-d',
     help='dataset to use')
 parser.add_argument('-m',
     '--modification',
-    choices=['balance_down', 'balance_up', 'image_shift_rot'],
+    choices=['balance_down', 'balance_up', 'image_rot', 'image_translation'],
     required=True,
     help='modification to apply to dataset')
 parser.add_argument('-f',
@@ -108,7 +108,7 @@ splitpoint = int(np.ceil(args['fraction']*len(allpaths)))
 mod_paths = allpaths[:splitpoint]
 rest_paths = allpaths[splitpoint:]
 
-if args['modification'] == 'image_shift_rot':
+if args['modification'] == 'image_rot':
     # rotates the images with random amounts of rotation
     for imagepath in mod_paths:
         # load image
@@ -135,14 +135,30 @@ if args['modification'] == 'image_shift_rot':
         print("Writing image {} ...".format(newpath))
         cv2.imwrite(newpath, rot_image)
 
-    # save the rest of the images
-    for imagepath in rest_paths:
-        # do the same, but without modification
-        image = cv2.imread(path)
+if args['modification'] == 'image_translation':
+    # rotates the images with random amounts of rotation
+    for imagepath in mod_paths:
+        # load image
+        image = cv2.imread(imagepath)
+
+        # create a new path to save modified image in
         newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
+        # get height and width values
+        (h, w) = image.shape[:2]
+
+        # make translation matrix, with 0.1 percent translation
+        trans_pct = 0.1
+        x_trans = trans_pct * w
+        y_trans = trans_pct * h
+        mat = np.float32([[1,0,x_trans], [0,1,y_trans]])
+
+        # translate the image
+        translated_image = cv2.warpAffine(image, mat, (h, w))
+
+        # save image in the new path
         print("Writing image {} ...".format(newpath))
-        cv2.imwrite(newpath, image)
+        cv2.imwrite(newpath, translated_image)
 
 
 
@@ -153,15 +169,14 @@ if args['modification'] == 'image_shift_rot':
 
 
 
+# save the rest of the training images
+for imagepath in rest_paths:
+    # do the same, but without modification
+    image = cv2.imread(path)
+    newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
-
-
-
-
-
-
-# 1
-
+    print("Writing image {} ...".format(newpath))
+    cv2.imwrite(newpath, image)
 
 # always we need to just copy the validation and test set into the new dataset directory
 for imagepath in itertools.chain(validationpaths, testpaths):
