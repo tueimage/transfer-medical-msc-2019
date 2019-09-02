@@ -176,6 +176,35 @@ if args['modification'] == 'image_translation':
         print("Writing image {} ...".format(newpath))
         cv2.imwrite(newpath, translated_image)
 
+if args['modification'] == 'image_zoom':
+    # zooms images
+    for imagepath in mod_paths:
+        # load image
+        image = cv2.imread(imagepath)
+
+        # create a new path to save modified image in
+        newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+
+        # get height and width values
+        (h, w) = image.shape[:2]
+
+        # zoom percentage
+        zoom_pct = 1.5
+
+        # calculate offsets
+        xmin = int((zoom_pct*w/2)-(w/2))
+        xmax = int((w/2)+(zoom_pct*w/2))
+        ymin = int((zoom_pct*h/2)-(h/2))
+        ymax = int((h/2)+(zoom_pct*h/2))
+
+        # zoom images
+        zoomed_image = cv2.resize(image,None,fx=zoom_pct, fy=zoom_pct, interpolation=cv2.INTER_LINEAR)
+        zoomed_image = zoomed_image[xmin:xmax,ymin:ymax]
+
+        # save image in the new path
+        print("Writing image {} ...".format(newpath))
+        cv2.imwrite(newpath, zoomed_image)
+
 if args['modification'] == 'add_noise':
     # adds noise to images
     for imagepath in mod_paths:
