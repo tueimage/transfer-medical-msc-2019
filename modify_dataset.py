@@ -55,9 +55,6 @@ validationpaths = glob.glob(os.path.join(validationpath, '**/*.jpg'))
 testpaths = glob.glob(os.path.join(testpath, '**/*.jpg'))
 
 # first create necessary directories for modified dataset
-
-# IF NOISe...... iets
-
 for classname in config['classes']:
     # create save directories if they don't exist yet for each class
     train_savedir = os.path.join(trainingpath, classname)
@@ -108,9 +105,53 @@ if args['modification'] == 'balance_down':
             image = cv2.imread(imagepath)
 
             # create a new path to save modified image in
-            newpath = imagepath.replace(datasetpath, '{}_{}'.format(datasetpath, args['modification']))
+            newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
             # save image in the new path
+            print("Writing image {} ...".format(newpath))
+            cv2.imwrite(newpath, image)
+
+if args['modification'] == 'balance_up':
+
+    # find class with least images (paths)
+    max_paths = max([len(paths[val]) for val in paths.keys()])
+
+    # now give every other class the same amount of paths (images)
+    for classname in paths.keys():
+        # skip the downsampling for class with least samples
+        if len(paths[classname]) == max_paths:
+            continue
+
+        # duplicate random images to get the same amount as the biggest class
+        extra_paths = [random.choice(paths[classname]) for _ in range(max_paths-len(paths[classname]))]
+        extra_paths_orig = np.copy(extra_paths)
+
+        # change the name of the duplicates so the image are not just replaced
+        for i in range(len(extra_paths)):
+            path = extra_paths[i].replace('.jpg', '_{}.jpg'.format(i))
+            extra_paths[i] = path
+
+        # add the original images to new dataset
+        for imagepath in paths[classname]:
+            # load image
+            image = cv2.imread(imagepath)
+
+            # create a new path to save modified image in
+            newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+
+            # save image in the new path
+            print("Writing image {} ...".format(newpath))
+            cv2.imwrite(newpath, image)
+
+        # add the extra images to new dataset
+        for i in range(len(extra_paths)):
+            # load original image
+            image = cv2.imread(extra_paths_orig[i])
+
+            # create new path
+            newpath = extra_paths[i].replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+
+            # save the duplicate image with the name new in new path
             print("Writing image {} ...".format(newpath))
             cv2.imwrite(newpath, image)
 
@@ -255,9 +296,6 @@ if args['modification'] == 'add_noise':
         # save image in the new path
         print("Writing image {} ...".format(newpath))
         cv2.imwrite(newpath, noisy_image)
-
-
-
 
 # save the rest of the training images
 for imagepath in rest_paths:
