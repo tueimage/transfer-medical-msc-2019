@@ -3,11 +3,17 @@ import json
 
 # make dictionary with parameters specific to all datasets
 data = {}
+data['isic'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC',
+  'output_path': 'output_ISIC'
+  }
 data['isic_2017'] = {
   'classes': ['melanoma', 'nevus_sk'],
   'orig_path': 'ISIC-2017',
-  'dataset_path': 'dataset_ISIC',
-  'output_path': 'output_ISIC'
+  'dataset_path': 'dataset_ISIC_2017',
+  'output_path': 'output_ISIC_2017'
   }
 data['isic_2017_adj'] = {
   'classes': ['melanoma', 'nevus_sk'],
@@ -23,7 +29,7 @@ data['cats_and_dogs'] = {
   }
 
 # list with all datasets; so certain paths can be added automatically to the data dictionary
-datasets = ['isic_2017', 'isic_2017_adj', 'cats_and_dogs']
+datasets = ['isic', 'isic_2017', 'isic_2017_adj', 'cats_and_dogs']
 for dataset in datasets:
     # path to original dataset, use parent path so data is not in same repo as code
     parent_path = os.path.dirname(os.getcwd())
