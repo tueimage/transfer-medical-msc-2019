@@ -9,7 +9,7 @@ import random
 import sys
 
 # choose GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # set a seed for reproducability
 seed=28
@@ -18,12 +18,12 @@ seed=28
 parser = argparse.ArgumentParser()
 parser.add_argument('-d',
     '--dataset',
-    choices=['isic_2017'],
+    choices=['isic'],
     required=True,
     help='dataset to use')
 parser.add_argument('-m',
     '--modification',
-    choices=['balance_down', 'balance_up', 'image_rot', 'image_translation', 'image_zoom', 'add_noise'],
+    choices=['balance_down', 'balance_up', 'image_rot', 'image_translation', 'image_zoom', 'add_noise', 'imbalance_classes'],
     required=True,
     help='modification to apply to dataset')
 parser.add_argument('-n',
@@ -154,6 +154,23 @@ if args['modification'] == 'balance_up':
             # save the duplicate image with the name new in new path
             print("Writing image {} ...".format(newpath))
             cv2.imwrite(newpath, image)
+
+if args['modification'] == 'imbalance_classes':
+    benign_paths = paths['benign']
+    malignant_paths = paths['malignant']
+
+    malignant_paths = malignant_paths[:int(np.ceil(args['fraction']*len(malignant_paths)))]
+
+    for imagepath in itertools.chain(benign_paths, malignant_paths):
+        # load image
+        image = cv2.imread(imagepath)
+
+        # create a new path to save modified image in
+        newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+
+        # save image in the new path
+        print("Writing image {} ...".format(newpath))
+        cv2.imwrite(newpath, image)
 
 # for the modifications from now on, only fraction of training images is needed
 # so we first make a list out of all paths for all keys and shuffle them
@@ -297,18 +314,19 @@ if args['modification'] == 'add_noise':
         print("Writing image {} ...".format(newpath))
         cv2.imwrite(newpath, noisy_image)
 
-# save the rest of the training images
-for imagepath in rest_paths:
-    # do the same, but without modification
-    image = cv2.imread(path)
+if args['modification'] == 'image_rot' or args['modification'] == 'image_translation' or args['modification'] == 'image_zoom' or args['modification'] == 'add_noise':
+    # save the rest of the training images
+    for imagepath in rest_paths:
+        # do the same, but without modification
+        image = cv2.imread(imagepath)
 
-    if args['modification'] == 'add_noise':
-        newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
-    else:
-        newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+        if args['modification'] == 'add_noise':
+            newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+        else:
+            newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
-    print("Writing image {} ...".format(newpath))
-    cv2.imwrite(newpath, image)
+        print("Writing image {} ...".format(newpath))
+        cv2.imwrite(newpath, image)
 
 # always we need to just copy the validation and test set into the new dataset directory
 for imagepath in itertools.chain(validationpaths, testpaths):
