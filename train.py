@@ -3,7 +3,6 @@ from sklearn.metrics import classification_report, roc_curve, confusion_matrix, 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from keras.applications import VGG16
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Model, load_model, Sequential
 from keras.layers.core import Flatten, Dense, Dropout
@@ -21,7 +20,7 @@ import numpy as np
 import os
 import pickle
 import glob
-from models import model_VGG16
+from models import VGG16
 import datetime
 import random
 import pandas as pd
@@ -379,20 +378,19 @@ if args['mode'] == 'from_scratch':
         shuffle=False,
         batch_size=1)
 
-    # set input tensor for VGG16 model
-    input_tensor = Input(shape=(224,224,3))
+    # set input shape for VGG16 model
+    input_shape = (224,224,3)
 
     # set params
-    dropout_rate = 0.3
-    l2_rate = 0.0
     learning_rate = 2e-7
     nr_epochs = 100
 
-    BN_setting = 'BN_ACT'
     OPT_setting = 'adam_opt'
 
     # load VGG16 model architecture
-    model_VGG16 = model_VGG16(dropout_rate, l2_rate, BN_setting, input_tensor=input_tensor, activation='relu')
+    model_VGG16 = VGG16().get_model(dropout_rate = 0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=input_shape)
+
+    # model_VGG16 = model_VGG16(dropout_rate, l2_rate, BN_setting, input_tensor=input_tensor, activation='relu')
     print(model_VGG16.summary())
 
     # set optimizer and compile model
