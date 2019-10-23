@@ -1,6 +1,6 @@
 import numpy as np
 import os
-import pandas
+import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import glob
@@ -20,7 +20,38 @@ from keras.backend.tensorflow_backend import get_session
 from keras.callbacks import EarlyStopping
 from keras import backend as K
 from time import time
+from scipy.stats import binom_test
 import tensorflow
+
+def perform_PCA(features, pca_pct=.95):
+    # reduce dimensionality of dataset features
+    # first scale the data to zero mean, unit variance
+    scaler = StandardScaler()
+    scaler.fit(features)
+    features = scaler.transform(features)
+
+    # fit PCA
+    pca = PCA(pca_pct)
+    pca.fit(features)
+    pca.n_components_
+
+    # apply PCA to features
+    features = pca.transform(features)
+
+    return features
+
+def binomial_test(true_labels, pred_labels):
+    # get the number of successes
+    TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
+    TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
+
+    num_successes = TP + TN
+    print("successes: {}".format(num_successes))
+    print("total: {}".format(len(true_labels)))
+
+    p_val_test = binom_test(num_successes, len(true_labels), p=0.5)
+
+    return p_val_test
 
 def limit_memory():
     # release unused memory sources, force garbage collection
@@ -28,14 +59,11 @@ def limit_memory():
     K.get_session().close()
     tf.reset_default_graph()
     gc.collect()
-    #cfg = tf.ConfigProto()
-    #cfg.gpu_options.allow_growth = True
-    #keras.backend.set_session(tf.Session(config=cfg))
     K.set_session(tf.Session())
     gc.collect()
 
 
-def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj_training, gen_obj_test):
+def train_model(config, learning_rate, dropout_rate, l2_rate,  batchsize, BN_setting, OPT_setting, gen_obj_training, gen_obj_test, csvpath):
     # get timestamp for saving stuff
     timestamp = datetime.datetime.now().strftime("%y%m%d_%Hh%M")
 
@@ -44,6 +72,7 @@ def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj
 
     # define the optimizer
     adam = Adam(lr=learning_rate)
+    sgd = SGD(lr=learning_rate, momentum=0.9, nesterov=True)
 
     # get paths to training, validation and testing directories
     trainingpath = config['trainingpath']
@@ -71,7 +100,7 @@ def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj
         target_size=(224,224),
         color_mode="rgb",
         shuffle=False,
-        batch_size=batchsize)
+        batch_size=1)
 
     gen_test = gen_obj_test.flow_from_directory(
         testpath,
@@ -79,18 +108,21 @@ def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj
         target_size=(224,224),
         color_mode="rgb",
         shuffle=False,
-        batch_size=batchsize)
+        batch_size=1)
 
     input_tensor = Input(shape=(224,224,3))
 
     # load VGG16 model architecture
-    model = models.model_VGG16(dropout_rate, l2_rate, input_tensor)
+    model = models.model_VGG16(dropout_rate, l2_rate, BN_setting, input_tensor)
 
     # compile model
-    model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
+    if OPT_setting == 'sgd_opt':
+        model.compile(loss="binary_crossentropy", optimizer=sgd, metrics=["accuracy"])
+    if OPT_setting == 'adam_opt':
+        model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 
     # define early stopping criterion
-    early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='auto', baseline=None, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_acc', patience=100, verbose=0, mode='auto', baseline=None, restore_best_weights=True)
 
     # get start time
     start_time = time()
@@ -98,9 +130,9 @@ def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj
     # train model
     hist = model.fit_generator(
         gen_training,
-        steps_per_epoch = num_training // batchsize,
+        # steps_per_epoch = num_training // batchsize,
         validation_data = gen_validation,
-        validation_steps = num_validation // batchsize,
+        # validation_steps = num_validation // batchsize,
         # class_weight=class_weights,
         epochs=50,
         verbose=2,
@@ -109,24 +141,26 @@ def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj
     # get training time
     train_time = time() - start_time
 
+    history = hist.history
+
     # get number of epochs the training lasted for
-    training_epochs = len(hist.history['loss'])
+    training_epochs = len(history['loss'])
 
     # create plot directory if it doesn't exist and plot training progress
     print("saving plots...")
     if not os.path.exists(config['plot_path']):
         os.makedirs(config['plot_path'])
     plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
-    plot_training(hist, training_epochs, plotpath)
+    plot_training(history, training_epochs, plotpath)
 
-    # reinitialize validation generator with batch size 1 so all validation images are used
-    gen_validation = gen_obj_test.flow_from_directory(
-        validationpath,
-        class_mode="binary",
-        target_size=(224,224),
-        color_mode="rgb",
-        shuffle=False,
-        batch_size=1)
+    # # reinitialize validation generator with batch size 1 so all validation images are used
+    # gen_validation = gen_obj_test.flow_from_directory(
+    #     validationpath,
+    #     class_mode="binary",
+    #     target_size=(224,224),
+    #     color_mode="rgb",
+    #     shuffle=False,
+    #     batch_size=1)
 
     # check the model on the validation data and use this for tweaking (not on test data)
     # this is for checking the best training settings; afterwards we can test on test set
@@ -141,7 +175,37 @@ def train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, gen_obj
     # plot ROC and calculate AUC
     AUC, AUC2 = ROC_AUC(preds, true_labels, config, timestamp)
 
-    return hist, AUC, AUC2, train_time, training_epochs, timestamp
+    # get train acc and val acc from training history
+    validation_acc = history.get('val_acc')[-1]
+    train_acc = history.get('acc')[-1]
+    train_loss = history.get('loss')[-1]
+    val_loss = history.get('val_loss')[-1]
+
+    # add results to the dataframe
+    row = pd.Series({'epochs': training_epochs,
+                    'train_time': train_time,
+                    'AUC': AUC,
+                    'skl_AUC': AUC2,
+                    'train_accuracy': train_acc,
+                    'val_accuracy': validation_acc,
+                    'train_loss': train_loss,
+                    'val_loss': val_loss,
+                    'learning_rate': learning_rate,
+                    'dropout_rate': dropout_rate,
+                    'l2_rate': l2_rate,
+                    'batchsize': batchsize,
+                    'batchnorm_setting': BN_setting,
+                    'optimizer': OPT_setting}, name=timestamp)
+
+    print(row)
+
+    # read existing dataframe, add new row and save again
+    search_records = pd.read_csv(csvpath)
+    search_records = search_records.append(row, ignore_index = True)
+
+    print(search_records)
+
+    search_records.to_csv(csvpath, index=False)
 
 def ROC_AUC(preds, true_labels, config, timestamp):
     # initialize TPR, FPR, ACC and AUC lists
@@ -180,9 +244,6 @@ def ROC_AUC(preds, true_labels, config, timestamp):
     AUC = round(sum(AUC_score)/len(thresholds),3)
     print("AUC: {}".format(AUC))
 
-    AUC2 = round(roc_auc_score(true_labels, preds),3)
-    print("sk_AUC: {}".format(AUC2))
-
     # plot and save ROC curve
     plt.style.use("ggplot")
     plt.figure()
@@ -208,7 +269,35 @@ def ROC_AUC(preds, true_labels, config, timestamp):
 
     # save plot data in csv file
     csvpath = os.path.join(config['model_savepath'], '{}_eval.csv'.format(timestamp))
-    pandas.DataFrame([TPR_list, FPR_list, ACC_list]).to_csv(csvpath)
+    pd.DataFrame([TPR_list, FPR_list, ACC_list]).to_csv(csvpath)
+
+    pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
+
+    # now with sklearn implementation
+    fpr, tpr, thresholds = roc_curve(true_labels, preds, pos_label=1)
+
+    AUC2 = round(roc_auc_score(true_labels, preds),3)
+    print("sk_AUC: {}".format(AUC2))
+
+    TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
+    TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
+    FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
+    FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
+
+    ACC = round(((TP + TN) / (TP + TN + FP + FN)),3)
+    print("ACC: {}".format(ACC))
+
+    # plot and save ROC curve
+    plt.style.use("ggplot")
+    plt.figure()
+    plt.plot(fpr, tpr)
+    plt.plot([0,1],[0,1], '--')
+    plt.xlabel("FPR")
+    plt.ylabel("TPR")
+    plt.xlim(0,1)
+    plt.ylim(0,1)
+    plt.title("ROC Curve, AUC = {}".format(AUC2))
+    plt.savefig(os.path.join(config['plot_path'], "{}_ROC_sk.png".format(timestamp)))
 
     return AUC, AUC2
 
@@ -231,18 +320,24 @@ def load_data(splitpath):
 
     return (data, labels)
 
-def plot_training(hist, epochs, plotpath):
+def plot_training(history, epochs, plotpath):
     # plot and save training history
     plt.style.use("ggplot")
-    plt.figure()
-    plt.plot(np.arange(0, epochs), hist.history["loss"], label="train_loss")
-    plt.plot(np.arange(0, epochs), hist.history["val_loss"], label="val_loss")
-    plt.plot(np.arange(0, epochs), hist.history["acc"], label="train_acc")
-    plt.plot(np.arange(0, epochs), hist.history["val_acc"], label="val_acc")
-    plt.title("Training Loss and Accuracy")
-    plt.xlabel("Epoch #")
-    plt.ylabel("Loss/Accuracy")
-    plt.legend(loc="upper right")
+
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
+
+    ax1.set_ylabel('Loss')
+    ax1.set_xlim([1,epochs])
+    ax1.plot(np.arange(0, epochs), history["loss"], label="train")
+    ax1.plot(np.arange(0, epochs), history["val_loss"], label="validation")
+    ax1.legend(loc="upper right")
+
+    ax2.set_ylabel('Accuracy')
+    ax2.set_ylim([0, 1])
+    ax2.plot(np.arange(0, epochs), history["acc"], label="train")
+    ax2.plot(np.arange(0, epochs), history["val_acc"], label="validation")
+    ax2.legend(loc="lower right")
+
     plt.savefig(plotpath)
 
 def load_training_data(trainingpath):
