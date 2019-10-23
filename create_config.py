@@ -9,6 +9,494 @@ data['isic'] = {
   'dataset_path': 'dataset_ISIC',
   'output_path': 'output_ISIC'
   }
+data['ISIC_image_rot_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.1',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.1'
+  }
+data['ISIC_image_rot_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.2',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.2'
+  }
+data['ISIC_image_rot_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.3',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.3'
+  }
+data['ISIC_image_rot_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.4',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.4'
+  }
+data['ISIC_image_rot_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.5',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.5'
+  }
+data['ISIC_image_rot_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.6',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.6'
+  }
+data['ISIC_image_rot_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.7',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.7'
+  }
+data['ISIC_image_rot_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.8',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.8'
+  }
+data['ISIC_image_rot_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=0.9',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=0.9'
+  }
+data['ISIC_image_rot_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_rot_f=1.0',
+  'output_path': 'output_ISIC_ISIC_image_rot_f=1.0'
+  }
+
+data['ISIC_image_translation_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.1',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.1'
+  }
+data['ISIC_image_translation_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.2',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.2'
+  }
+data['ISIC_image_translation_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.3',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.3'
+  }
+data['ISIC_image_translation_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.4',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.4'
+  }
+data['ISIC_image_translation_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.5',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.5'
+  }
+data['ISIC_image_translation_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.6',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.6'
+  }
+data['ISIC_image_translation_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.7',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.7'
+  }
+data['ISIC_image_translation_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.8',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.8'
+  }
+data['ISIC_image_translation_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=0.9',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=0.9'
+  }
+data['ISIC_image_translation_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_translation_f=1.0',
+  'output_path': 'output_ISIC_ISIC_image_translation_f=1.0'
+  }
+
+data['ISIC_image_zoom_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.1',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.1'
+  }
+data['ISIC_image_zoom_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.2',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.2'
+  }
+data['ISIC_image_zoom_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.3',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.3'
+  }
+data['ISIC_image_zoom_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.4',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.4'
+  }
+data['ISIC_image_zoom_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.5',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.5'
+  }
+data['ISIC_image_zoom_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.6',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.6'
+  }
+data['ISIC_image_zoom_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.7',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.7'
+  }
+data['ISIC_image_zoom_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.8',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.8'
+  }
+data['ISIC_image_zoom_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=0.9',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=0.9'
+  }
+data['ISIC_image_zoom_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_image_zoom_f=1.0',
+  'output_path': 'output_ISIC_ISIC_image_zoom_f=1.0'
+  }
+
+data['ISIC_add_noise_gaussian_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.1',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.1'
+  }
+data['ISIC_add_noise_gaussian_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.2',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.2'
+  }
+data['ISIC_add_noise_gaussian_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.3',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.3'
+  }
+data['ISIC_add_noise_gaussian_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.4',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.4'
+  }
+data['ISIC_add_noise_gaussian_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.5',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.5'
+  }
+data['ISIC_add_noise_gaussian_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.6',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.6'
+  }
+data['ISIC_add_noise_gaussian_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.7',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.7'
+  }
+data['ISIC_add_noise_gaussian_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.8',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.8'
+  }
+data['ISIC_add_noise_gaussian_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=0.9',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=0.9'
+  }
+data['ISIC_add_noise_gaussian_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_gaussian_f=1.0',
+  'output_path': 'output_ISIC_ISIC_add_noise_gaussian_f=1.0'
+  }
+
+data['ISIC_add_noise_poisson_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.1',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.1'
+  }
+data['ISIC_add_noise_poisson_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.2',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.2'
+  }
+data['ISIC_add_noise_poisson_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.3',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.3'
+  }
+data['ISIC_add_noise_poisson_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.4',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.4'
+  }
+data['ISIC_add_noise_poisson_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.5',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.5'
+  }
+data['ISIC_add_noise_poisson_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.6',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.6'
+  }
+data['ISIC_add_noise_poisson_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.7',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.7'
+  }
+data['ISIC_add_noise_poisson_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.8',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.8'
+  }
+data['ISIC_add_noise_poisson_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=0.9',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=0.9'
+  }
+data['ISIC_add_noise_poisson_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_poisson_f=1.0',
+  'output_path': 'output_ISIC_ISIC_add_noise_poisson_f=1.0'
+  }
+
+data['ISIC_add_noise_salt_and_pepper_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.1',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.1'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.2',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.2'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.3',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.3'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.4',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.4'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.5',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.5'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.6',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.6'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.7',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.7'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.8',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.8'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=0.9',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=0.9'
+  }
+data['ISIC_add_noise_salt_and_pepper_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_salt_and_pepper_f=1.0',
+  'output_path': 'output_ISIC_ISIC_add_noise_salt_and_pepper_f=1.0'
+  }
+
+data['ISIC_add_noise_speckle_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.1',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.1'
+  }
+data['ISIC_add_noise_speckle_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.2',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.2'
+  }
+data['ISIC_add_noise_speckle_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.3',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.3'
+  }
+data['ISIC_add_noise_speckle_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.4',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.4'
+  }
+data['ISIC_add_noise_speckle_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.5',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.5'
+  }
+data['ISIC_add_noise_speckle_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.6',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.6'
+  }
+data['ISIC_add_noise_speckle_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.7',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.7'
+  }
+data['ISIC_add_noise_speckle_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.8',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.8'
+  }
+data['ISIC_add_noise_speckle_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=0.9',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=0.9'
+  }
+data['ISIC_add_noise_speckle_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_add_noise_speckle_f=1.0',
+  'output_path': 'output_ISIC_ISIC_add_noise_speckle_f=1.0'
+  }
+
+data['ISIC_imbalance_classes_f=0.1'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.1',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.1'
+}
+data['ISIC_imbalance_classes_f=0.2'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.2',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.2'
+}
+data['ISIC_imbalance_classes_f=0.3'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.3',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.3'
+}
+data['ISIC_imbalance_classes_f=0.4'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.4',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.4'
+}
+data['ISIC_imbalance_classes_f=0.5'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.5',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.5'
+}
+data['ISIC_imbalance_classes_f=0.6'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.6',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.6'
+}
+data['ISIC_imbalance_classes_f=0.7'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.7',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.7'
+}
+data['ISIC_imbalance_classes_f=0.8'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.8',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.8'
+}
+data['ISIC_imbalance_classes_f=0.9'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=0.9',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=0.9'
+}
+data['ISIC_imbalance_classes_f=1.0'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'ISIC',
+'dataset_path': 'dataset_ISIC_imbalance_classes_f=1.0',
+'output_path': 'output_ISIC_ISIC_imbalance_classes_f=1.0'
+}
+
 data['isic_2017'] = {
   'classes': ['melanoma', 'nevus_sk'],
   'orig_path': 'ISIC-2017',
@@ -29,7 +517,91 @@ data['cats_and_dogs'] = {
   }
 
 # list with all datasets; so certain paths can be added automatically to the data dictionary
-datasets = ['isic', 'isic_2017', 'isic_2017_adj', 'cats_and_dogs']
+datasets = ['isic',
+            'ISIC_image_rot_f=0.1',
+            'ISIC_image_rot_f=0.2',
+            'ISIC_image_rot_f=0.3',
+            'ISIC_image_rot_f=0.4',
+            'ISIC_image_rot_f=0.5',
+            'ISIC_image_rot_f=0.6',
+            'ISIC_image_rot_f=0.7',
+            'ISIC_image_rot_f=0.8',
+            'ISIC_image_rot_f=0.9',
+            'ISIC_image_rot_f=1.0',
+            'ISIC_image_translation_f=0.1',
+            'ISIC_image_translation_f=0.2',
+            'ISIC_image_translation_f=0.3',
+            'ISIC_image_translation_f=0.4',
+            'ISIC_image_translation_f=0.5',
+            'ISIC_image_translation_f=0.6',
+            'ISIC_image_translation_f=0.7',
+            'ISIC_image_translation_f=0.8',
+            'ISIC_image_translation_f=0.9',
+            'ISIC_image_translation_f=1.0',
+            'ISIC_image_zoom_f=0.1',
+            'ISIC_image_zoom_f=0.2',
+            'ISIC_image_zoom_f=0.3',
+            'ISIC_image_zoom_f=0.4',
+            'ISIC_image_zoom_f=0.5',
+            'ISIC_image_zoom_f=0.6',
+            'ISIC_image_zoom_f=0.7',
+            'ISIC_image_zoom_f=0.8',
+            'ISIC_image_zoom_f=0.9',
+            'ISIC_image_zoom_f=1.0',
+            'ISIC_add_noise_gaussian_f=0.1',
+            'ISIC_add_noise_gaussian_f=0.2',
+            'ISIC_add_noise_gaussian_f=0.3',
+            'ISIC_add_noise_gaussian_f=0.4',
+            'ISIC_add_noise_gaussian_f=0.5',
+            'ISIC_add_noise_gaussian_f=0.6',
+            'ISIC_add_noise_gaussian_f=0.7',
+            'ISIC_add_noise_gaussian_f=0.8',
+            'ISIC_add_noise_gaussian_f=0.9',
+            'ISIC_add_noise_gaussian_f=1.0',
+            'ISIC_add_noise_poisson_f=0.1',
+            'ISIC_add_noise_poisson_f=0.2',
+            'ISIC_add_noise_poisson_f=0.3',
+            'ISIC_add_noise_poisson_f=0.4',
+            'ISIC_add_noise_poisson_f=0.5',
+            'ISIC_add_noise_poisson_f=0.6',
+            'ISIC_add_noise_poisson_f=0.7',
+            'ISIC_add_noise_poisson_f=0.8',
+            'ISIC_add_noise_poisson_f=0.9',
+            'ISIC_add_noise_poisson_f=1.0',
+            'ISIC_add_noise_salt_and_pepper_f=0.1',
+            'ISIC_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_add_noise_salt_and_pepper_f=0.3',
+            'ISIC_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_add_noise_salt_and_pepper_f=0.5',
+            'ISIC_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_add_noise_salt_and_pepper_f=0.7',
+            'ISIC_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_add_noise_salt_and_pepper_f=0.9',
+            'ISIC_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_add_noise_speckle_f=0.1',
+            'ISIC_add_noise_speckle_f=0.2',
+            'ISIC_add_noise_speckle_f=0.3',
+            'ISIC_add_noise_speckle_f=0.4',
+            'ISIC_add_noise_speckle_f=0.5',
+            'ISIC_add_noise_speckle_f=0.6',
+            'ISIC_add_noise_speckle_f=0.7',
+            'ISIC_add_noise_speckle_f=0.8',
+            'ISIC_add_noise_speckle_f=0.9',
+            'ISIC_add_noise_speckle_f=1.0',
+            'ISIC_imbalance_classes_f=0.1',
+            'ISIC_imbalance_classes_f=0.2',
+            'ISIC_imbalance_classes_f=0.3',
+            'ISIC_imbalance_classes_f=0.4',
+            'ISIC_imbalance_classes_f=0.5',
+            'ISIC_imbalance_classes_f=0.6',
+            'ISIC_imbalance_classes_f=0.7',
+            'ISIC_imbalance_classes_f=0.8',
+            'ISIC_imbalance_classes_f=0.9',
+            'ISIC_imbalance_classes_f=1.0',
+            'isic_2017',
+            'isic_2017_adj',
+            'cats_and_dogs']
+
 for dataset in datasets:
     # path to original dataset, use parent path so data is not in same repo as code
     parent_path = os.path.dirname(os.getcwd())
