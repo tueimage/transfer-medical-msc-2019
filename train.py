@@ -27,11 +27,8 @@ import pandas as pd
 import cv2
 import gc
 from time import time
-from helper_functions import ROC_AUC, load_data, load_training_data, plot_training, train_model, limit_memory
+from utils import *
 from sklearn import svm
-
-
-
 
 # choose GPU for training
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
@@ -290,7 +287,7 @@ if args['mode'] == 'random_search':
     search_records.to_csv(csvpath, index=False)
 
     # test multiple models
-    for i in range(10):
+    for i in range(100):
         limit_memory()
         session = tf.Session()
         K.set_session(session)
@@ -299,38 +296,38 @@ if args['mode'] == 'random_search':
                 # need a different random seed everytime for hyperparameters, otherwise will still get same parameters every iteration
                 np.random.seed(random.randint(0, 100000))
 
-                # # get random params
-                # learning_rate = 10 ** np.random.uniform(-7,-1)
-                # dropout_rate = np.random.uniform(0,1)
-                # l2_rate = 10 ** np.random.uniform(-2,-.3)
-                # # batchsize = 2 ** np.random.randint(6)
-                # batchsize = 32
-                #
-                # # get get either [batch norm before relu, after relu, or not at all]
-                # # if there is batch norm, dropout will not be used
-                # BN_nr = np.random.randint(3)
-                # BN_setting = ['BN_ACT', 'ACT_BN', 'NO_BN'][BN_nr]
-                #
+                # get random params
+                learning_rate = 10 ** np.random.uniform(-7,-1)
+                dropout_rate = np.random.uniform(0,1)
+                l2_rate = 10 ** np.random.uniform(-2,-.3)
+                # batchsize = 2 ** np.random.randint(6)
+                batchsize = 32
+
+                # get get either [batch norm before relu, after relu, or not at all]
+                # if there is batch norm, dropout will not be used
+                BN_nr = np.random.randint(2)
+                BN_setting = [True, False][BN_nr]
+
                 # if BN_setting != 'NO_BN':
                 #     dropout_rate = 0.0
                 #     l2_rate = 0.0
-                #
-                # # now choose between an optimizer
-                # OPT_nr = np.random.randint(2)
-                # OPT_setting = ['sgd_opt', 'adam_opt'][OPT_nr]
+                
+                # now choose between an optimizer
+                OPT_nr = np.random.randint(2)
+                OPT_setting = ['sgd_opt', 'adam_opt'][OPT_nr]
 
-                l2_rate = 0.0
-                dropout_rate = i * 0.1
-                OPT_setting = 'adam_opt'
-                BN_setting = 'BN_ACT'
-                learning_rate = 2e-7
-                batchsize = 32
+                # l2_rate = 0.0
+                # dropout_rate = i * 0.1
+                # OPT_setting = 'adam_opt'
+                # BN_setting = 'BN_ACT'
+                # learning_rate = 2e-7
+                # batchsize = 32
 
-                # # now set a constant random seed, so things that may be variable are the same for every trained model, e.g. weight initialization
-                # os.environ['PYTHONHASHSEED'] = str(sd)
-                # np.random.seed(sd)
-                # random.seed(sd)
-                # tf.set_random_seed(sd)
+                # now set a constant random seed, so things that may be variable are the same for every trained model, e.g. weight initialization
+                os.environ['PYTHONHASHSEED'] = str(sd)
+                np.random.seed(sd)
+                random.seed(sd)
+                tf.set_random_seed(sd)
 
                 # build and train model and add results to csv file
                 train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, BN_setting, OPT_setting, gen_obj_training, gen_obj_test, csvpath)
@@ -343,9 +340,6 @@ if args['mode'] == 'from_scratch':
     x_train = load_training_data(trainingpath)
     gen_obj_training.fit(x_train, seed=sd)
     gen_obj_test.fit(x_train, seed=sd)
-
-    # get timestamp for saving stuff
-    timestamp = args['dataset']
 
     # set random seed for result reproducability
     os.environ['PYTHONHASHSEED'] = str(sd)
@@ -403,8 +397,6 @@ if args['mode'] == 'from_scratch':
         model_VGG16.compile(loss="binary_crossentropy", optimizer=sgd, metrics=["accuracy"])
     if OPT_setting == 'adam_opt':
         model_VGG16.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
-
-    # tensorboard = TensorBoard(log_dir="logs/{}".format(time()), batch_size=batchsize, write_graph=True, write_grads=False, write_images=True, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
     # #calculate relative class weights for the imbalanced training data
     # class_weights = {}
@@ -473,8 +465,19 @@ if args['mode'] == 'from_scratch':
     # get true labels
     true_labels = gen_validation.classes
 
-    # plot ROC and calculate AUC
-    ROC_AUC(preds, true_labels, config, timestamp)
+    # calculate AUC and sklearn AUC
+    fpr, tpr, thresholds, AUC = AUC(preds, true_labels)
+    skfpr, sktpr, skthresholds, skAUC = skAUC(preds, true_labels)
+
+    # calculate accuracy score
+    acc = accuracy(preds, true_labels)
+
+    # plot AUC plots
+    savepath = os.path.join(config['plot_path'], "{}_ROC.png".format(args['dataset']))
+    plot_AUC(fpr, tpr, AUC, savepath)
+
+    sksavepath = os.path.join(config['plot_path'], "{}_skROC.png".format(args['dataset']))
+    plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
 
 if args['mode'] == 'evaluate':
     # load model
@@ -517,14 +520,25 @@ if args['mode'] == 'evaluate':
     # get true labels
     true_labels = gen_validation.classes
 
-    # plot ROC and calculate AUC
-    ROC_AUC(preds, true_labels, config, timestamp)
+    # calculate AUC and sklearn AUC
+    fpr, tpr, thresholds, AUC = AUC(preds, true_labels)
+    skfpr, sktpr, skthresholds, skAUC = skAUC(preds, true_labels)
+
+    # calculate accuracy score
+    acc = accuracy(preds, true_labels)
+
+    # plot AUC plots
+    savepath = os.path.join(config['plot_path'], "{}_ROC.png".format(args['dataset']))
+    plot_AUC(fpr, tpr, AUC, savepath)
+
+    sksavepath = os.path.join(config['plot_path'], "{}_skROC.png".format(args['dataset']))
+    plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
 
     # create plot directory if it doesn't exist and plot training progress
     print("saving plots...")
     if not os.path.exists(config['plot_path']):
         os.makedirs(config['plot_path'])
-    plotpath = os.path.join(config['plot_path'], "{}_training.png".format(timestamp))
+    plotpath = os.path.join(config['plot_path'], "{}_training.png".format(args['dataset']))
     plot_training(history, epochs, plotpath)
 
 if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] == 'SVM':
@@ -585,23 +599,12 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         # get true labels
         true_labels = gen_validation.classes
 
-        # plot ROC and calculate AUC
-        AUC, AUC2 = ROC_AUC(preds, true_labels, config, timestamp)
+        # calculate AUC and sklearn AUC
+        fpr, tpr, thresholds, AUC = AUC(preds, true_labels)
+        skfpr, sktpr, skthresholds, skAUC = skAUC(preds, true_labels)
 
-        # preds is an array like [[x] [x] [x]], make it into array like [x x x]
-        preds = np.asarray([label for sublist in preds for label in sublist])
-
-        # calculate accuracy
-        pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
-
-        # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-        # False Negative (FN)
-        TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
-        TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
-        FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
-        FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
-
-        ACC = round(((TP + TN) / (TP + TN + FP + FN)),3)
+        # calculate accuracy score
+        acc = accuracy(preds, true_labels)
 
         # get path to save csv file for results
         transfer_csvpath = os.path.join(resultspath, 'transfer_results.csv')
@@ -610,15 +613,15 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         # create csv file if it doesn't exist yet with the correct headers
         if not os.path.exists(transfer_csvpath):
             # initialize dataframe to save results for different combinations of datasets and add to csv file
-            transfer_results = pd.DataFrame(columns=['target_dataset', 'source_dataset', 'AUC', 'skl_AUC', 'ACC'])
+            transfer_results = pd.DataFrame(columns=['target_dataset', 'source_dataset', 'AUC', 'skAUC', 'ACC'])
             transfer_results.to_csv(transfer_csvpath, index=False)
 
         # add new results to dataframe
         row = pd.Series({'target_dataset': args['dataset'],
                         'source_dataset': args['source_dataset'],
                         'AUC': AUC,
-                        'skl_AUC': AUC2,
-                        'ACC': ACC})
+                        'skAUC': skAUC,
+                        'ACC': acc})
 
         # read existing dataframe, add new row and save again
         transfer_results = pd.read_csv(transfer_csvpath)
@@ -660,65 +663,12 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         # get true validation labels
         true_labels_val = gen_validation.classes
 
-        # initialize TPR, FPR, ACC and AUC lists
-        TPR_list, FPR_list, ACC_list = [], [], []
-        AUC_score = []
+        # calculate AUC and sklearn AUC
+        fpr, tpr, thresholds, AUC = AUC(preds, true_labels)
+        skfpr, sktpr, skthresholds, skAUC = skAUC(preds, true_labels)
 
-        # calculate for different thresholds
-        thresholds = -np.sort(-(np.unique(preds)))
-        for threshold in thresholds:
-            # apply threshold to predictions
-            pred_labels = np.where(preds > threshold, 1, 0).astype(int)
-
-            # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-            # False Negative (FN)
-            TP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 1))
-            TN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 0))
-            FP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 0))
-            FN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 1))
-
-            # calculate TPR, FPR, ACC and add to lists
-            TPR = TP / (TP + FN)
-            FPR = FP / (FP + TN)
-            ACC = (TP + TN) / (TP + TN + FP + FN)
-
-            TPR_list.append(TPR)
-            FPR_list.append(FPR)
-            ACC_list.append(ACC)
-
-            AUC_score.append((1-FPR+TPR)/2)
-
-            pred_labels = []
-
-        AUC = round(sum(AUC_score)/len(thresholds),3)
-        print("AUC: {}".format(AUC))
-
-        pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
-
-        # now with sklearn implementation
-        fpr, tpr, thresholds = roc_curve(true_labels_val, preds, pos_label=1)
-
-        AUC2 = round(roc_auc_score(true_labels_val, preds),3)
-        print("sk_AUC: {}".format(AUC2))
-
-        # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-        # False Negative (FN)
-        TP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 1))
-        TN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 0))
-        FP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 0))
-        FN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 1))
-
-        # TPR = TP / (TP + FN)
-        # FPR = FP / (FP + TN)
-        #
-        # AUC = round(((1-FPR+TPR)/2),3)
-        #
-        # print(AUC)
-
-        ACC = round(((TP + TN) / (TP + TN + FP + FN)),3)
-
-        print(ACC)
-
+        # calculate accuracy score
+        acc = accuracy(preds, true_labels)
 
         # get path to save csv file for results
         SVM_csvpath = os.path.join(resultspath, 'SVM_results.csv')
@@ -727,21 +677,20 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         # create csv file if it doesn't exist yet with the correct headers
         if not os.path.exists(SVM_csvpath):
             # initialize dataframe to save results for different combinations of datasets and add to csv file
-            SVM_results = pd.DataFrame(columns=['target_dataset', 'source_dataset', 'AUC', 'skl_AUC', 'ACC'])
+            SVM_results = pd.DataFrame(columns=['target_dataset', 'source_dataset', 'AUC', 'skAUC', 'ACC'])
             SVM_results.to_csv(SVM_csvpath, index=False)
 
         # add new results to dataframe
         row = pd.Series({'target_dataset': args['dataset'],
                         'source_dataset': args['source_dataset'],
                         'AUC': AUC,
-                        'skl_AUC': AUC2,
-                        'ACC': ACC})
+                        'skAUC': skAUC,
+                        'ACC': acc})
 
         # read existing dataframe, add new row and save again
         SVM_results = pd.read_csv(SVM_csvpath)
         SVM_results = SVM_results.append(row, ignore_index=True)
         SVM_results.to_csv(SVM_csvpath, index=False)
-
 
     if args['mode'] == 'fine_tuning':
 
@@ -766,8 +715,6 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
 
         # add the model on top of the base model
         model = Model(inputs=base_model.input, outputs=top_model)
-
-
 
         model.summary()
 
@@ -795,92 +742,15 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         # make predictions
         preds = model.predict_generator(gen_validation, verbose=1)
 
-        # preds is an array like [[x] [x] [x]], make it into array like [x x x]
-        preds = np.asarray([label for sublist in preds for label in sublist])
-
         # get true validation labels
-        true_labels_val = gen_validation.classes
+        true_labels = gen_validation.classes
 
-        # initialize TPR, FPR, ACC and AUC lists
-        TPR_list, FPR_list, ACC_list = [], [], []
-        AUC_score = []
+        # calculate AUC and sklearn AUC
+        fpr, tpr, thresholds, AUC = AUC(preds, true_labels)
+        skfpr, sktpr, skthresholds, skAUC = skAUC(preds, true_labels)
 
-        # calculate for different thresholds
-        thresholds = -np.sort(-(np.unique(preds)))
-        for threshold in thresholds:
-            # apply threshold to predictions
-            pred_labels = np.where(preds > threshold, 1, 0).astype(int)
-
-            # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-            # False Negative (FN)
-            TP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 1))
-            TN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 0))
-            FP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 0))
-            FN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 1))
-
-            # calculate TPR, FPR, ACC and add to lists
-            TPR = TP / (TP + FN)
-            FPR = FP / (FP + TN)
-            ACC = (TP + TN) / (TP + TN + FP + FN)
-
-            TPR_list.append(TPR)
-            FPR_list.append(FPR)
-            ACC_list.append(ACC)
-
-            AUC_score.append((1-FPR+TPR)/2)
-
-            pred_labels = []
-
-        AUC = round(sum(AUC_score)/len(thresholds),3)
-        print("AUC: {}".format(AUC))
-
-        pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
-
-        # now with sklearn implementation
-        fpr, tpr, thresholds = roc_curve(true_labels_val, preds, pos_label=1)
-
-        AUC2 = round(roc_auc_score(true_labels_val, preds),3)
-        print("sk_AUC: {}".format(AUC2))
-
-        # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-        # False Negative (FN)
-        TP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 1))
-        TN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 0))
-        FP = np.sum(np.logical_and(pred_labels == 1, true_labels_val == 0))
-        FN = np.sum(np.logical_and(pred_labels == 0, true_labels_val == 1))
-
-        ACC1 = round(((TP + TN) / (TP + TN + FP + FN)),3)
-
-        print(ACC1)
-
-
-        # for i in range(len(model.layers)):
-        #     layer = model.layers[i]
-        #     # skip non-conv layers
-        #     if 'conv' not in layer.name:
-        #         continue
-        #     print(i, layer.name, layer.output_shape)
-        #
-        # image = cv2.imread(os.path.join(trainingpath, 'malignant/ISIC_0027089.jpg'))
-        #
-        # # image /= 255.0
-        # image = np.expand_dims(image, axis=0)
-        #
-        # feature_maps = model.predict(image)
-        #
-        # square = 8
-        # ix = 1
-        # for _ in range(square):
-        #     for _ in range(square):
-        #     	# specify subplot and turn of axis
-        #     	ax = plt.subplot(square, square, ix)
-        #     	ax.set_xticks([])
-        #     	ax.set_yticks([])
-        #     	# plot filter channel in grayscale
-        #     	plt.imshow(feature_maps[0, :, :, ix-1], cmap='gray')
-        #     	ix += 1
-        # # show the figure
-        # plt.show()
+        # calculate accuracy score
+        acc = accuracy(preds, true_labels)
 
         # unfreeze some layers and train some more
         for layer in base_model.layers[-10:]:
@@ -919,66 +789,17 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         gen_validation.reset()
 
         # make predictions
-        preds2 = model.predict_generator(gen_validation, verbose=1)
-
-        # preds is an array like [[x] [x] [x]], make it into array like [x x x]
-        preds2 = np.asarray([label for sublist in preds2 for label in sublist])
+        preds_ft = model.predict_generator(gen_validation, verbose=1)
 
         # get true validation labels
-        true_labels_val2 = gen_validation.classes
+        true_labels_ft = gen_validation.classes
 
-        # initialize TPR, FPR, ACC and AUC lists
-        TPR_list2, FPR_list2, ACC_list2 = [], [], []
-        AUC_score2 = []
+        # calculate AUC and sklearn AUC
+        fpr_ft, tpr_ft, thresholds_ft, AUC_ft = AUC(preds_ft, true_labels_ft)
+        skfpr_ft, sktpr_ft, skthresholds_ft, skAUC_ft = skAUC(preds_ft, true_labels_ft)
 
-        # calculate for different thresholds
-        thresholds2 = -np.sort(-(np.unique(preds2)))
-        for threshold in thresholds2:
-            # apply threshold to predictions
-            pred_labels2 = np.where(preds2 > threshold, 1, 0).astype(int)
-
-            # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-            # False Negative (FN)
-            TP = np.sum(np.logical_and(pred_labels2 == 1, true_labels_val2 == 1))
-            TN = np.sum(np.logical_and(pred_labels2 == 0, true_labels_val2 == 0))
-            FP = np.sum(np.logical_and(pred_labels2 == 1, true_labels_val2 == 0))
-            FN = np.sum(np.logical_and(pred_labels2 == 0, true_labels_val2 == 1))
-
-            # calculate TPR, FPR, ACC and add to lists
-            TPR = TP / (TP + FN)
-            FPR = FP / (FP + TN)
-            ACC = (TP + TN) / (TP + TN + FP + FN)
-
-            TPR_list2.append(TPR)
-            FPR_list2.append(FPR)
-            ACC_list2.append(ACC)
-
-            AUC_score2.append((1-FPR+TPR)/2)
-
-            pred_labels2 = []
-
-        AUC_ft = round(sum(AUC_score2)/len(thresholds2),3)
-        print("AUC: {}".format(AUC_ft))
-
-        pred_labels2 = np.where(preds2 > 0.5, 1, 0).astype(int)
-
-        # now with sklearn implementation
-        fpr, tpr, thresholds2 = roc_curve(true_labels_val2, preds2, pos_label=1)
-
-        AUC2_ft = round(roc_auc_score(true_labels_val2, preds2),3)
-        print("sk_AUC: {}".format(AUC2_ft))
-
-        # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-        # False Negative (FN)
-        TP = np.sum(np.logical_and(pred_labels2 == 1, true_labels_val2 == 1))
-        TN = np.sum(np.logical_and(pred_labels2 == 0, true_labels_val2 == 0))
-        FP = np.sum(np.logical_and(pred_labels2 == 1, true_labels_val2 == 0))
-        FN = np.sum(np.logical_and(pred_labels2 == 0, true_labels_val2 == 1))
-
-        ACC_ft = round(((TP + TN) / (TP + TN + FP + FN)),3)
-
-        print(ACC_ft)
-
+        # calculate accuracy score
+        acc_ft = accuracy(preds_ft, true_labels_ft)
 
         # get path to save csv file for results
         FT_csvpath = os.path.join(resultspath, 'FT_results.csv')
@@ -987,79 +808,20 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         # create csv file if it doesn't exist yet with the correct headers
         if not os.path.exists(FT_csvpath):
             # initialize dataframe to save results for different combinations of datasets and add to csv file
-            FT_results = pd.DataFrame(columns=['target_dataset', 'source_dataset', 'AUC', 'skl_AUC', 'ACC', 'AUC_ft', 'skl_AUC_ft', 'ACC_ft'])
+            FT_results = pd.DataFrame(columns=['target_dataset', 'source_dataset', 'AUC', 'skAUC', 'ACC', 'AUC_ft', 'skAUC_ft', 'ACC_ft'])
             FT_results.to_csv(FT_csvpath, index=False)
 
         # add new results to dataframe
         row = pd.Series({'target_dataset': args['dataset'],
                         'source_dataset': args['source_dataset'],
                         'AUC': AUC,
-                        'skl_AUC': AUC2,
-                        'ACC': ACC1,
+                        'skl_AUC': skAUC,
+                        'ACC': acc,
                         'AUC_ft': AUC_ft,
-                        'skl_AUC_ft': AUC2_ft,
-                        'ACC_ft': ACC_ft})
+                        'skl_AUC_ft': skAUC_ft,
+                        'ACC_ft': acc_ft})
 
         # read existing dataframe, add new row and save again
         FT_results = pd.read_csv(FT_csvpath)
         FT_results = FT_results.append(row, ignore_index=True)
         FT_results.to_csv(FT_csvpath, index=False)
-
-
-
-
-
-
-        # # reset the testing generator for network evaluation using the test data
-        # print("evaluating after fine-tuning top model...")
-        # gen_test.reset()
-        #
-        # # make predictions and take highest predicted value as class label
-        # preds = model.predict_generator(gen_test, steps=(num_test//batchsize), verbose=1)
-        # preds = np.argmax(preds, axis=1)
-        #
-        # # print classification report
-        # print(classification_report(gen_test.classes, preds, target_names=gen_test.class_indices.keys()))
-        #
-        # # create plot directory if it doesn't exist and plot training progress
-        # if not os.path.exists(config['plot_path']):
-        #     os.makedirs(config['plot_path'])
-        # plotpath = os.path.join(config['plot_path'], "warmup_training.png")
-        # plot_training(hist, 5, plotpath)
-        #
-        # # now we can unfreeze base model layers to train more
-        # # unfreeze the last convolutional layer in VGG16
-        # for layer in base_model.layers[15:]:
-        #     layer.trainable = True
-        #
-        # # print which layers are trainable now
-        # for layer in base_model.layers:
-        #     print("{}: {}".format(layer, layer.trainable))
-        #
-        # # reset image generators before training again
-        # gen_training.reset()
-        # gen_validation.reset()
-        #
-        # # recompile the model
-        # print("recompiling model...")
-        # sgd = SGD(lr=1e-4, momentum=0.9)
-        # model.compile(loss="binary_crossentropy", optimizer=sgd, metrics=["accuracy"])
-        #
-        # # train the model again, with extra trainable layers
-        # print("training recompiled model...")
-        # hist = model.fit_generator(
-        #     gen_training,
-        #     steps_per_epoch = num_training // batchsize,
-        #     validation_data = gen_validation,
-        #     validation_steps = num_validation // batchsize,
-        #     epochs=5,
-        #     verbose=1)
-        #
-        # # and evaluate again
-        # print("evaluating after fine-tuning network...")
-        # gen_test.reset()
-        # preds = model.predict_generator(gen_test, steps=(num_test//batchsize), verbose=1)
-        # preds = np.argmax(preds, axis=1)
-        # print(classification_report(gen_test.classes, preds, target_names=gen_test.class_indices.keys()))
-        # plotpath = os.path.join(config['plot_path'], "unfrozen_training.png")
-        # plot_training(hist, 5, plotpath)

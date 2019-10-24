@@ -207,9 +207,9 @@ def train_model(config, learning_rate, dropout_rate, l2_rate,  batchsize, BN_set
 
     search_records.to_csv(csvpath, index=False)
 
-def ROC_AUC(preds, true_labels, config, timestamp):
-    # initialize TPR, FPR, ACC and AUC lists
-    TPR_list, FPR_list, ACC_list = [], [], []
+def AUC(preds, true_labels):
+    # initialize tpr, fpr and AUC lists
+    tpr, fpr = [], []
     AUC_score = []
 
     # preds is an array like [[x] [x] [x]], make it into array like [x x x]
@@ -228,14 +228,12 @@ def ROC_AUC(preds, true_labels, config, timestamp):
         FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
         FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
 
-        # calculate TPR, FPR, ACC and add to lists
+        # calculate TPR and FPR and add to lists
         TPR = TP / (TP + FN)
         FPR = FP / (FP + TN)
-        ACC = (TP + TN) / (TP + TN + FP + FN)
 
-        TPR_list.append(TPR)
-        FPR_list.append(FPR)
-        ACC_list.append(ACC)
+        tpr.append(TPR)
+        fpr.append(FPR)
 
         AUC_score.append((1-FPR+TPR)/2)
 
@@ -244,49 +242,33 @@ def ROC_AUC(preds, true_labels, config, timestamp):
     AUC = round(sum(AUC_score)/len(thresholds),3)
     print("AUC: {}".format(AUC))
 
-    # plot and save ROC curve
-    plt.style.use("ggplot")
-    plt.figure()
-    plt.plot(FPR_list, TPR_list)
-    plt.plot([0,1],[0,1], '--')
-    plt.xlabel("FPR")
-    plt.ylabel("TPR")
-    plt.xlim(0,1)
-    plt.ylim(0,1)
-    plt.title("ROC Curve, AUC = {}".format(AUC))
-    plt.savefig(os.path.join(config['plot_path'], "{}_ROC.png".format(timestamp)))
+    return fpr, tpr, thresholds, AUC
 
-    # also plot accuracies for each threshold
-    plt.figure()
-    plt.plot(thresholds, ACC_list)
-    plt.plot([0,1],[0,1], '--')
-    plt.xlabel("Threshold")
-    plt.ylabel("Accuracy")
-    plt.xlim(0,1)
-    plt.ylim(0,1)
-    plt.title("Accuracy per threshold")
-    plt.savefig(os.path.join(config['plot_path'], "{}_ACC.png".format(timestamp)))
-
-    # save plot data in csv file
-    csvpath = os.path.join(config['model_savepath'], '{}_eval.csv'.format(timestamp))
-    pd.DataFrame([TPR_list, FPR_list, ACC_list]).to_csv(csvpath)
-
+def skAUC(preds, true_labels):
     pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
 
     # now with sklearn implementation
     fpr, tpr, thresholds = roc_curve(true_labels, preds, pos_label=1)
 
-    AUC2 = round(roc_auc_score(true_labels, preds),3)
-    print("sk_AUC: {}".format(AUC2))
+    skAUC = round(roc_auc_score(true_labels, preds),3)
+    print("sk_AUC: {}".format(skAUC))
+
+    return fpr, tpr, thresholds, skAUC
+
+def accuracy(preds, true_labels):
+    pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
 
     TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
     TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
     FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
     FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
 
-    ACC = round(((TP + TN) / (TP + TN + FP + FN)),3)
-    print("ACC: {}".format(ACC))
+    acc = round(((TP + TN) / (TP + TN + FP + FN)),3)
+    print("ACC: {}".format(acc))
 
+    return acc
+
+def plot_AUC(fpr, tpr, AUC, savepath):
     # plot and save ROC curve
     plt.style.use("ggplot")
     plt.figure()
@@ -296,10 +278,21 @@ def ROC_AUC(preds, true_labels, config, timestamp):
     plt.ylabel("TPR")
     plt.xlim(0,1)
     plt.ylim(0,1)
-    plt.title("ROC Curve, AUC = {}".format(AUC2))
-    plt.savefig(os.path.join(config['plot_path'], "{}_ROC_sk.png".format(timestamp)))
+    plt.title("ROC Curve, AUC = {}".format(AUC))
+    plt.savefig(savepath)
 
-    return AUC, AUC2
+def plot_skAUC(fpr, tpr, skAUC, savepath):
+    # plot and save ROC curve
+    plt.style.use("ggplot")
+    plt.figure()
+    plt.plot(fpr, tpr)
+    plt.plot([0,1],[0,1], '--')
+    plt.xlabel("FPR")
+    plt.ylabel("TPR")
+    plt.xlim(0,1)
+    plt.ylim(0,1)
+    plt.title("ROC Curve, AUC = {}".format(skAUC))
+    plt.savefig(savepath)
 
 def load_data(splitpath):
     data, labels = [], []
