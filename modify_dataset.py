@@ -23,7 +23,7 @@ parser.add_argument('-d',
     help='dataset to use')
 parser.add_argument('-m',
     '--modification',
-    choices=['balance_down', 'balance_up', 'image_rot', 'image_translation', 'image_zoom', 'add_noise', 'imbalance_classes'],
+    choices=['change_split', 'balance_down', 'balance_up', 'image_rot', 'image_translation', 'image_zoom', 'add_noise', 'imbalance_classes'],
     required=True,
     help='modification to apply to dataset')
 parser.add_argument('-n',
@@ -37,6 +37,10 @@ parser.add_argument('-f',
     type=float,
     default=1.0,
     help='fraction of total images to apply modification to')
+parser.add_argument('-s',
+    '--seed',
+    required='change_split' in sys.argv,
+    help='seed to re-split the dataset with')
 args = vars(parser.parse_args())
 
 # read parameters for wanted dataset from config file
@@ -67,6 +71,12 @@ for classname in config['classes']:
         val_savedir2 = val_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
         test_savedir2 = test_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
 
+    elif args['modification'] == 'change_split':
+        seed = int(args['seed'])
+        train_savedir2 = train_savedir.replace(datasetpath, '{}_{}'.format(datasetpath, seed))
+        val_savedir2 = val_savedir.replace(datasetpath, '{}_{}'.format(datasetpath, seed))
+        test_savedir2 = test_savedir.replace(datasetpath, '{}_{}'.format(datasetpath, seed))
+
     else:
         train_savedir2 = train_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
         val_savedir2 = val_savedir.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
@@ -79,10 +89,57 @@ for classname in config['classes']:
     if not os.path.exists(test_savedir2):
         os.makedirs(test_savedir2)
 
-paths = {}
+paths, paths_val, paths_test = {}, {}, {}
 # separate paths (of training set) for each class in a dictionary
 for classname in config['classes']:
     paths[classname] = list(filter(lambda x: classname in x, trainingpaths))
+
+if args['modification'] == 'change_split':
+    # also read all validation images and test images per class
+    for classname in config['classes']:
+        paths_val[classname] = list(filter(lambda x: classname in x, validationpaths))
+        paths_test[classname] = list(filter(lambda x: classname in x, testpaths))
+
+    # concatenate all paths from each split
+    path_dicts = [paths, paths_val, paths_test]
+    allpaths = {}
+    for key in paths.keys():
+        allpaths[key] = np.concatenate(list(dict[key] for dict in [paths, paths_val, paths_test]))
+
+    # now we need to shuffle the values for all classes
+    np.random.seed(seed)
+    for key,  val in allpaths.items():
+        np.random.shuffle(val)
+        allpaths[key] = val
+
+
+    # percentages to split data in training, val and test set
+    split_pct = {'training': .8, 'validation': .1, 'test':.1}
+
+    # split the shuffled images and save in right directories
+    for key, val in allpaths.items():
+        for split in ['training', 'validation', 'test']:
+            k = 0
+            # split the paths
+            splitnr = int(np.ceil(len(val)*split_pct[split]))
+            splitpaths = val[:k+splitnr]
+
+            # use a count so same images are not re-used in next split
+            k =+ splitnr
+            for imagepath in splitpaths:
+                # load image
+                image = cv2.imread(imagepath)
+
+                # first replace the split with the correct split, try for all splits
+                for pos_split in ['training', 'validation', 'test']:
+                    imagepath = imagepath.replace(pos_split, split)
+
+                # also replace dataset name
+                newpath = imagepath.replace(datasetpath, '{}_{}'.format(datasetpath, seed))
+
+                # save image in the new path
+                print("Writing image {} ...".format(newpath))
+                cv2.imwrite(newpath, image)
 
 if args['modification'] == 'balance_down':
     # find class with least images (paths)
@@ -328,18 +385,19 @@ if args['modification'] == 'image_rot' or args['modification'] == 'image_transla
         print("Writing image {} ...".format(newpath))
         cv2.imwrite(newpath, image)
 
-# always we need to just copy the validation and test set into the new dataset directory
-for imagepath in itertools.chain(validationpaths, testpaths):
-    # load image
-    image = cv2.imread(imagepath)
+# always we need to just copy the validation and test set into the new dataset directory, except for when changing the split
+if args['modification'] != 'change_split':
+    for imagepath in itertools.chain(validationpaths, testpaths):
+        # load image
+        image = cv2.imread(imagepath)
 
-    # create a new path to save modified image in
-    if args['modification'] == 'add_noise':
-        newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
+        # create a new path to save modified image in
+        if args['modification'] == 'add_noise':
+            newpath = imagepath.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
 
-    else:
-        newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
+        else:
+            newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
-    # save image in the new path
-    print("Writing image {} ...".format(newpath))
-    cv2.imwrite(newpath, image)
+        # save image in the new path
+        print("Writing image {} ...".format(newpath))
+        cv2.imwrite(newpath, image)
