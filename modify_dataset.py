@@ -112,20 +112,19 @@ if args['modification'] == 'change_split':
         np.random.shuffle(val)
         allpaths[key] = val
 
-
     # percentages to split data in training, val and test set
     split_pct = {'training': .8, 'validation': .1, 'test':.1}
 
     # split the shuffled images and save in right directories
     for key, val in allpaths.items():
+        k = 0
         for split in ['training', 'validation', 'test']:
-            k = 0
             # split the paths
             splitnr = int(np.ceil(len(val)*split_pct[split]))
-            splitpaths = val[:k+splitnr]
+            splitpaths = val[k:k+splitnr]
 
-            # use a count so same images are not re-used in next split
-            k =+ splitnr
+            # use a counter so same images are not re-used in next split
+            k += splitnr
             for imagepath in splitpaths:
                 # load image
                 image = cv2.imread(imagepath)
