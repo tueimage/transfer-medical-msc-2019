@@ -264,75 +264,6 @@ num_test = len(glob.glob(os.path.join(testpath, '**/*.jpg')))
 gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
 gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
 
-# function for randomized search for optimal hyperparameters
-if args['mode'] == 'random_search':
-    # we need to fit generators to training data
-    # from this mean and std, featurewise_center is calculated in the generator
-    x_train = load_training_data(trainingpath)
-    gen_obj_training.fit(x_train, seed=sd)
-    gen_obj_test.fit(x_train, seed=sd)
-
-
-    # create save directory if it doesn't exist
-    if not os.path.exists(config['model_savepath']):
-        os.makedirs(config['model_savepath'])
-
-    # get path to save csv file with results
-    csvpath = os.path.join(config['model_savepath'], 'randomsearch.csv')
-
-    # initialize dataframe to save results for different hyperparameters
-    search_records = pd.DataFrame(columns=['epochs', 'train_time', 'AUC', 'skl_AUC', 'train_accuracy', 'val_accuracy', 'learning_rate', 'dropout_rate', 'l2_rate', 'batchsize'])
-
-    # add the headers to
-    search_records.to_csv(csvpath, index=False)
-
-    # test multiple models
-    for i in range(100):
-        limit_memory()
-        session = tf.Session()
-        K.set_session(session)
-        with session.as_default():
-            with session.graph.as_default():
-                # need a different random seed everytime for hyperparameters, otherwise will still get same parameters every iteration
-                np.random.seed(random.randint(0, 100000))
-
-                # get random params
-                learning_rate = 10 ** np.random.uniform(-7,-1)
-                dropout_rate = np.random.uniform(0,1)
-                l2_rate = 10 ** np.random.uniform(-2,-.3)
-                # batchsize = 2 ** np.random.randint(6)
-                batchsize = 32
-
-                # get get either [batch norm before relu, after relu, or not at all]
-                # if there is batch norm, dropout will not be used
-                BN_nr = np.random.randint(2)
-                BN_setting = [True, False][BN_nr]
-
-                # if BN_setting != 'NO_BN':
-                #     dropout_rate = 0.0
-                #     l2_rate = 0.0
-                
-                # now choose between an optimizer
-                OPT_nr = np.random.randint(2)
-                OPT_setting = ['sgd_opt', 'adam_opt'][OPT_nr]
-
-                # l2_rate = 0.0
-                # dropout_rate = i * 0.1
-                # OPT_setting = 'adam_opt'
-                # BN_setting = 'BN_ACT'
-                # learning_rate = 2e-7
-                # batchsize = 32
-
-                # now set a constant random seed, so things that may be variable are the same for every trained model, e.g. weight initialization
-                os.environ['PYTHONHASHSEED'] = str(sd)
-                np.random.seed(sd)
-                random.seed(sd)
-                tf.set_random_seed(sd)
-
-                # build and train model and add results to csv file
-                train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, BN_setting, OPT_setting, gen_obj_training, gen_obj_test, csvpath)
-        limit_memory()
-
 # train model from scratch
 if args['mode'] == 'from_scratch':
     # we need to fit generators to training data
@@ -825,3 +756,72 @@ if args['mode'] == 'transfer' or args['mode'] == 'fine_tuning' or args['mode'] =
         FT_results = pd.read_csv(FT_csvpath)
         FT_results = FT_results.append(row, ignore_index=True)
         FT_results.to_csv(FT_csvpath, index=False)
+
+# function for randomized search for optimal hyperparameters
+if args['mode'] == 'random_search':
+    # we need to fit generators to training data
+    # from this mean and std, featurewise_center is calculated in the generator
+    x_train = load_training_data(trainingpath)
+    gen_obj_training.fit(x_train, seed=sd)
+    gen_obj_test.fit(x_train, seed=sd)
+
+
+    # create save directory if it doesn't exist
+    if not os.path.exists(config['model_savepath']):
+        os.makedirs(config['model_savepath'])
+
+    # get path to save csv file with results
+    csvpath = os.path.join(config['model_savepath'], 'randomsearch.csv')
+
+    # initialize dataframe to save results for different hyperparameters
+    search_records = pd.DataFrame(columns=['epochs', 'train_time', 'AUC', 'skl_AUC', 'train_accuracy', 'val_accuracy', 'learning_rate', 'dropout_rate', 'l2_rate', 'batchsize'])
+
+    # add the headers to
+    search_records.to_csv(csvpath, index=False)
+
+    # test multiple models
+    for i in range(100):
+        limit_memory()
+        session = tf.Session()
+        K.set_session(session)
+        with session.as_default():
+            with session.graph.as_default():
+                # need a different random seed everytime for hyperparameters, otherwise will still get same parameters every iteration
+                np.random.seed(random.randint(0, 100000))
+
+                # get random params
+                learning_rate = 10 ** np.random.uniform(-7,-1)
+                dropout_rate = np.random.uniform(0,1)
+                l2_rate = 10 ** np.random.uniform(-2,-.3)
+                # batchsize = 2 ** np.random.randint(6)
+                batchsize = 32
+
+                # get get either [batch norm before relu, after relu, or not at all]
+                # if there is batch norm, dropout will not be used
+                BN_nr = np.random.randint(2)
+                BN_setting = [True, False][BN_nr]
+
+                # if BN_setting != 'NO_BN':
+                #     dropout_rate = 0.0
+                #     l2_rate = 0.0
+
+                # now choose between an optimizer
+                OPT_nr = np.random.randint(2)
+                OPT_setting = ['sgd_opt', 'adam_opt'][OPT_nr]
+
+                # l2_rate = 0.0
+                # dropout_rate = i * 0.1
+                # OPT_setting = 'adam_opt'
+                # BN_setting = 'BN_ACT'
+                # learning_rate = 2e-7
+                # batchsize = 32
+
+                # now set a constant random seed, so things that may be variable are the same for every trained model, e.g. weight initialization
+                os.environ['PYTHONHASHSEED'] = str(sd)
+                np.random.seed(sd)
+                random.seed(sd)
+                tf.set_random_seed(sd)
+
+                # build and train model and add results to csv file
+                train_model(config, learning_rate, dropout_rate, l2_rate, batchsize, BN_setting, OPT_setting, gen_obj_training, gen_obj_test, csvpath)
+        limit_memory()

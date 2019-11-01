@@ -9,6 +9,12 @@ data['isic'] = {
   'dataset_path': 'dataset_ISIC',
   'output_path': 'output_ISIC'
   }
+data['isic_2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'ISIC',
+  'dataset_path': 'dataset_ISIC_2',
+  'output_path': 'output_ISIC_2'
+  }
 data['ISIC_image_rot_f=0.1'] = {
   'classes': ['benign', 'malignant'],
   'orig_path': 'ISIC',
@@ -518,6 +524,7 @@ data['cats_and_dogs'] = {
 
 # list with all datasets; so certain paths can be added automatically to the data dictionary
 datasets = ['isic',
+            'isic_2',
             'ISIC_image_rot_f=0.1',
             'ISIC_image_rot_f=0.2',
             'ISIC_image_rot_f=0.3',

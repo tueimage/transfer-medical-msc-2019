@@ -27,6 +27,8 @@ class VGG16:
         return output_tensor
 
     def get_model(self):
+        # self.dropout_rate = kwargs.get('dropout_rate', 0.3) # ??????? klopt dit ^^^ bij init ook al dropout_rate
+
         input_tensor = Input(shape=self.input_shape)
 
         output_tensor = self.conv_bn_act(input_tensor, feature_channels=64)
