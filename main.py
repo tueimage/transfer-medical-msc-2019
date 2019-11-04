@@ -42,179 +42,68 @@ parser.add_argument('-m',
     help='training mode')
 parser.add_argument('-d',
     '--dataset',
-    choices=['isic',
-            'isic_2',
-            'ISIC_image_rot_f=0.1',
-            'ISIC_image_rot_f=0.2',
-            'ISIC_image_rot_f=0.3',
-            'ISIC_image_rot_f=0.4',
-            'ISIC_image_rot_f=0.5',
-            'ISIC_image_rot_f=0.6',
-            'ISIC_image_rot_f=0.7',
-            'ISIC_image_rot_f=0.8',
-            'ISIC_image_rot_f=0.9',
-            'ISIC_image_rot_f=1.0',
-            'ISIC_image_translation_f=0.1',
-            'ISIC_image_translation_f=0.2',
-            'ISIC_image_translation_f=0.3',
-            'ISIC_image_translation_f=0.4',
-            'ISIC_image_translation_f=0.5',
-            'ISIC_image_translation_f=0.6',
-            'ISIC_image_translation_f=0.7',
-            'ISIC_image_translation_f=0.8',
-            'ISIC_image_translation_f=0.9',
-            'ISIC_image_translation_f=1.0',
-            'ISIC_image_zoom_f=0.1',
-            'ISIC_image_zoom_f=0.2',
-            'ISIC_image_zoom_f=0.3',
-            'ISIC_image_zoom_f=0.4',
-            'ISIC_image_zoom_f=0.5',
-            'ISIC_image_zoom_f=0.6',
-            'ISIC_image_zoom_f=0.7',
-            'ISIC_image_zoom_f=0.8',
-            'ISIC_image_zoom_f=0.9',
-            'ISIC_image_zoom_f=1.0',
-            'ISIC_add_noise_gaussian_f=0.1',
-            'ISIC_add_noise_gaussian_f=0.2',
-            'ISIC_add_noise_gaussian_f=0.3',
-            'ISIC_add_noise_gaussian_f=0.4',
-            'ISIC_add_noise_gaussian_f=0.5',
-            'ISIC_add_noise_gaussian_f=0.6',
-            'ISIC_add_noise_gaussian_f=0.7',
-            'ISIC_add_noise_gaussian_f=0.8',
-            'ISIC_add_noise_gaussian_f=0.9',
-            'ISIC_add_noise_gaussian_f=1.0',
-            'ISIC_add_noise_poisson_f=0.1',
-            'ISIC_add_noise_poisson_f=0.2',
-            'ISIC_add_noise_poisson_f=0.3',
-            'ISIC_add_noise_poisson_f=0.4',
-            'ISIC_add_noise_poisson_f=0.5',
-            'ISIC_add_noise_poisson_f=0.6',
-            'ISIC_add_noise_poisson_f=0.7',
-            'ISIC_add_noise_poisson_f=0.8',
-            'ISIC_add_noise_poisson_f=0.9',
-            'ISIC_add_noise_poisson_f=1.0',
-            'ISIC_add_noise_salt_and_pepper_f=0.1',
-            'ISIC_add_noise_salt_and_pepper_f=0.2',
-            'ISIC_add_noise_salt_and_pepper_f=0.3',
-            'ISIC_add_noise_salt_and_pepper_f=0.4',
-            'ISIC_add_noise_salt_and_pepper_f=0.5',
-            'ISIC_add_noise_salt_and_pepper_f=0.6',
-            'ISIC_add_noise_salt_and_pepper_f=0.7',
-            'ISIC_add_noise_salt_and_pepper_f=0.8',
-            'ISIC_add_noise_salt_and_pepper_f=0.9',
-            'ISIC_add_noise_salt_and_pepper_f=1.0',
-            'ISIC_add_noise_speckle_f=0.1',
-            'ISIC_add_noise_speckle_f=0.2',
-            'ISIC_add_noise_speckle_f=0.3',
-            'ISIC_add_noise_speckle_f=0.4',
-            'ISIC_add_noise_speckle_f=0.5',
-            'ISIC_add_noise_speckle_f=0.6',
-            'ISIC_add_noise_speckle_f=0.7',
-            'ISIC_add_noise_speckle_f=0.8',
-            'ISIC_add_noise_speckle_f=0.9',
-            'ISIC_add_noise_speckle_f=1.0',
-            'ISIC_imbalance_classes_f=0.1',
-            'ISIC_imbalance_classes_f=0.2',
-            'ISIC_imbalance_classes_f=0.3',
-            'ISIC_imbalance_classes_f=0.4',
-            'ISIC_imbalance_classes_f=0.5',
-            'ISIC_imbalance_classes_f=0.6',
-            'ISIC_imbalance_classes_f=0.7',
-            'ISIC_imbalance_classes_f=0.8',
-            'ISIC_imbalance_classes_f=0.9',
-            'ISIC_imbalance_classes_f=1.0',
-            'isic_2017',
-            'isic_2017_adj',
-            'cats_and_dogs'],
+    choices=['isic', 'isic_2', 'ISIC_image_rot_f=0.1', 'ISIC_image_rot_f=0.2',
+            'ISIC_image_rot_f=0.3', 'ISIC_image_rot_f=0.4', 'ISIC_image_rot_f=0.5',
+            'ISIC_image_rot_f=0.6', 'ISIC_image_rot_f=0.7', 'ISIC_image_rot_f=0.8',
+            'ISIC_image_rot_f=0.9', 'ISIC_image_rot_f=1.0', 'ISIC_image_translation_f=0.1',
+            'ISIC_image_translation_f=0.2', 'ISIC_image_translation_f=0.3', 'ISIC_image_translation_f=0.4',
+            'ISIC_image_translation_f=0.5', 'ISIC_image_translation_f=0.6', 'ISIC_image_translation_f=0.7',
+            'ISIC_image_translation_f=0.8', 'ISIC_image_translation_f=0.9', 'ISIC_image_translation_f=1.0',
+            'ISIC_image_zoom_f=0.1', 'ISIC_image_zoom_f=0.2', 'ISIC_image_zoom_f=0.3',
+            'ISIC_image_zoom_f=0.4', 'ISIC_image_zoom_f=0.5', 'ISIC_image_zoom_f=0.6',
+            'ISIC_image_zoom_f=0.7', 'ISIC_image_zoom_f=0.8', 'ISIC_image_zoom_f=0.9',
+            'ISIC_image_zoom_f=1.0', 'ISIC_add_noise_gaussian_f=0.1', 'ISIC_add_noise_gaussian_f=0.2',
+            'ISIC_add_noise_gaussian_f=0.3', 'ISIC_add_noise_gaussian_f=0.4', 'ISIC_add_noise_gaussian_f=0.5',
+            'ISIC_add_noise_gaussian_f=0.6', 'ISIC_add_noise_gaussian_f=0.7', 'ISIC_add_noise_gaussian_f=0.8',
+            'ISIC_add_noise_gaussian_f=0.9', 'ISIC_add_noise_gaussian_f=1.0', 'ISIC_add_noise_poisson_f=0.1',
+            'ISIC_add_noise_poisson_f=0.2', 'ISIC_add_noise_poisson_f=0.3', 'ISIC_add_noise_poisson_f=0.4',
+            'ISIC_add_noise_poisson_f=0.5', 'ISIC_add_noise_poisson_f=0.6', 'ISIC_add_noise_poisson_f=0.7',
+            'ISIC_add_noise_poisson_f=0.8', 'ISIC_add_noise_poisson_f=0.9', 'ISIC_add_noise_poisson_f=1.0',
+            'ISIC_add_noise_salt_and_pepper_f=0.1', 'ISIC_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_add_noise_salt_and_pepper_f=0.3', 'ISIC_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_add_noise_salt_and_pepper_f=0.5', 'ISIC_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_add_noise_salt_and_pepper_f=0.7', 'ISIC_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_add_noise_salt_and_pepper_f=0.9', 'ISIC_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_add_noise_speckle_f=0.1', 'ISIC_add_noise_speckle_f=0.2', 'ISIC_add_noise_speckle_f=0.3',
+            'ISIC_add_noise_speckle_f=0.4', 'ISIC_add_noise_speckle_f=0.5', 'ISIC_add_noise_speckle_f=0.6',
+            'ISIC_add_noise_speckle_f=0.7', 'ISIC_add_noise_speckle_f=0.8', 'ISIC_add_noise_speckle_f=0.9',
+            'ISIC_add_noise_speckle_f=1.0', 'ISIC_imbalance_classes_f=0.1', 'ISIC_imbalance_classes_f=0.2',
+            'ISIC_imbalance_classes_f=0.3', 'ISIC_imbalance_classes_f=0.4', 'ISIC_imbalance_classes_f=0.5',
+            'ISIC_imbalance_classes_f=0.6', 'ISIC_imbalance_classes_f=0.7', 'ISIC_imbalance_classes_f=0.8',
+            'ISIC_imbalance_classes_f=0.9', 'ISIC_imbalance_classes_f=1.0', 'cats_and_dogs'],
     required=True,
     help='dataset to use, when using transfer, fine_tuning or SVM, this is the target dataset')
 parser.add_argument('-s',
     '--source_dataset',
-    choices=['isic',
-            'ISIC_image_rot_f=0.1',
-            'ISIC_image_rot_f=0.2',
-            'ISIC_image_rot_f=0.3',
-            'ISIC_image_rot_f=0.4',
-            'ISIC_image_rot_f=0.5',
-            'ISIC_image_rot_f=0.6',
-            'ISIC_image_rot_f=0.7',
-            'ISIC_image_rot_f=0.8',
-            'ISIC_image_rot_f=0.9',
-            'ISIC_image_rot_f=1.0',
-            'ISIC_image_translation_f=0.1',
-            'ISIC_image_translation_f=0.2',
-            'ISIC_image_translation_f=0.3',
-            'ISIC_image_translation_f=0.4',
-            'ISIC_image_translation_f=0.5',
-            'ISIC_image_translation_f=0.6',
-            'ISIC_image_translation_f=0.7',
-            'ISIC_image_translation_f=0.8',
-            'ISIC_image_translation_f=0.9',
-            'ISIC_image_translation_f=1.0',
-            'ISIC_image_zoom_f=0.1',
-            'ISIC_image_zoom_f=0.2',
-            'ISIC_image_zoom_f=0.3',
-            'ISIC_image_zoom_f=0.4',
-            'ISIC_image_zoom_f=0.5',
-            'ISIC_image_zoom_f=0.6',
-            'ISIC_image_zoom_f=0.7',
-            'ISIC_image_zoom_f=0.8',
-            'ISIC_image_zoom_f=0.9',
-            'ISIC_image_zoom_f=1.0',
-            'ISIC_add_noise_gaussian_f=0.1',
-            'ISIC_add_noise_gaussian_f=0.2',
-            'ISIC_add_noise_gaussian_f=0.3',
-            'ISIC_add_noise_gaussian_f=0.4',
-            'ISIC_add_noise_gaussian_f=0.5',
-            'ISIC_add_noise_gaussian_f=0.6',
-            'ISIC_add_noise_gaussian_f=0.7',
-            'ISIC_add_noise_gaussian_f=0.8',
-            'ISIC_add_noise_gaussian_f=0.9',
-            'ISIC_add_noise_gaussian_f=1.0',
-            'ISIC_add_noise_poisson_f=0.1',
-            'ISIC_add_noise_poisson_f=0.2',
-            'ISIC_add_noise_poisson_f=0.3',
-            'ISIC_add_noise_poisson_f=0.4',
-            'ISIC_add_noise_poisson_f=0.5',
-            'ISIC_add_noise_poisson_f=0.6',
-            'ISIC_add_noise_poisson_f=0.7',
-            'ISIC_add_noise_poisson_f=0.8',
-            'ISIC_add_noise_poisson_f=0.9',
-            'ISIC_add_noise_poisson_f=1.0',
-            'ISIC_add_noise_salt_and_pepper_f=0.1',
-            'ISIC_add_noise_salt_and_pepper_f=0.2',
-            'ISIC_add_noise_salt_and_pepper_f=0.3',
-            'ISIC_add_noise_salt_and_pepper_f=0.4',
-            'ISIC_add_noise_salt_and_pepper_f=0.5',
-            'ISIC_add_noise_salt_and_pepper_f=0.6',
-            'ISIC_add_noise_salt_and_pepper_f=0.7',
-            'ISIC_add_noise_salt_and_pepper_f=0.8',
-            'ISIC_add_noise_salt_and_pepper_f=0.9',
-            'ISIC_add_noise_salt_and_pepper_f=1.0',
-            'ISIC_add_noise_speckle_f=0.1',
-            'ISIC_add_noise_speckle_f=0.2',
-            'ISIC_add_noise_speckle_f=0.3',
-            'ISIC_add_noise_speckle_f=0.4',
-            'ISIC_add_noise_speckle_f=0.5',
-            'ISIC_add_noise_speckle_f=0.6',
-            'ISIC_add_noise_speckle_f=0.7',
-            'ISIC_add_noise_speckle_f=0.8',
-            'ISIC_add_noise_speckle_f=0.9',
-            'ISIC_add_noise_speckle_f=1.0',
-            'ISIC_imbalance_classes_f=0.1',
-            'ISIC_imbalance_classes_f=0.2',
-            'ISIC_imbalance_classes_f=0.3',
-            'ISIC_imbalance_classes_f=0.4',
-            'ISIC_imbalance_classes_f=0.5',
-            'ISIC_imbalance_classes_f=0.6',
-            'ISIC_imbalance_classes_f=0.7',
-            'ISIC_imbalance_classes_f=0.8',
-            'ISIC_imbalance_classes_f=0.9',
-            'ISIC_imbalance_classes_f=1.0',
-            'isic_2017',
-            'isic_2017_adj',
-            'cats_and_dogs'],
+    choices=['isic', 'isic_2', 'ISIC_image_rot_f=0.1', 'ISIC_image_rot_f=0.2',
+            'ISIC_image_rot_f=0.3', 'ISIC_image_rot_f=0.4', 'ISIC_image_rot_f=0.5',
+            'ISIC_image_rot_f=0.6', 'ISIC_image_rot_f=0.7', 'ISIC_image_rot_f=0.8',
+            'ISIC_image_rot_f=0.9', 'ISIC_image_rot_f=1.0', 'ISIC_image_translation_f=0.1',
+            'ISIC_image_translation_f=0.2', 'ISIC_image_translation_f=0.3', 'ISIC_image_translation_f=0.4',
+            'ISIC_image_translation_f=0.5', 'ISIC_image_translation_f=0.6', 'ISIC_image_translation_f=0.7',
+            'ISIC_image_translation_f=0.8', 'ISIC_image_translation_f=0.9', 'ISIC_image_translation_f=1.0',
+            'ISIC_image_zoom_f=0.1', 'ISIC_image_zoom_f=0.2', 'ISIC_image_zoom_f=0.3',
+            'ISIC_image_zoom_f=0.4', 'ISIC_image_zoom_f=0.5', 'ISIC_image_zoom_f=0.6',
+            'ISIC_image_zoom_f=0.7', 'ISIC_image_zoom_f=0.8', 'ISIC_image_zoom_f=0.9',
+            'ISIC_image_zoom_f=1.0', 'ISIC_add_noise_gaussian_f=0.1', 'ISIC_add_noise_gaussian_f=0.2',
+            'ISIC_add_noise_gaussian_f=0.3', 'ISIC_add_noise_gaussian_f=0.4', 'ISIC_add_noise_gaussian_f=0.5',
+            'ISIC_add_noise_gaussian_f=0.6', 'ISIC_add_noise_gaussian_f=0.7', 'ISIC_add_noise_gaussian_f=0.8',
+            'ISIC_add_noise_gaussian_f=0.9', 'ISIC_add_noise_gaussian_f=1.0', 'ISIC_add_noise_poisson_f=0.1',
+            'ISIC_add_noise_poisson_f=0.2', 'ISIC_add_noise_poisson_f=0.3', 'ISIC_add_noise_poisson_f=0.4',
+            'ISIC_add_noise_poisson_f=0.5', 'ISIC_add_noise_poisson_f=0.6', 'ISIC_add_noise_poisson_f=0.7',
+            'ISIC_add_noise_poisson_f=0.8', 'ISIC_add_noise_poisson_f=0.9', 'ISIC_add_noise_poisson_f=1.0',
+            'ISIC_add_noise_salt_and_pepper_f=0.1', 'ISIC_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_add_noise_salt_and_pepper_f=0.3', 'ISIC_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_add_noise_salt_and_pepper_f=0.5', 'ISIC_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_add_noise_salt_and_pepper_f=0.7', 'ISIC_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_add_noise_salt_and_pepper_f=0.9', 'ISIC_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_add_noise_speckle_f=0.1', 'ISIC_add_noise_speckle_f=0.2', 'ISIC_add_noise_speckle_f=0.3',
+            'ISIC_add_noise_speckle_f=0.4', 'ISIC_add_noise_speckle_f=0.5', 'ISIC_add_noise_speckle_f=0.6',
+            'ISIC_add_noise_speckle_f=0.7', 'ISIC_add_noise_speckle_f=0.8', 'ISIC_add_noise_speckle_f=0.9',
+            'ISIC_add_noise_speckle_f=1.0', 'ISIC_imbalance_classes_f=0.1', 'ISIC_imbalance_classes_f=0.2',
+            'ISIC_imbalance_classes_f=0.3', 'ISIC_imbalance_classes_f=0.4', 'ISIC_imbalance_classes_f=0.5',
+            'ISIC_imbalance_classes_f=0.6', 'ISIC_imbalance_classes_f=0.7', 'ISIC_imbalance_classes_f=0.8',
+            'ISIC_imbalance_classes_f=0.9', 'ISIC_imbalance_classes_f=1.0', 'cats_and_dogs'],
     required='transfer' in sys.argv or 'fine_tuning' in sys.argv or 'SVM' in sys.argv,
     help='source dataset to use when using transfer, fine_tuning or SVM')
 parser.add_argument('-i',
@@ -225,10 +114,12 @@ parser.add_argument('-bs', '--batchsize', default=32, help='batch size')
 args = vars(parser.parse_args())
 
 class NeuralNetwork:
-    def __init__(self, model, trainingpath, validationpath, **kwargs):
+    def __init__(self, model, config, **kwargs):
         self.model = model
-        self.trainingpath = trainingpath
-        self.validationpath = validationpath
+        self.config = config
+        self.trainingpath = config['trainingpath']
+        self.validationpath = config['validationpath']
+        self.batchsize = kwargs.get('batchsize', 32)
         for attribute, value in kwargs.items():
             setattr(self, attribute, value)
 
@@ -256,7 +147,7 @@ class NeuralNetwork:
             target_size=(224,224),
             color_mode="rgb",
             shuffle=False,
-            batch_size=1)
+            batch_size=self.batchsize)
 
     def compile_network(self, learning_rate, **kwargs):
         # compile model
@@ -285,7 +176,7 @@ class NeuralNetwork:
         # train the model
         hist = self.model.fit_generator(self.gen_training,
             steps_per_epoch = num_training // self.batchsize,
-            validation_data=self.gen_validation,
+            validation_data = self.gen_validation,
             validation_steps = num_validation // self.batchsize,
             epochs=epochs,
             verbose=1)
@@ -293,14 +184,14 @@ class NeuralNetwork:
         history = hist.history
 
         # save history
-        pd.DataFrame(history).to_csv(os.path.join(config['model_savepath'], '{}_history.csv'.format(args['dataset'])))
+        pd.DataFrame(history).to_csv(os.path.join(self.config['model_savepath'], '{}_history.csv'.format(args['dataset'])))
 
         return history
 
     def save_model(self):
         # save trained model
         print("saving model...")
-        savepath = os.path.join(config['model_savepath'], "{}_model.h5".format(args['dataset']))
+        savepath = os.path.join(self.config['model_savepath'], "{}_model.h5".format(args['dataset']))
         model.save(savepath)
 
     def plot_training(self, history):
@@ -322,7 +213,7 @@ class NeuralNetwork:
         ax2.legend(loc="lower right")
 
         # create plot path
-        plotpath = os.path.join(config['plot_path'], "{}_training.png".format(args['dataset']))
+        plotpath = os.path.join(self.config['plot_path'], "{}_training.png".format(args['dataset']))
 
         # save plot
         plt.savefig(plotpath)
@@ -342,10 +233,10 @@ class NeuralNetwork:
         acc = accuracy(preds, true_labels)
 
         # plot AUC plots
-        savepath = os.path.join(config['plot_path'], "{}_ROC.png".format(args['dataset']))
+        savepath = os.path.join(self.config['plot_path'], "{}_ROC.png".format(args['dataset']))
         plot_AUC(fpr, tpr, AUC, savepath)
 
-        sksavepath = os.path.join(config['plot_path'], "{}_skROC.png".format(args['dataset']))
+        sksavepath = os.path.join(self.config['plot_path'], "{}_skROC.png".format(args['dataset']))
         plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
 
 def main():
@@ -373,12 +264,6 @@ def main():
     # set a random seed
     seed=28
 
-    # get paths to training, validation and testing directories
-    trainingpath = config['trainingpath']
-    validationpath = config['validationpath']
-    testpath = config['testpath']
-
-
     if args['mode'] == 'from_scratch':
         # set random seed for result reproducability
         os.environ['PYTHONHASHSEED'] = str(seed)
@@ -395,7 +280,7 @@ def main():
         model.summary()
 
         # create network instance
-        network = NeuralNetwork(model, trainingpath, validationpath, batchsize=batchsize, seed=seed)
+        network = NeuralNetwork(model, config, batchsize=batchsize, seed=seed)
 
         # compile network
         print("compiling network...")
