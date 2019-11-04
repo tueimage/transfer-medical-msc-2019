@@ -49,6 +49,7 @@ parser.add_argument('-m',
 parser.add_argument('-d',
     '--dataset',
     choices=['isic',
+            'isic_2',
             'ISIC_image_rot_f=0.1',
             'ISIC_image_rot_f=0.2',
             'ISIC_image_rot_f=0.3',
@@ -313,10 +314,11 @@ if args['mode'] == 'from_scratch':
     OPT_setting = 'adam_opt'
 
     # load VGG16 model architecture
-    model_VGG16 = VGG16().get_model(dropout_rate = 0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=input_shape)
+    # model_VGG16 = VGG16().get_model(dropout_rate = 0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=input_shape)
+    model = VGG16(dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224,224,3)).get_model()
 
     # model_VGG16 = model_VGG16(dropout_rate, l2_rate, BN_setting, input_tensor=input_tensor, activation='relu')
-    print(model_VGG16.summary())
+    print(model.summary())
 
     # set optimizer and compile model
     print("compiling model...")
@@ -325,9 +327,9 @@ if args['mode'] == 'from_scratch':
     adam = Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 
     if OPT_setting == 'sgd_opt':
-        model_VGG16.compile(loss="binary_crossentropy", optimizer=sgd, metrics=["accuracy"])
+        model.compile(loss="binary_crossentropy", optimizer=sgd, metrics=["accuracy"])
     if OPT_setting == 'adam_opt':
-        model_VGG16.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
+        model.compile(loss="binary_crossentropy", optimizer=adam, metrics=["accuracy"])
 
     # #calculate relative class weights for the imbalanced training data
     # class_weights = {}
@@ -347,11 +349,11 @@ if args['mode'] == 'from_scratch':
 
     # train the model
     print("training model...")
-    hist = model_VGG16.fit_generator(
+    hist = model.fit_generator(
         gen_training,
-        # steps_per_epoch = num_training // batchsize,
+        steps_per_epoch = num_training // batchsize,
         validation_data = gen_validation,
-        # validation_steps = num_validation // batchsize,
+        validation_steps = num_validation // batchsize,
         # class_weight=class_weights,
         epochs=nr_epochs,
         verbose=1)
@@ -368,7 +370,7 @@ if args['mode'] == 'from_scratch':
     # save trained model
     print("saving model...")
     savepath = os.path.join(config['model_savepath'], "{}_model_VGG16.h5".format(args['dataset']))
-    model_VGG16.save(savepath)
+    model.save(savepath)
 
     # create plot directory if it doesn't exist and plot training progress
     print("saving plots...")
@@ -391,7 +393,7 @@ if args['mode'] == 'from_scratch':
         batch_size=1)
 
     # make predictions
-    preds = model_VGG16.predict_generator(gen_validation, verbose=1)
+    preds = model.predict_generator(gen_validation, verbose=1)
 
     # get true labels
     true_labels = gen_validation.classes

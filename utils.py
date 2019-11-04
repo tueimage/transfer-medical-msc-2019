@@ -207,13 +207,10 @@ def train_model(config, learning_rate, dropout_rate, l2_rate,  batchsize, BN_set
 
     search_records.to_csv(csvpath, index=False)
 
-def AUC(preds, true_labels):
+def AUC_score(preds, true_labels):
     # initialize tpr, fpr and AUC lists
     tpr, fpr = [], []
     AUC_score = []
-
-    # preds is an array like [[x] [x] [x]], make it into array like [x x x]
-    preds = np.asarray([label for sublist in preds for label in sublist])
 
     # calculate for different thresholds
     thresholds = -np.sort(-(np.unique(preds)))
@@ -244,9 +241,7 @@ def AUC(preds, true_labels):
 
     return fpr, tpr, thresholds, AUC
 
-def skAUC(preds, true_labels):
-    pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
-
+def skAUC_score(preds, true_labels):
     # now with sklearn implementation
     fpr, tpr, thresholds = roc_curve(true_labels, preds, pos_label=1)
 

@@ -124,29 +124,36 @@ class NeuralNetwork:
             setattr(self, attribute, value)
 
         # initialize image data generator objects
-        gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
-        gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+        self.gen_obj_training = ImageDataGenerator(rescale=1./255, featurewise_center=True)
+        self.gen_obj_test = ImageDataGenerator(rescale=1./255, featurewise_center=True)
 
         # fit generators to training data
         x_train = load_training_data(self.trainingpath)
-        gen_obj_training.fit(x_train, seed=self.seed)
-        gen_obj_test.fit(x_train, seed=self.seed)
+        self.gen_obj_training.fit(x_train, seed=self.seed)
+        self.gen_obj_test.fit(x_train, seed=self.seed)
+
+        self.num_training = len(glob.glob(os.path.join(self.trainingpath, '**/*.jpg')))
+        self.num_validation = len(glob.glob(os.path.join(self.validationpath, '**/*.jpg')))
+
+    def init_generators(self, shuffle_training, shuffle_validation, **kwargs):
+        for attribute, value in kwargs.items():
+            setattr(self, attribute, value)
 
         # initialize image generators that load batches of images
-        self.gen_training = gen_obj_training.flow_from_directory(
+        self.gen_training = self.gen_obj_training.flow_from_directory(
             self.trainingpath,
             class_mode="binary",
             target_size=(224,224),
             color_mode="rgb",
-            shuffle=True,
+            shuffle=shuffle_training,
             batch_size=self.batchsize)
 
-        self.gen_validation = gen_obj_test.flow_from_directory(
+        self.gen_validation = self.gen_obj_test.flow_from_directory(
             self.validationpath,
             class_mode="binary",
             target_size=(224,224),
             color_mode="rgb",
-            shuffle=False,
+            shuffle=shuffle_validation,
             batch_size=self.batchsize)
 
     def compile_network(self, learning_rate, **kwargs):
@@ -169,15 +176,14 @@ class NeuralNetwork:
         self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=self.metrics)
 
     def train(self, epochs):
-        # get total number of images in each split, needed to train in batches
-        num_training = len(glob.glob(os.path.join(self.trainingpath, '**/*.jpg')))
-        num_validation = len(glob.glob(os.path.join(self.validationpath, '**/*.jpg')))
+        # initialize image generators
+        self.init_generators(shuffle_training=True, shuffle_validation=False)
 
         # train the model
         hist = self.model.fit_generator(self.gen_training,
-            steps_per_epoch = num_training // self.batchsize,
+            steps_per_epoch = self.num_training // self.batchsize,
             validation_data = self.gen_validation,
-            validation_steps = num_validation // self.batchsize,
+            validation_steps = self.num_validation // self.batchsize,
             epochs=epochs,
             verbose=1)
 
@@ -192,9 +198,13 @@ class NeuralNetwork:
         # save trained model
         print("saving model...")
         savepath = os.path.join(self.config['model_savepath'], "{}_model.h5".format(args['dataset']))
-        model.save(savepath)
+        self.model.save(savepath)
 
     def plot_training(self, history):
+        # get the number of epochs the model was trained for
+        epochs = len(history['loss'])
+        print(epochs)
+
         # plot and save training history
         plt.style.use("ggplot")
 
@@ -219,15 +229,21 @@ class NeuralNetwork:
         plt.savefig(plotpath)
 
     def evaluate(self):
+        # initialize image generators
+        self.init_generators(shuffle_training=False, shuffle_validation=False, batchsize=1)
+
         # make predictions
-        preds = model.predict_generator(self.gen_validation, verbose=1)
+        preds = self.model.predict_generator(self.gen_validation, verbose=1)
+
+        # preds is an array like [[x] [x] [x]], make it into array like [x x x]
+        preds = np.asarray([label for sublist in preds for label in sublist])
 
         # get true labels
         true_labels = self.gen_validation.classes
 
         # calculate AUC and sklearn AUC
-        fpr, tpr, thresholds, AUC = AUC(preds, true_labels)
-        skfpr, sktpr, skthresholds, skAUC = skAUC(preds, true_labels)
+        fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels)
+        skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels)
 
         # calculate accuracy score
         acc = accuracy(preds, true_labels)
@@ -238,6 +254,26 @@ class NeuralNetwork:
 
         sksavepath = os.path.join(self.config['plot_path'], "{}_skROC.png".format(args['dataset']))
         plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
+
+    def set_bottleneck_model(self, outputlayer='flatten_1'):
+        # create a bottleneck model until given output layer
+        self.bottleneck_model = Model(inputs=self.model.input, outputs=self.model.get_layer(outputlayer).output)
+        return self.bottleneck_model
+
+    def extract_bottleneck_features(self):
+        # don't shuffle when extracting features
+        self.init_generators(shuffle_training=False, shuffle_validation=False, batchsize=1)
+
+        # extract features from bottleneck model
+        bn_features_train = self.bottleneck_model.predict_generator(self.gen_training, steps=self.num_training//self.batchsize, verbose=1)
+        bn_features_val = self.bottleneck_model.predict_generator(self.gen_validation, steps=self.num_validation//self.batchsize, verbose=1)
+
+        # get true labels
+        true_labels_train = self.gen_training.classes
+        true_labels_val = self.gen_validation.classes
+
+        return bn_features_train, bn_features_val, true_labels_train, true_labels_val
+
 
 def main():
     # read parameters for wanted dataset from config file
@@ -273,7 +309,7 @@ def main():
 
         # set parameters for training
         learning_rate = 2e-7
-        epochs = 100
+        epochs = 5
 
         # load VGG16 model architecture
         model = VGG16(dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224,224,3)).get_model()
@@ -301,6 +337,55 @@ def main():
         # evaluate network on validation data
         print("evaluating network on validation data...")
         network.evaluate()
+
+    if args['mode'] == 'SVM':
+        # load the pre-trained source network
+        print("loading source network...")
+        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(args['source_dataset']))
+        source_model = load_model(modelpath)
+        source_model.summary()
+
+        # create network instance
+        source_network = NeuralNetwork(source_model, config_source, batchsize=batchsize, seed=seed)
+
+        # set create a bottleneck model at specified layer
+        bottleneck_model = source_network.set_bottleneck_model(outputlayer='flatten_1')
+        bottleneck_model.summary()
+
+        # extract features using bottleneck model
+        bn_features_train, bn_features_val, true_labels_train, true_labels_val = source_network.extract_bottleneck_features()
+
+        # scale the data to zero mean, unit variance for PCA
+        scaler = StandardScaler()
+        train_features = scaler.fit_transform(bn_features_train)
+        val_features = scaler.transform(bn_features_val)
+
+        # fit PCA
+        print("Performing PCA...")
+        pca = PCA(.95)
+        pca.fit(train_features)
+
+        # apply PCA to features and validation data
+        reduced_train_features = pca.transform(train_features)
+        reduced_val_features = pca.transform(val_features)
+
+        # fit SVM classifier
+        print("Fitting SVM classifier...")
+        clf = svm.LinearSVC(penalty='l2', loss='squared_hinge', C=1.0).fit(reduced_train_features, true_labels_train)
+
+        # make predictions using the trained SVM
+        preds = clf.decision_function(reduced_val_features)
+
+        print(preds)
+
+        # calculate AUC and sklearn AUC
+        print("Evaluating results...")
+        fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels_val)
+        skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels_val)
+
+        # calculate accuracy score
+        acc = accuracy(preds, true_labels_val)
+
 
 if __name__ == "__main__":
     main()
