@@ -31,7 +31,7 @@ from utils import *
 from sklearn import svm
 
 # choose GPU for training
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -119,6 +119,7 @@ class NeuralNetwork:
         self.config = config
         self.trainingpath = config['trainingpath']
         self.validationpath = config['validationpath']
+        self.testpath = config['testpath']
         self.batchsize = kwargs.get('batchsize', 32)
         for attribute, value in kwargs.items():
             setattr(self, attribute, value)
@@ -135,7 +136,7 @@ class NeuralNetwork:
         self.num_training = len(glob.glob(os.path.join(self.trainingpath, '**/*.jpg')))
         self.num_validation = len(glob.glob(os.path.join(self.validationpath, '**/*.jpg')))
 
-    def init_generators(self, shuffle_training, shuffle_validation, **kwargs):
+    def init_generators(self, shuffle_training, shuffle_validation, shuffle_test, **kwargs):
         for attribute, value in kwargs.items():
             setattr(self, attribute, value)
 
@@ -154,6 +155,14 @@ class NeuralNetwork:
             target_size=(224,224),
             color_mode="rgb",
             shuffle=shuffle_validation,
+            batch_size=self.batchsize)
+
+        self.gen_test = self.gen_obj_test.flow_from_directory(
+            self.testpath,
+            class_mode="binary",
+            target_size=(224,224),
+            color_mode="rgb",
+            shuffle=shuffle_test,
             batch_size=self.batchsize)
 
     def compile_network(self, learning_rate, **kwargs):
@@ -177,7 +186,7 @@ class NeuralNetwork:
 
     def train(self, epochs):
         # initialize image generators
-        self.init_generators(shuffle_training=True, shuffle_validation=False)
+        self.init_generators(shuffle_training=True, shuffle_validation=False, shuffle_test=False)
 
         # train the model
         hist = self.model.fit_generator(self.gen_training,
@@ -187,12 +196,11 @@ class NeuralNetwork:
             epochs=epochs,
             verbose=1)
 
-        history = hist.history
+        return hist.history
 
+    def save_history(history):
         # save history
         pd.DataFrame(history).to_csv(os.path.join(self.config['model_savepath'], '{}_history.csv'.format(args['dataset'])))
-
-        return history
 
     def save_model(self):
         # save trained model
@@ -203,7 +211,6 @@ class NeuralNetwork:
     def plot_training(self, history):
         # get the number of epochs the model was trained for
         epochs = len(history['loss'])
-        print(epochs)
 
         # plot and save training history
         plt.style.use("ggplot")
@@ -228,18 +235,23 @@ class NeuralNetwork:
         # save plot
         plt.savefig(plotpath)
 
-    def evaluate(self):
+    def evaluate(self, **kwargs):
+        mode = kwargs.get('mode', 'from_scratch')
+        savepath = kwargs.get('savepath', os.path.join(self.config['plot_path'], "{}_ROC.png".format(args['dataset'])))
+        sksavepath = kwargs.get('sksavepath', os.path.join(self.config['plot_path'], "{}_skROC.png".format(args['dataset'])))
+
         # initialize image generators
-        self.init_generators(shuffle_training=False, shuffle_validation=False, batchsize=1)
+        self.gen_test.reset()
+        self.init_generators(shuffle_training=False, shuffle_validation=False, shuffle_test=False, batchsize=1)
 
         # make predictions
-        preds = self.model.predict_generator(self.gen_validation, verbose=1)
+        preds = self.model.predict_generator(self.gen_test, verbose=1)
 
         # preds is an array like [[x] [x] [x]], make it into array like [x x x]
         preds = np.asarray([label for sublist in preds for label in sublist])
 
         # get true labels
-        true_labels = self.gen_validation.classes
+        true_labels = self.gen_test.classes
 
         # calculate AUC and sklearn AUC
         fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels)
@@ -248,31 +260,44 @@ class NeuralNetwork:
         # calculate accuracy score
         acc = accuracy(preds, true_labels)
 
-        # plot AUC plots
-        savepath = os.path.join(self.config['plot_path'], "{}_ROC.png".format(args['dataset']))
-        plot_AUC(fpr, tpr, AUC, savepath)
+        if mode == 'from_scratch':
+            # plot AUC plots
+            plot_AUC(fpr, tpr, AUC, savepath)
+            plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
 
-        sksavepath = os.path.join(self.config['plot_path'], "{}_skROC.png".format(args['dataset']))
-        plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
+            # also save results in correct file
+            # if mode == 'fine_tuning':
+            # dan anders opslaan?
 
     def set_bottleneck_model(self, outputlayer='flatten_1'):
         # create a bottleneck model until given output layer
-        self.bottleneck_model = Model(inputs=self.model.input, outputs=self.model.get_layer(outputlayer).output)
-        return self.bottleneck_model
+        self.model = Model(inputs=self.model.input, outputs=self.model.get_layer(outputlayer).output)
 
     def extract_bottleneck_features(self):
         # don't shuffle when extracting features
         self.init_generators(shuffle_training=False, shuffle_validation=False, batchsize=1)
 
         # extract features from bottleneck model
-        bn_features_train = self.bottleneck_model.predict_generator(self.gen_training, steps=self.num_training//self.batchsize, verbose=1)
-        bn_features_val = self.bottleneck_model.predict_generator(self.gen_validation, steps=self.num_validation//self.batchsize, verbose=1)
+        bn_features_train = self.model.predict_generator(self.gen_training, steps=self.num_training//self.batchsize, verbose=1)
+        bn_features_val = self.model.predict_generator(self.gen_validation, steps=self.num_validation//self.batchsize, verbose=1)
 
         # get true labels
         true_labels_train = self.gen_training.classes
         true_labels_val = self.gen_validation.classes
 
         return bn_features_train, bn_features_val, true_labels_train, true_labels_val
+
+    def set_ft_model(self):
+        # build classification model
+        top_model = Dense(128, activation="relu")(self.model.output)
+        # top_model = Dropout(0.3)(top_model)
+        top_model = Dense(8, activation="relu")(top_model)
+        # top_model = Dropout(0.3)(top_model)
+        top_model = Dense(1, activation="sigmoid")(top_model)
+
+        # add model on top of base model
+        self.model =  Model(inputs=self.model.input, outputs=top_model)
+        return self.model
 
 
 def main():
@@ -326,6 +351,10 @@ def main():
         print("training network...")
         history = network.train(epochs)
 
+        # save history
+        print("saving training history...")
+        network.save_history(history)
+
         # save network
         print("saving network...")
         network.save_model()
@@ -334,9 +363,9 @@ def main():
         print("plotting training progress...")
         network.plot_training(history)
 
-        # evaluate network on validation data
-        print("evaluating network on validation data...")
-        network.evaluate()
+        # evaluate network on test data
+        print("evaluating network on test data...")
+        network.evaluate(mode=args['mode'])
 
     if args['mode'] == 'SVM':
         # load the pre-trained source network
@@ -346,14 +375,14 @@ def main():
         source_model.summary()
 
         # create network instance
-        source_network = NeuralNetwork(source_model, config_source, batchsize=batchsize, seed=seed)
+        network = NeuralNetwork(source_model, config, batchsize=batchsize, seed=seed)
 
         # set create a bottleneck model at specified layer
-        bottleneck_model = source_network.set_bottleneck_model(outputlayer='flatten_1')
-        bottleneck_model.summary()
+        network.set_bottleneck_model(outputlayer='flatten_1')
+        network.model.summary()
 
         # extract features using bottleneck model
-        bn_features_train, bn_features_val, true_labels_train, true_labels_val = source_network.extract_bottleneck_features()
+        bn_features_train, bn_features_val, true_labels_train, true_labels_val = network.extract_bottleneck_features()
 
         # scale the data to zero mean, unit variance for PCA
         scaler = StandardScaler()
@@ -361,7 +390,7 @@ def main():
         val_features = scaler.transform(bn_features_val)
 
         # fit PCA
-        print("Performing PCA...")
+        print("performing PCA...")
         pca = PCA(.95)
         pca.fit(train_features)
 
@@ -370,22 +399,87 @@ def main():
         reduced_val_features = pca.transform(val_features)
 
         # fit SVM classifier
-        print("Fitting SVM classifier...")
+        print("fitting SVM classifier...")
         clf = svm.LinearSVC(penalty='l2', loss='squared_hinge', C=1.0).fit(reduced_train_features, true_labels_train)
 
         # make predictions using the trained SVM
         preds = clf.decision_function(reduced_val_features)
 
-        print(preds)
-
         # calculate AUC and sklearn AUC
-        print("Evaluating results...")
+        print("evaluating results...")
         fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels_val)
         skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels_val)
 
         # calculate accuracy score
         acc = accuracy(preds, true_labels_val)
 
+        print(AUC, skAUC, acc)
+
+        #### dingen nog saven
+
+    if args['mode'] == 'fine_tuning':
+        # load the pre-trained source network
+        print("loading source network...")
+        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(args['source_dataset']))
+        source_model = load_model(modelpath)
+        source_model.summary()
+
+        # create network instance
+        network = NeuralNetwork(source_model, config, batchsize=batchsize, seed=seed)
+
+        # create a bottleneck model at specified layer
+        network.set_bottleneck_model(outputlayer='flatten_1')
+        network.model.summary()
+
+        # freeze all layers in the convolutional base to exclude them from training
+        for layer in network.model.layers:
+            layer.trainable = False
+
+        # set learning phase to avoid problems with BN layers freezing/training
+        K.set_learning_phase(1)
+
+        # add classification model on top of the bottleneck model
+        network.set_ft_model()
+        network.model.summary()
+
+        # compile network
+        print("compiling network...")
+        network.compile_network(learning_rate=1e-3, optimizer='sgd', loss="binary_crossentropy", metrics=["accuracy"])
+
+        # train the model for some epochs
+        print("training top model...")
+        epochs = 25
+        history = network.train(epochs)
+
+        # evaluate on test data
+        network.evaluate(mode='fine_tuning')
+
+        # find correct layer index for last conv block and unfreeze last convolutional block
+        for idx, layer in enumerate(network.model.layers):
+            if layer.name == 'conv2d_11':
+                index = idx
+
+        for layer in network.model.layers[index:]:
+            layer.trainable = True
+
+        # reset training and validation generators
+        network.gen_training.reset()
+        network.gen_validation.reset()
+
+        # recompile model
+        print("compiling network...")
+        network.compile_network(learning_rate=1e-4, optimizer='sgd', loss="binary_crossentropy", metrics=["accuracy"])
+
+        # train model some more
+        print("training top model and unfrozen layers...")
+        epochs = 25
+        history = network.train(epochs)
+
+        # evaluate results on test data
+        print("evaluating after fine-tuning top model...")
+        network.evaluate(mode='fine_tuning')
+
+        ### nu resultaten nog saven.... in een overzichtelijke csv. En training progress misschien ook?
 
 if __name__ == "__main__":
     main()
