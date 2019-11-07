@@ -624,7 +624,7 @@ for dataset in datasets:
     data[dataset]['plot_path'] = plot_path
 
     # path to save trained model
-    model_savepath = os.path.join(parent_path, 'outputs/{}/models'.format(data[dataset]['output_path']))
+    model_savepath = os.path.join(parent_path, 'outputs/{}/models'.format(data[dataset]['output_path']))1
     data[dataset]['model_savepath'] = model_savepath
 
     # data split paths
@@ -634,6 +634,10 @@ for dataset in datasets:
     data[dataset]['validationpath'] = validationpath
     testpath = os.path.join(dataset_path, 'test')
     data[dataset]['testpath'] = testpath
+
+    # output path
+    output_path = os.path.join(parent_path, 'outputs/{}'.format(data[dataset]['output_path']))
+    data[dataset]['output_path'] = output_path
 
 # create json configuration file
 with open('config.json', 'w') as f:

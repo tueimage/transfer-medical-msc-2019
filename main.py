@@ -26,12 +26,13 @@ import random
 import pandas as pd
 import cv2
 import gc
-from time import time
+import time
+from openpyxl import load_workbook, Workbook
 from utils import *
 from sklearn import svm
 
 # choose GPU for training
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -135,6 +136,14 @@ class NeuralNetwork:
 
         self.num_training = len(glob.glob(os.path.join(self.trainingpath, '**/*.jpg')))
         self.num_validation = len(glob.glob(os.path.join(self.validationpath, '**/*.jpg')))
+        self.num_test= len(glob.glob(os.path.join(self.testpath, '**/*.jpg')))
+
+        # create a savepath for results and create a sheet to avoid errors
+        self.savefile = os.path.join(self.config['output_path'], 'results.xlsx')
+
+        # also create excel file already to avoid errors, if it doesn't exist yet
+        if not os.path.exists(self.savefile):
+            Workbook().save(self.savefile)
 
     def init_generators(self, shuffle_training, shuffle_validation, shuffle_test, **kwargs):
         for attribute, value in kwargs.items():
@@ -186,7 +195,7 @@ class NeuralNetwork:
 
     def train(self, epochs):
         # initialize image generators
-        self.init_generators(shuffle_training=True, shuffle_validation=False, shuffle_test=False)
+        self.init_generators(shuffle_training=True, shuffle_validation=False, shuffle_test=False, batchsize=32)
 
         # train the model
         hist = self.model.fit_generator(self.gen_training,
@@ -198,13 +207,15 @@ class NeuralNetwork:
 
         return hist.history
 
-    def save_history(history):
+    def save_history(self, history):
         # save history
-        pd.DataFrame(history).to_csv(os.path.join(self.config['model_savepath'], '{}_history.csv'.format(args['dataset'])))
+        with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
+            writer.book = load_workbook(self.savefile)
+            writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+            pd.DataFrame(history).to_excel(writer, sheet_name='history')
 
     def save_model(self):
         # save trained model
-        print("saving model...")
         savepath = os.path.join(self.config['model_savepath'], "{}_model.h5".format(args['dataset']))
         self.model.save(savepath)
 
@@ -237,6 +248,7 @@ class NeuralNetwork:
 
     def evaluate(self, **kwargs):
         mode = kwargs.get('mode', 'from_scratch')
+        source_dataset = kwargs.get('source_dataset', None)
         savepath = kwargs.get('savepath', os.path.join(self.config['plot_path'], "{}_ROC.png".format(args['dataset'])))
         sksavepath = kwargs.get('sksavepath', os.path.join(self.config['plot_path'], "{}_skROC.png".format(args['dataset'])))
 
@@ -261,13 +273,36 @@ class NeuralNetwork:
         acc = accuracy(preds, true_labels)
 
         if mode == 'from_scratch':
+            # create dataframe out of results
+            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc}])
+
+            # save results in excel file
+            with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
+                writer.book = load_workbook(self.savefile)
+                writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+                test_results.to_excel(writer, sheet_name='from_scratch')
+
             # plot AUC plots
             plot_AUC(fpr, tpr, AUC, savepath)
             plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
 
-            # also save results in correct file
-            # if mode == 'fine_tuning':
-            # dan anders opslaan?
+        if mode in ['fc', 'fine_tuning']:
+            # save in path for target dataset
+            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc}], index=[source_dataset])
+
+            # read existing rows and add test results
+            try:
+                test_results = pd.read_excel(self.savefile, sheet_name=mode).append(test_results)
+            except:
+                pass
+
+            # save results in excel file
+            with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
+                writer.book = load_workbook(self.savefile)
+                writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+                test_results.index.name = 'source dataset'
+                test_results.to_excel(writer, sheet_name=mode)
+
 
     def set_bottleneck_model(self, outputlayer='flatten_1'):
         # create a bottleneck model until given output layer
@@ -275,17 +310,17 @@ class NeuralNetwork:
 
     def extract_bottleneck_features(self):
         # don't shuffle when extracting features
-        self.init_generators(shuffle_training=False, shuffle_validation=False, batchsize=1)
+        self.init_generators(shuffle_training=False, shuffle_validation=False, shuffle_test=False, batchsize=1)
 
         # extract features from bottleneck model
         bn_features_train = self.model.predict_generator(self.gen_training, steps=self.num_training//self.batchsize, verbose=1)
-        bn_features_val = self.model.predict_generator(self.gen_validation, steps=self.num_validation//self.batchsize, verbose=1)
+        bn_features_test = self.model.predict_generator(self.gen_test, steps=self.num_test//self.batchsize, verbose=1)
 
         # get true labels
         true_labels_train = self.gen_training.classes
-        true_labels_val = self.gen_validation.classes
+        true_labels_test = self.gen_test.classes
 
-        return bn_features_train, bn_features_val, true_labels_train, true_labels_val
+        return bn_features_train, bn_features_test, true_labels_train, true_labels_test
 
     def set_ft_model(self):
         # build classification model
@@ -334,7 +369,7 @@ def main():
 
         # set parameters for training
         learning_rate = 2e-7
-        epochs = 5
+        epochs = 3
 
         # load VGG16 model architecture
         model = VGG16(dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224,224,3)).get_model()
@@ -370,7 +405,8 @@ def main():
     if args['mode'] == 'SVM':
         # load the pre-trained source network
         print("loading source network...")
-        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(args['source_dataset']))
+        source_dataset = args['source_dataset']
+        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(source_dataset))
         source_model = load_model(modelpath)
         source_model.summary()
 
@@ -382,45 +418,65 @@ def main():
         network.model.summary()
 
         # extract features using bottleneck model
-        bn_features_train, bn_features_val, true_labels_train, true_labels_val = network.extract_bottleneck_features()
+        bn_features_train, bn_features_test, true_labels_train, true_labels_test = network.extract_bottleneck_features()
 
         # scale the data to zero mean, unit variance for PCA
         scaler = StandardScaler()
         train_features = scaler.fit_transform(bn_features_train)
-        val_features = scaler.transform(bn_features_val)
+        test_features = scaler.transform(bn_features_test)
 
         # fit PCA
         print("performing PCA...")
         pca = PCA(.95)
         pca.fit(train_features)
 
-        # apply PCA to features and validation data
+        # apply PCA to features and test data
         reduced_train_features = pca.transform(train_features)
-        reduced_val_features = pca.transform(val_features)
+        reduced_test_features = pca.transform(test_features)
 
         # fit SVM classifier
         print("fitting SVM classifier...")
         clf = svm.LinearSVC(penalty='l2', loss='squared_hinge', C=1.0).fit(reduced_train_features, true_labels_train)
 
         # make predictions using the trained SVM
-        preds = clf.decision_function(reduced_val_features)
+        preds = clf.decision_function(reduced_test_features)
 
         # calculate AUC and sklearn AUC
         print("evaluating results...")
-        fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels_val)
-        skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels_val)
+        fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels_test)
+        skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels_test)
 
         # calculate accuracy score
-        acc = accuracy(preds, true_labels_val)
+        acc = accuracy(preds, true_labels_test)
 
-        print(AUC, skAUC, acc)
+        # create a savepath for results and create a sheet to avoid errors
+        savefile = os.path.join(config['output_path'], 'results.xlsx')
 
-        #### dingen nog saven
+        # also create excel file already to avoid errors, if it doesn't exist yet
+        if not os.path.exists(savefile):
+            Workbook().save(savefile)
+
+        # save in path for target dataset
+        test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc}], index=[source_dataset])
+
+        # read existing results if they exist yet
+        try:
+            test_results = pd.read_excel(savefile, sheet_name=mode).append(test_results)
+        except:
+            pass
+
+        # save results in excel file
+        with pd.ExcelWriter(savefile, engine='openpyxl') as writer:
+            writer.book = load_workbook(savefile)
+            writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+            test_results.index.name = 'source dataset'
+            test_results.to_excel(writer, sheet_name='SVM')
 
     if args['mode'] == 'fine_tuning':
         # load the pre-trained source network
         print("loading source network...")
-        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(args['source_dataset']))
+        source_dataset = args['source_dataset']
+        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(source_dataset))
         source_model = load_model(modelpath)
         source_model.summary()
 
@@ -452,7 +508,8 @@ def main():
         history = network.train(epochs)
 
         # evaluate on test data
-        network.evaluate(mode='fine_tuning')
+        print("evaluating top model...")
+        network.evaluate(mode='fc', source_dataset=source_dataset)
 
         # find correct layer index for last conv block and unfreeze last convolutional block
         for idx, layer in enumerate(network.model.layers):
@@ -477,9 +534,7 @@ def main():
 
         # evaluate results on test data
         print("evaluating after fine-tuning top model...")
-        network.evaluate(mode='fine_tuning')
-
-        ### nu resultaten nog saven.... in een overzichtelijke csv. En training progress misschien ook?
+        network.evaluate(mode='fine_tuning', source_dataset=source_dataset)
 
 if __name__ == "__main__":
     main()
