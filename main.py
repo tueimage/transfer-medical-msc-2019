@@ -21,12 +21,11 @@ import os
 import pickle
 import glob
 from models import VGG16
-import datetime
 import random
 import pandas as pd
 import cv2
 import gc
-import time
+from time import time
 from openpyxl import load_workbook, Workbook
 from utils import *
 from sklearn import svm
@@ -197,6 +196,9 @@ class NeuralNetwork:
         # initialize image generators
         self.init_generators(shuffle_training=True, shuffle_validation=False, shuffle_test=False, batchsize=32)
 
+        # determine how much time passes
+        start = time()
+
         # train the model
         hist = self.model.fit_generator(self.gen_training,
             steps_per_epoch = self.num_training // self.batchsize,
@@ -204,6 +206,10 @@ class NeuralNetwork:
             validation_steps = self.num_validation // self.batchsize,
             epochs=epochs,
             verbose=1)
+
+        # determine how much time passed
+        end = time()
+        self.training_time = end-start
 
         return hist.history
 
@@ -274,7 +280,7 @@ class NeuralNetwork:
 
         if mode == 'from_scratch':
             # create dataframe out of results
-            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc}])
+            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': self.training_time}])
 
             # save results in excel file
             with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
@@ -288,7 +294,7 @@ class NeuralNetwork:
 
         if mode in ['fc', 'fine_tuning']:
             # save in path for target dataset
-            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc}], index=[source_dataset])
+            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': self.training_time}], index=[source_dataset])
 
             # read existing rows and add test results
             try:
@@ -300,7 +306,7 @@ class NeuralNetwork:
             with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
                 writer.book = load_workbook(self.savefile)
                 writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
-                test_results.index.name = 'source dataset'
+                test_results.index.name = 'source_dataset'
                 test_results.to_excel(writer, sheet_name=mode)
 
 
@@ -425,6 +431,9 @@ def main():
         train_features = scaler.fit_transform(bn_features_train)
         test_features = scaler.transform(bn_features_test)
 
+        # determine time taken to perform PCA and train SVM
+        start = time()
+
         # fit PCA
         print("performing PCA...")
         pca = PCA(.95)
@@ -437,6 +446,10 @@ def main():
         # fit SVM classifier
         print("fitting SVM classifier...")
         clf = svm.LinearSVC(penalty='l2', loss='squared_hinge', C=1.0).fit(reduced_train_features, true_labels_train)
+
+        # determine time taken to perform PCA and train SVM
+        end = time()
+        training_time = end-start
 
         # make predictions using the trained SVM
         preds = clf.decision_function(reduced_test_features)
@@ -457,7 +470,7 @@ def main():
             Workbook().save(savefile)
 
         # save in path for target dataset
-        test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc}], index=[source_dataset])
+        test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': training_time}], index=[source_dataset])
 
         # read existing results if they exist yet
         try:
@@ -469,7 +482,7 @@ def main():
         with pd.ExcelWriter(savefile, engine='openpyxl') as writer:
             writer.book = load_workbook(savefile)
             writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
-            test_results.index.name = 'source dataset'
+            test_results.index.name = 'source_dataset'
             test_results.to_excel(writer, sheet_name='SVM')
 
     if args['mode'] == 'fine_tuning':
