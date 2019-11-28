@@ -2654,7 +2654,7 @@ for dataset in datasets:
     data[dataset]['plot_path'] = plot_path
 
     # path to save trained model
-    model_savepath = os.path.join(parent_path, 'outputs/{}/models'.format(data[dataset]['output_path']))1
+    model_savepath = os.path.join(parent_path, 'outputs/{}/models'.format(data[dataset]['output_path']))
     data[dataset]['model_savepath'] = model_savepath
 
     # data split paths

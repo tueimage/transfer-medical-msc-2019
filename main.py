@@ -490,6 +490,8 @@ class NeuralNetwork:
         savepath = kwargs.get('savepath', os.path.join(self.config['plot_path'], "{}_ROC.png".format(args['dataset'])))
         sksavepath = kwargs.get('sksavepath', os.path.join(self.config['plot_path'], "{}_skROC.png".format(args['dataset'])))
 
+        print("mode: {}".format(mode))
+
         # initialize image generators
         self.gen_test.reset()
         self.init_generators(shuffle_training=False, shuffle_validation=False, shuffle_test=False, batchsize=1)
@@ -526,21 +528,23 @@ class NeuralNetwork:
 
         if mode in ['fc', 'fine_tuning']:
             # save in path for target dataset
-            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': self.training_time}], index=[source_dataset])
+            test_results = pd.Series({'source_dataset': source_dataset, 'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': self.training_time})
 
             # read existing rows and add test results
             try:
-                test_results = pd.read_excel(self.savefile, sheet_name=mode).append(test_results)
+                df = pd.read_excel(self.savefile, sheet_name=mode)
             except:
-                pass
+                df = pd.DataFrame(columns=['source_dataset', 'AUC', 'skAUC', 'acc', 'training_time'])
+
+            df = df.append(test_results, ignore_index=True)
+            df.set_index('source_dataset', inplace=True)
 
             # save results in excel file
             with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
                 writer.book = load_workbook(self.savefile)
                 writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
-                test_results.index.name = 'source_dataset'
-                test_results.to_excel(writer, sheet_name=mode)
-
+                df.index.name = 'source_dataset'
+                df.to_excel(writer, sheet_name=mode)
 
     def set_bottleneck_model(self, outputlayer='flatten_1'):
         # create a bottleneck model until given output layer
@@ -607,7 +611,7 @@ def main():
 
         # set parameters for training
         learning_rate = 2e-7
-        epochs = 3
+        epochs = 100
 
         # load VGG16 model architecture
         model = VGG16(dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224,224,3)).get_model()
@@ -644,7 +648,7 @@ def main():
         # load the pre-trained source network
         print("loading source network...")
         source_dataset = args['source_dataset']
-        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(source_dataset))
+        modelpath = os.path.join(config_source['model_savepath'], '{}_model.h5'.format(source_dataset))
         source_model = load_model(modelpath)
         source_model.summary()
 
@@ -697,31 +701,34 @@ def main():
         # create a savepath for results and create a sheet to avoid errors
         savefile = os.path.join(config['output_path'], 'results.xlsx')
 
-        # also create excel file already to avoid errors, if it doesn't exist yet
+        # also create excel file if it doesn't exist yet to avoid errors
         if not os.path.exists(savefile):
             Workbook().save(savefile)
 
         # save in path for target dataset
-        test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': training_time}], index=[source_dataset])
+        test_results = pd.Series({'source_dataset': source_dataset, 'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': training_time})
 
-        # read existing results if they exist yet
+        # read existing results if they exist, else create empty dataframe
         try:
-            test_results = pd.read_excel(savefile, sheet_name=mode).append(test_results)
+            df = pd.read_excel(savefile, sheet_name='SVM')
         except:
-            pass
+            df = pd.DataFrame(columns=['source_dataset', 'AUC', 'skAUC', 'acc', 'training_time'])
+
+        df = df.append(test_results, ignore_index=True)
+        df.set_index('source_dataset', inplace=True)
 
         # save results in excel file
         with pd.ExcelWriter(savefile, engine='openpyxl') as writer:
             writer.book = load_workbook(savefile)
             writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
-            test_results.index.name = 'source_dataset'
-            test_results.to_excel(writer, sheet_name='SVM')
+            df.index.name = 'source_dataset'
+            df.to_excel(writer, sheet_name='SVM')
 
     if args['mode'] == 'fine_tuning':
         # load the pre-trained source network
         print("loading source network...")
         source_dataset = args['source_dataset']
-        modelpath = os.path.join(config_source['model_savepath'], '{}_model_VGG16.h5'.format(source_dataset))
+        modelpath = os.path.join(config_source['model_savepath'], '{}_model.h5'.format(source_dataset))
         source_model = load_model(modelpath)
         source_model.summary()
 

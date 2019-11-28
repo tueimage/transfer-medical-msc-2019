@@ -18,7 +18,7 @@ seed=28
 parser = argparse.ArgumentParser()
 parser.add_argument('-d',
     '--dataset',
-    choices=['isic'],
+    choices=['ISIC_2', 'ISIC_3', 'ISIC_4', 'ISIC_5', 'ISIC_6'],
     required=True,
     help='dataset to use')
 parser.add_argument('-m',
