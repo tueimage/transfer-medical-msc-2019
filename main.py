@@ -338,10 +338,6 @@ parser.add_argument('-s',
             'ISIC_6_imbalance_classes_f=0.9', 'ISIC_6_imbalance_classes_f=1.0'],
     required='transfer' in sys.argv or 'fine_tuning' in sys.argv or 'SVM' in sys.argv,
     help='source dataset to use when using transfer, fine_tuning or SVM')
-parser.add_argument('-i',
-    '--input',
-    required='evaluate' in sys.argv,
-    help='name of trained model to load when evaluating')
 parser.add_argument('-bs', '--batchsize', default=32, help='batch size')
 args = vars(parser.parse_args())
 
@@ -787,6 +783,29 @@ def main():
         # evaluate results on test data
         print("evaluating after fine-tuning top model...")
         network.evaluate(mode='fine_tuning', source_dataset=source_dataset)
+
+    if args['mode'] == 'evaluate':
+        # load the source network
+        print("loading source network...")
+        modelpath = os.path.join(config['model_savepath'], '{}_model.h5'.format(args['dataset']))
+        model = load_model(modelpath)
+        model.summary()
+
+        # create network instance
+        network = NeuralNetwork(model, config, batchsize=batchsize, seed=seed)
+
+        # fit generators on training data
+        x_train = load_training_data(network.trainingpath)
+        network.gen_obj_training.fit(x_train, seed=seed)
+        network.gen_obj_test.fit(x_train, seed=seed)
+
+        # initialize generators
+        network.init_generators(shuffle_training=False, shuffle_validation=False, shuffle_test=False, batchsize=1)
+
+        # evaluate network on test data
+        print("evaluating network on test data...")
+        network.evaluate(mode=args['mode'])
+
 
 if __name__ == "__main__":
     main()
