@@ -9,16 +9,16 @@ import pandas as pd
 import cv2
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from models import model_VGG16_light, get_MLP
+from models import get_MLP
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Input
 from keras.optimizers import SGD
 from keras.callbacks import EarlyStopping
 from keras.utils import to_categorical
-from helper_functions import ROC_AUC, plot_training, load_training_data, binomial_test
+from utils import *
 from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score
 from scipy.stats import binom_test, kstest, ks_2samp
-
+from openpyxl import load_workbook, Workbook
 
 # choose GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
@@ -32,92 +32,156 @@ parser.add_argument('-m',
     help='dataset shift to detect, train_val for shift between train and validation set')
 parser.add_argument('-d',
     '--dataset',
-    choices=['isic'],
+    choices=['ISIC_2', 'ISIC_3', 'ISIC_4', 'ISIC_5', 'ISIC_6'],
     required=True,
     help='dataset to use')
 parser.add_argument('-d2',
     '--dataset2',
-    choices=['isic',
-            'ISIC_image_rot_f=0.1',
-            'ISIC_image_rot_f=0.2',
-            'ISIC_image_rot_f=0.3',
-            'ISIC_image_rot_f=0.4',
-            'ISIC_image_rot_f=0.5',
-            'ISIC_image_rot_f=0.6',
-            'ISIC_image_rot_f=0.7',
-            'ISIC_image_rot_f=0.8',
-            'ISIC_image_rot_f=0.9',
-            'ISIC_image_rot_f=1.0',
-            'ISIC_image_translation_f=0.1',
-            'ISIC_image_translation_f=0.2',
-            'ISIC_image_translation_f=0.3',
-            'ISIC_image_translation_f=0.4',
-            'ISIC_image_translation_f=0.5',
-            'ISIC_image_translation_f=0.6',
-            'ISIC_image_translation_f=0.7',
-            'ISIC_image_translation_f=0.8',
-            'ISIC_image_translation_f=0.9',
-            'ISIC_image_translation_f=1.0',
-            'ISIC_image_zoom_f=0.1',
-            'ISIC_image_zoom_f=0.2',
-            'ISIC_image_zoom_f=0.3',
-            'ISIC_image_zoom_f=0.4',
-            'ISIC_image_zoom_f=0.5',
-            'ISIC_image_zoom_f=0.6',
-            'ISIC_image_zoom_f=0.7',
-            'ISIC_image_zoom_f=0.8',
-            'ISIC_image_zoom_f=0.9',
-            'ISIC_image_zoom_f=1.0',
-            'ISIC_add_noise_gaussian_f=0.1',
-            'ISIC_add_noise_gaussian_f=0.2',
-            'ISIC_add_noise_gaussian_f=0.3',
-            'ISIC_add_noise_gaussian_f=0.4',
-            'ISIC_add_noise_gaussian_f=0.5',
-            'ISIC_add_noise_gaussian_f=0.6',
-            'ISIC_add_noise_gaussian_f=0.7',
-            'ISIC_add_noise_gaussian_f=0.8',
-            'ISIC_add_noise_gaussian_f=0.9',
-            'ISIC_add_noise_gaussian_f=1.0',
-            'ISIC_add_noise_poisson_f=0.1',
-            'ISIC_add_noise_poisson_f=0.2',
-            'ISIC_add_noise_poisson_f=0.3',
-            'ISIC_add_noise_poisson_f=0.4',
-            'ISIC_add_noise_poisson_f=0.5',
-            'ISIC_add_noise_poisson_f=0.6',
-            'ISIC_add_noise_poisson_f=0.7',
-            'ISIC_add_noise_poisson_f=0.8',
-            'ISIC_add_noise_poisson_f=0.9',
-            'ISIC_add_noise_poisson_f=1.0',
-            'ISIC_add_noise_salt_and_pepper_f=0.1',
-            'ISIC_add_noise_salt_and_pepper_f=0.2',
-            'ISIC_add_noise_salt_and_pepper_f=0.3',
-            'ISIC_add_noise_salt_and_pepper_f=0.4',
-            'ISIC_add_noise_salt_and_pepper_f=0.5',
-            'ISIC_add_noise_salt_and_pepper_f=0.6',
-            'ISIC_add_noise_salt_and_pepper_f=0.7',
-            'ISIC_add_noise_salt_and_pepper_f=0.8',
-            'ISIC_add_noise_salt_and_pepper_f=0.9',
-            'ISIC_add_noise_salt_and_pepper_f=1.0',
-            'ISIC_add_noise_speckle_f=0.1',
-            'ISIC_add_noise_speckle_f=0.2',
-            'ISIC_add_noise_speckle_f=0.3',
-            'ISIC_add_noise_speckle_f=0.4',
-            'ISIC_add_noise_speckle_f=0.5',
-            'ISIC_add_noise_speckle_f=0.6',
-            'ISIC_add_noise_speckle_f=0.7',
-            'ISIC_add_noise_speckle_f=0.8',
-            'ISIC_add_noise_speckle_f=0.9',
-            'ISIC_add_noise_speckle_f=1.0',
-            'ISIC_imbalance_classes_f=0.1',
-            'ISIC_imbalance_classes_f=0.2',
-            'ISIC_imbalance_classes_f=0.3',
-            'ISIC_imbalance_classes_f=0.4',
-            'ISIC_imbalance_classes_f=0.5',
-            'ISIC_imbalance_classes_f=0.6',
-            'ISIC_imbalance_classes_f=0.7',
-            'ISIC_imbalance_classes_f=0.8',
-            'ISIC_imbalance_classes_f=0.9',
-            'ISIC_imbalance_classes_f=1.0'],
+    choices=['ISIC_2', 'ISIC_2_image_rot_f=0.1', 'ISIC_2_image_rot_f=0.2',
+            'ISIC_2_image_rot_f=0.3', 'ISIC_2_image_rot_f=0.4', 'ISIC_2_image_rot_f=0.5',
+            'ISIC_2_image_rot_f=0.6', 'ISIC_2_image_rot_f=0.7', 'ISIC_2_image_rot_f=0.8',
+            'ISIC_2_image_rot_f=0.9', 'ISIC_2_image_rot_f=1.0', 'ISIC_2_image_translation_f=0.1',
+            'ISIC_2_image_translation_f=0.2', 'ISIC_2_image_translation_f=0.3', 'ISIC_2_image_translation_f=0.4',
+            'ISIC_2_image_translation_f=0.5', 'ISIC_2_image_translation_f=0.6', 'ISIC_2_image_translation_f=0.7',
+            'ISIC_2_image_translation_f=0.8', 'ISIC_2_image_translation_f=0.9', 'ISIC_2_image_translation_f=1.0',
+            'ISIC_2_image_zoom_f=0.1', 'ISIC_2_image_zoom_f=0.2', 'ISIC_2_image_zoom_f=0.3',
+            'ISIC_2_image_zoom_f=0.4', 'ISIC_2_image_zoom_f=0.5', 'ISIC_2_image_zoom_f=0.6',
+            'ISIC_2_image_zoom_f=0.7', 'ISIC_2_image_zoom_f=0.8', 'ISIC_2_image_zoom_f=0.9',
+            'ISIC_2_image_zoom_f=1.0', 'ISIC_2_add_noise_gaussian_f=0.1', 'ISIC_2_add_noise_gaussian_f=0.2',
+            'ISIC_2_add_noise_gaussian_f=0.3', 'ISIC_2_add_noise_gaussian_f=0.4', 'ISIC_2_add_noise_gaussian_f=0.5',
+            'ISIC_2_add_noise_gaussian_f=0.6', 'ISIC_2_add_noise_gaussian_f=0.7', 'ISIC_2_add_noise_gaussian_f=0.8',
+            'ISIC_2_add_noise_gaussian_f=0.9', 'ISIC_2_add_noise_gaussian_f=1.0', 'ISIC_2_add_noise_poisson_f=0.1',
+            'ISIC_2_add_noise_poisson_f=0.2', 'ISIC_2_add_noise_poisson_f=0.3', 'ISIC_2_add_noise_poisson_f=0.4',
+            'ISIC_2_add_noise_poisson_f=0.5', 'ISIC_2_add_noise_poisson_f=0.6', 'ISIC_2_add_noise_poisson_f=0.7',
+            'ISIC_2_add_noise_poisson_f=0.8', 'ISIC_2_add_noise_poisson_f=0.9', 'ISIC_2_add_noise_poisson_f=1.0',
+            'ISIC_2_add_noise_salt_and_pepper_f=0.1', 'ISIC_2_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_2_add_noise_salt_and_pepper_f=0.3', 'ISIC_2_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_2_add_noise_salt_and_pepper_f=0.5', 'ISIC_2_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_2_add_noise_salt_and_pepper_f=0.7', 'ISIC_2_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_2_add_noise_salt_and_pepper_f=0.9', 'ISIC_2_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_2_add_noise_speckle_f=0.1', 'ISIC_2_add_noise_speckle_f=0.2', 'ISIC_2_add_noise_speckle_f=0.3',
+            'ISIC_2_add_noise_speckle_f=0.4', 'ISIC_2_add_noise_speckle_f=0.5', 'ISIC_2_add_noise_speckle_f=0.6',
+            'ISIC_2_add_noise_speckle_f=0.7', 'ISIC_2_add_noise_speckle_f=0.8', 'ISIC_2_add_noise_speckle_f=0.9',
+            'ISIC_2_add_noise_speckle_f=1.0', 'ISIC_2_imbalance_classes_f=0.1', 'ISIC_2_imbalance_classes_f=0.2',
+            'ISIC_2_imbalance_classes_f=0.3', 'ISIC_2_imbalance_classes_f=0.4', 'ISIC_2_imbalance_classes_f=0.5',
+            'ISIC_2_imbalance_classes_f=0.6', 'ISIC_2_imbalance_classes_f=0.7', 'ISIC_2_imbalance_classes_f=0.8',
+            'ISIC_2_imbalance_classes_f=0.9', 'ISIC_2_imbalance_classes_f=1.0',
+            'ISIC_3', 'ISIC_3_image_rot_f=0.1', 'ISIC_3_image_rot_f=0.2',
+            'ISIC_3_image_rot_f=0.3', 'ISIC_3_image_rot_f=0.4', 'ISIC_3_image_rot_f=0.5',
+            'ISIC_3_image_rot_f=0.6', 'ISIC_3_image_rot_f=0.7', 'ISIC_3_image_rot_f=0.8',
+            'ISIC_3_image_rot_f=0.9', 'ISIC_3_image_rot_f=1.0', 'ISIC_3_image_translation_f=0.1',
+            'ISIC_3_image_translation_f=0.2', 'ISIC_3_image_translation_f=0.3', 'ISIC_3_image_translation_f=0.4',
+            'ISIC_3_image_translation_f=0.5', 'ISIC_3_image_translation_f=0.6', 'ISIC_3_image_translation_f=0.7',
+            'ISIC_3_image_translation_f=0.8', 'ISIC_3_image_translation_f=0.9', 'ISIC_3_image_translation_f=1.0',
+            'ISIC_3_image_zoom_f=0.1', 'ISIC_3_image_zoom_f=0.2', 'ISIC_3_image_zoom_f=0.3',
+            'ISIC_3_image_zoom_f=0.4', 'ISIC_3_image_zoom_f=0.5', 'ISIC_3_image_zoom_f=0.6',
+            'ISIC_3_image_zoom_f=0.7', 'ISIC_3_image_zoom_f=0.8', 'ISIC_3_image_zoom_f=0.9',
+            'ISIC_3_image_zoom_f=1.0', 'ISIC_3_add_noise_gaussian_f=0.1', 'ISIC_3_add_noise_gaussian_f=0.2',
+            'ISIC_3_add_noise_gaussian_f=0.3', 'ISIC_3_add_noise_gaussian_f=0.4', 'ISIC_3_add_noise_gaussian_f=0.5',
+            'ISIC_3_add_noise_gaussian_f=0.6', 'ISIC_3_add_noise_gaussian_f=0.7', 'ISIC_3_add_noise_gaussian_f=0.8',
+            'ISIC_3_add_noise_gaussian_f=0.9', 'ISIC_3_add_noise_gaussian_f=1.0', 'ISIC_3_add_noise_poisson_f=0.1',
+            'ISIC_3_add_noise_poisson_f=0.2', 'ISIC_3_add_noise_poisson_f=0.3', 'ISIC_3_add_noise_poisson_f=0.4',
+            'ISIC_3_add_noise_poisson_f=0.5', 'ISIC_3_add_noise_poisson_f=0.6', 'ISIC_3_add_noise_poisson_f=0.7',
+            'ISIC_3_add_noise_poisson_f=0.8', 'ISIC_3_add_noise_poisson_f=0.9', 'ISIC_3_add_noise_poisson_f=1.0',
+            'ISIC_3_add_noise_salt_and_pepper_f=0.1', 'ISIC_3_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_3_add_noise_salt_and_pepper_f=0.3', 'ISIC_3_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_3_add_noise_salt_and_pepper_f=0.5', 'ISIC_3_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_3_add_noise_salt_and_pepper_f=0.7', 'ISIC_3_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_3_add_noise_salt_and_pepper_f=0.9', 'ISIC_3_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_3_add_noise_speckle_f=0.1', 'ISIC_3_add_noise_speckle_f=0.2', 'ISIC_3_add_noise_speckle_f=0.3',
+            'ISIC_3_add_noise_speckle_f=0.4', 'ISIC_3_add_noise_speckle_f=0.5', 'ISIC_3_add_noise_speckle_f=0.6',
+            'ISIC_3_add_noise_speckle_f=0.7', 'ISIC_3_add_noise_speckle_f=0.8', 'ISIC_3_add_noise_speckle_f=0.9',
+            'ISIC_3_add_noise_speckle_f=1.0', 'ISIC_3_imbalance_classes_f=0.1', 'ISIC_3_imbalance_classes_f=0.2',
+            'ISIC_3_imbalance_classes_f=0.3', 'ISIC_3_imbalance_classes_f=0.4', 'ISIC_3_imbalance_classes_f=0.5',
+            'ISIC_3_imbalance_classes_f=0.6', 'ISIC_3_imbalance_classes_f=0.7', 'ISIC_3_imbalance_classes_f=0.8',
+            'ISIC_3_imbalance_classes_f=0.9', 'ISIC_3_imbalance_classes_f=1.0',
+            'ISIC_4', 'ISIC_4_image_rot_f=0.1', 'ISIC_4_image_rot_f=0.2',
+            'ISIC_4_image_rot_f=0.3', 'ISIC_4_image_rot_f=0.4', 'ISIC_4_image_rot_f=0.5',
+            'ISIC_4_image_rot_f=0.6', 'ISIC_4_image_rot_f=0.7', 'ISIC_4_image_rot_f=0.8',
+            'ISIC_4_image_rot_f=0.9', 'ISIC_4_image_rot_f=1.0', 'ISIC_4_image_translation_f=0.1',
+            'ISIC_4_image_translation_f=0.2', 'ISIC_4_image_translation_f=0.3', 'ISIC_4_image_translation_f=0.4',
+            'ISIC_4_image_translation_f=0.5', 'ISIC_4_image_translation_f=0.6', 'ISIC_4_image_translation_f=0.7',
+            'ISIC_4_image_translation_f=0.8', 'ISIC_4_image_translation_f=0.9', 'ISIC_4_image_translation_f=1.0',
+            'ISIC_4_image_zoom_f=0.1', 'ISIC_4_image_zoom_f=0.2', 'ISIC_4_image_zoom_f=0.3',
+            'ISIC_4_image_zoom_f=0.4', 'ISIC_4_image_zoom_f=0.5', 'ISIC_4_image_zoom_f=0.6',
+            'ISIC_4_image_zoom_f=0.7', 'ISIC_4_image_zoom_f=0.8', 'ISIC_4_image_zoom_f=0.9',
+            'ISIC_4_image_zoom_f=1.0', 'ISIC_4_add_noise_gaussian_f=0.1', 'ISIC_4_add_noise_gaussian_f=0.2',
+            'ISIC_4_add_noise_gaussian_f=0.3', 'ISIC_4_add_noise_gaussian_f=0.4', 'ISIC_4_add_noise_gaussian_f=0.5',
+            'ISIC_4_add_noise_gaussian_f=0.6', 'ISIC_4_add_noise_gaussian_f=0.7', 'ISIC_4_add_noise_gaussian_f=0.8',
+            'ISIC_4_add_noise_gaussian_f=0.9', 'ISIC_4_add_noise_gaussian_f=1.0', 'ISIC_4_add_noise_poisson_f=0.1',
+            'ISIC_4_add_noise_poisson_f=0.2', 'ISIC_4_add_noise_poisson_f=0.3', 'ISIC_4_add_noise_poisson_f=0.4',
+            'ISIC_4_add_noise_poisson_f=0.5', 'ISIC_4_add_noise_poisson_f=0.6', 'ISIC_4_add_noise_poisson_f=0.7',
+            'ISIC_4_add_noise_poisson_f=0.8', 'ISIC_4_add_noise_poisson_f=0.9', 'ISIC_4_add_noise_poisson_f=1.0',
+            'ISIC_4_add_noise_salt_and_pepper_f=0.1', 'ISIC_4_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_4_add_noise_salt_and_pepper_f=0.3', 'ISIC_4_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_4_add_noise_salt_and_pepper_f=0.5', 'ISIC_4_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_4_add_noise_salt_and_pepper_f=0.7', 'ISIC_4_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_4_add_noise_salt_and_pepper_f=0.9', 'ISIC_4_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_4_add_noise_speckle_f=0.1', 'ISIC_4_add_noise_speckle_f=0.2', 'ISIC_4_add_noise_speckle_f=0.3',
+            'ISIC_4_add_noise_speckle_f=0.4', 'ISIC_4_add_noise_speckle_f=0.5', 'ISIC_4_add_noise_speckle_f=0.6',
+            'ISIC_4_add_noise_speckle_f=0.7', 'ISIC_4_add_noise_speckle_f=0.8', 'ISIC_4_add_noise_speckle_f=0.9',
+            'ISIC_4_add_noise_speckle_f=1.0', 'ISIC_4_imbalance_classes_f=0.1', 'ISIC_4_imbalance_classes_f=0.2',
+            'ISIC_4_imbalance_classes_f=0.3', 'ISIC_4_imbalance_classes_f=0.4', 'ISIC_4_imbalance_classes_f=0.5',
+            'ISIC_4_imbalance_classes_f=0.6', 'ISIC_4_imbalance_classes_f=0.7', 'ISIC_4_imbalance_classes_f=0.8',
+            'ISIC_4_imbalance_classes_f=0.9', 'ISIC_4_imbalance_classes_f=1.0',
+            'ISIC_5', 'ISIC_5_image_rot_f=0.1', 'ISIC_5_image_rot_f=0.2',
+            'ISIC_5_image_rot_f=0.3', 'ISIC_5_image_rot_f=0.4', 'ISIC_5_image_rot_f=0.5',
+            'ISIC_5_image_rot_f=0.6', 'ISIC_5_image_rot_f=0.7', 'ISIC_5_image_rot_f=0.8',
+            'ISIC_5_image_rot_f=0.9', 'ISIC_5_image_rot_f=1.0', 'ISIC_5_image_translation_f=0.1',
+            'ISIC_5_image_translation_f=0.2', 'ISIC_5_image_translation_f=0.3', 'ISIC_5_image_translation_f=0.4',
+            'ISIC_5_image_translation_f=0.5', 'ISIC_5_image_translation_f=0.6', 'ISIC_5_image_translation_f=0.7',
+            'ISIC_5_image_translation_f=0.8', 'ISIC_5_image_translation_f=0.9', 'ISIC_5_image_translation_f=1.0',
+            'ISIC_5_image_zoom_f=0.1', 'ISIC_5_image_zoom_f=0.2', 'ISIC_5_image_zoom_f=0.3',
+            'ISIC_5_image_zoom_f=0.4', 'ISIC_5_image_zoom_f=0.5', 'ISIC_5_image_zoom_f=0.6',
+            'ISIC_5_image_zoom_f=0.7', 'ISIC_5_image_zoom_f=0.8', 'ISIC_5_image_zoom_f=0.9',
+            'ISIC_5_image_zoom_f=1.0', 'ISIC_5_add_noise_gaussian_f=0.1', 'ISIC_5_add_noise_gaussian_f=0.2',
+            'ISIC_5_add_noise_gaussian_f=0.3', 'ISIC_5_add_noise_gaussian_f=0.4', 'ISIC_5_add_noise_gaussian_f=0.5',
+            'ISIC_5_add_noise_gaussian_f=0.6', 'ISIC_5_add_noise_gaussian_f=0.7', 'ISIC_5_add_noise_gaussian_f=0.8',
+            'ISIC_5_add_noise_gaussian_f=0.9', 'ISIC_5_add_noise_gaussian_f=1.0', 'ISIC_5_add_noise_poisson_f=0.1',
+            'ISIC_5_add_noise_poisson_f=0.2', 'ISIC_5_add_noise_poisson_f=0.3', 'ISIC_5_add_noise_poisson_f=0.4',
+            'ISIC_5_add_noise_poisson_f=0.5', 'ISIC_5_add_noise_poisson_f=0.6', 'ISIC_5_add_noise_poisson_f=0.7',
+            'ISIC_5_add_noise_poisson_f=0.8', 'ISIC_5_add_noise_poisson_f=0.9', 'ISIC_5_add_noise_poisson_f=1.0',
+            'ISIC_5_add_noise_salt_and_pepper_f=0.1', 'ISIC_5_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_5_add_noise_salt_and_pepper_f=0.3', 'ISIC_5_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_5_add_noise_salt_and_pepper_f=0.5', 'ISIC_5_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_5_add_noise_salt_and_pepper_f=0.7', 'ISIC_5_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_5_add_noise_salt_and_pepper_f=0.9', 'ISIC_5_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_5_add_noise_speckle_f=0.1', 'ISIC_5_add_noise_speckle_f=0.2', 'ISIC_5_add_noise_speckle_f=0.3',
+            'ISIC_5_add_noise_speckle_f=0.4', 'ISIC_5_add_noise_speckle_f=0.5', 'ISIC_5_add_noise_speckle_f=0.6',
+            'ISIC_5_add_noise_speckle_f=0.7', 'ISIC_5_add_noise_speckle_f=0.8', 'ISIC_5_add_noise_speckle_f=0.9',
+            'ISIC_5_add_noise_speckle_f=1.0', 'ISIC_5_imbalance_classes_f=0.1', 'ISIC_5_imbalance_classes_f=0.2',
+            'ISIC_5_imbalance_classes_f=0.3', 'ISIC_5_imbalance_classes_f=0.4', 'ISIC_5_imbalance_classes_f=0.5',
+            'ISIC_5_imbalance_classes_f=0.6', 'ISIC_5_imbalance_classes_f=0.7', 'ISIC_5_imbalance_classes_f=0.8',
+            'ISIC_5_imbalance_classes_f=0.9', 'ISIC_5_imbalance_classes_f=1.0',
+            'ISIC_6', 'ISIC_6_image_rot_f=0.1', 'ISIC_6_image_rot_f=0.2',
+            'ISIC_6_image_rot_f=0.3', 'ISIC_6_image_rot_f=0.4', 'ISIC_6_image_rot_f=0.5',
+            'ISIC_6_image_rot_f=0.6', 'ISIC_6_image_rot_f=0.7', 'ISIC_6_image_rot_f=0.8',
+            'ISIC_6_image_rot_f=0.9', 'ISIC_6_image_rot_f=1.0', 'ISIC_6_image_translation_f=0.1',
+            'ISIC_6_image_translation_f=0.2', 'ISIC_6_image_translation_f=0.3', 'ISIC_6_image_translation_f=0.4',
+            'ISIC_6_image_translation_f=0.5', 'ISIC_6_image_translation_f=0.6', 'ISIC_6_image_translation_f=0.7',
+            'ISIC_6_image_translation_f=0.8', 'ISIC_6_image_translation_f=0.9', 'ISIC_6_image_translation_f=1.0',
+            'ISIC_6_image_zoom_f=0.1', 'ISIC_6_image_zoom_f=0.2', 'ISIC_6_image_zoom_f=0.3',
+            'ISIC_6_image_zoom_f=0.4', 'ISIC_6_image_zoom_f=0.5', 'ISIC_6_image_zoom_f=0.6',
+            'ISIC_6_image_zoom_f=0.7', 'ISIC_6_image_zoom_f=0.8', 'ISIC_6_image_zoom_f=0.9',
+            'ISIC_6_image_zoom_f=1.0', 'ISIC_6_add_noise_gaussian_f=0.1', 'ISIC_6_add_noise_gaussian_f=0.2',
+            'ISIC_6_add_noise_gaussian_f=0.3', 'ISIC_6_add_noise_gaussian_f=0.4', 'ISIC_6_add_noise_gaussian_f=0.5',
+            'ISIC_6_add_noise_gaussian_f=0.6', 'ISIC_6_add_noise_gaussian_f=0.7', 'ISIC_6_add_noise_gaussian_f=0.8',
+            'ISIC_6_add_noise_gaussian_f=0.9', 'ISIC_6_add_noise_gaussian_f=1.0', 'ISIC_6_add_noise_poisson_f=0.1',
+            'ISIC_6_add_noise_poisson_f=0.2', 'ISIC_6_add_noise_poisson_f=0.3', 'ISIC_6_add_noise_poisson_f=0.4',
+            'ISIC_6_add_noise_poisson_f=0.5', 'ISIC_6_add_noise_poisson_f=0.6', 'ISIC_6_add_noise_poisson_f=0.7',
+            'ISIC_6_add_noise_poisson_f=0.8', 'ISIC_6_add_noise_poisson_f=0.9', 'ISIC_6_add_noise_poisson_f=1.0',
+            'ISIC_6_add_noise_salt_and_pepper_f=0.1', 'ISIC_6_add_noise_salt_and_pepper_f=0.2',
+            'ISIC_6_add_noise_salt_and_pepper_f=0.3', 'ISIC_6_add_noise_salt_and_pepper_f=0.4',
+            'ISIC_6_add_noise_salt_and_pepper_f=0.5', 'ISIC_6_add_noise_salt_and_pepper_f=0.6',
+            'ISIC_6_add_noise_salt_and_pepper_f=0.7', 'ISIC_6_add_noise_salt_and_pepper_f=0.8',
+            'ISIC_6_add_noise_salt_and_pepper_f=0.9', 'ISIC_6_add_noise_salt_and_pepper_f=1.0',
+            'ISIC_6_add_noise_speckle_f=0.1', 'ISIC_6_add_noise_speckle_f=0.2', 'ISIC_6_add_noise_speckle_f=0.3',
+            'ISIC_6_add_noise_speckle_f=0.4', 'ISIC_6_add_noise_speckle_f=0.5', 'ISIC_6_add_noise_speckle_f=0.6',
+            'ISIC_6_add_noise_speckle_f=0.7', 'ISIC_6_add_noise_speckle_f=0.8', 'ISIC_6_add_noise_speckle_f=0.9',
+            'ISIC_6_add_noise_speckle_f=1.0', 'ISIC_6_imbalance_classes_f=0.1', 'ISIC_6_imbalance_classes_f=0.2',
+            'ISIC_6_imbalance_classes_f=0.3', 'ISIC_6_imbalance_classes_f=0.4', 'ISIC_6_imbalance_classes_f=0.5',
+            'ISIC_6_imbalance_classes_f=0.6', 'ISIC_6_imbalance_classes_f=0.7', 'ISIC_6_imbalance_classes_f=0.8',
+            'ISIC_6_imbalance_classes_f=0.9', 'ISIC_6_imbalance_classes_f=1.0'],
     required='datasets' in sys.argv,
     help='second dataset to use')
 
@@ -242,50 +306,17 @@ preds = np.asarray([label for sublist in preds for label in sublist])
 # get true labels
 true_labels = y_val
 
+# calculate AUC and sklearn AUC
+fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels)
+skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels)
 
-# initialize TPR, FPR, ACC and AUC lists
-TPR_list, FPR_list, ACC_list = [], [], []
-AUC_score = []
+# calculate accuracy score
+acc = accuracy(preds, true_labels)
 
-# calculate for different thresholds
-thresholds = -np.sort(-(np.unique(preds)))
-for threshold in thresholds:
-    # apply threshold to predictions
-    pred_labels = np.where(preds > threshold, 1, 0).astype(int)
-
-    # calculate True Positive (TP), True Negative (TN), False Positive (FP) and
-    # False Negative (FN)
-    TP = np.sum(np.logical_and(pred_labels == 1, true_labels == 1))
-    TN = np.sum(np.logical_and(pred_labels == 0, true_labels == 0))
-    FP = np.sum(np.logical_and(pred_labels == 1, true_labels == 0))
-    FN = np.sum(np.logical_and(pred_labels == 0, true_labels == 1))
-
-    # calculate TPR, FPR, ACC and add to lists
-    TPR = TP / (TP + FN)
-    FPR = FP / (FP + TN)
-    ACC = (TP + TN) / (TP + TN + FP + FN)
-
-    TPR_list.append(TPR)
-    FPR_list.append(FPR)
-    ACC_list.append(ACC)
-
-    AUC_score.append((1-FPR+TPR)/2)
-
-    pred_labels = []
-
-AUC = round(sum(AUC_score)/len(thresholds),3)
-print("AUC: {}".format(AUC))
-
-# now with sklearn implementation
-fpr, tpr, thresholds = roc_curve(true_labels, preds, pos_label=1)
-
-AUC2 = round(roc_auc_score(true_labels, preds),3)
-print("sk_AUC: {}".format(AUC2))
 
 pred_labels = np.where(preds > 0.5, 1, 0).astype(int)
-# pred_labels = np.argmax(preds, axis=-1)
 
-accuracy = accuracy_score(true_labels, pred_labels)
+
 
 unique, counts = np.unique(true_labels, return_counts=True)
 print("distribution of true labels: {}".format(dict(zip(unique, counts))))
@@ -321,6 +352,37 @@ print("p-value: {}".format(p_val_test))
 
 stat_ks, p_val_ks = ks_2samp(pred_labels, true_labels, alternative='two-sided')
 print(stat_ks, p_val_ks)
+
+
+
+absAUC = round(abs(skAUC-0.5),3)
+
+# create a savepath for results and create a sheet to avoid errors
+savefile = os.path.join(config['output_path'], 'results_shift.xlsx')
+
+# also create excel file already to avoid errors, if it doesn't exist yet
+if not os.path.exists(savefile):
+    Workbook().save(savefile)
+
+# save in path
+test_results = pd.Series({'dataset2': args['dataset2'], 'absAUC': absAUC, 'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'p_val_binom': p_val_test, 'stat_ks': stat_ks, 'p_val_ks': p_val_ks})
+
+# read existing rows and add test results
+try:
+    df = pd.read_excel(savefile, sheet_name='detect_shift')
+except:
+    df = pd.DataFrame(columns=['dataset2', 'absAUC', 'AUC', 'skAUC', 'acc', 'p_val_binom', 'stat_ks', 'p_val_ks'])
+
+df = df.append(test_results, ignore_index=True)
+df.set_index('dataset2', inplace=True)
+
+# save results in excel file
+with pd.ExcelWriter(savefile, engine='openpyxl') as writer:
+    writer.book = load_workbook(savefile)
+    writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+    df.index.name = 'dataset2'
+    df.to_excel(writer, sheet_name='detect_shift')
+
 
 # stat_ks, p_val_ks = kstest(pred_labels, N=len(pred_labels), alternative='two-sided')
 # print(stat_ks, p_val_ks)
