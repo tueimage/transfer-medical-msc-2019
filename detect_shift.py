@@ -9,7 +9,7 @@ import pandas as pd
 import cv2
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from models import get_MLP
+from models import get_MLP, get_shiftCNN
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Input
 from keras.optimizers import SGD
@@ -21,7 +21,7 @@ from scipy.stats import binom_test, kstest, ks_2samp
 from openpyxl import load_workbook, Workbook
 
 # choose GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -258,14 +258,14 @@ for path in impaths_val_s:
     x_val.append(cv2.imread(path))
     y_val.append(1)
 
-x_train = np.array(x_train)
-y_train = np.array(y_train)
-x_val = np.array(x_val)
-y_val = np.array(y_val)
+x_train = np.asarray(x_train)
+y_train = np.asarray(y_train)
+x_val = np.asarray(x_val)
+y_val = np.asarray(y_val)
 
 # flatten images to single feature vector
-x_train = x_train.reshape(x_train.shape[0], np.prod(x_train.shape[1:]))
-x_val = x_val.reshape(x_val.shape[0], np.prod(x_val.shape[1:]))
+# x_train = x_train.reshape(x_train.shape[0], np.prod(x_train.shape[1:]))
+# x_val = x_val.reshape(x_val.shape[0], np.prod(x_val.shape[1:]))
 
 # convert arrays to float32
 x_train = x_train.astype('float32')
@@ -279,26 +279,44 @@ x_val /= 255.0
 # y_train_one_hot = to_categorical(y_train)
 # y_val_one_hot = to_categorical(y_val)
 
-# get MLP model
-MLP = get_MLP(input_shape=(x_train.shape[1],))
+####### for MLP
+# # get MLP model
+# MLP = get_MLP(input_shape=(x_train.shape[1],))
+#
+# MLP.summary()
+#
+# # configure optimizer
+# sgd = SGD(lr=1e-5, nesterov=True)
+#
+# # compile model
+# MLP.compile(optimizer=sgd, loss='binary_crossentropy', metrics=['accuracy'])
+#
+# # train model
+# hist = MLP.fit(x_train, y_train, batch_size=32, epochs=10, verbose=1, validation_data=(x_val, y_val))
+#
+# # now make predictions
+# print("evaluating model...")
+# preds = MLP.predict(x_val, batch_size=1, verbose=1)
 
-MLP.summary()
 
-# configure optimizer
+# for CNN
+CNN = get_shiftCNN(input_shape=(224, 224, 3))
+CNN.summary()
+
 sgd = SGD(lr=1e-5, nesterov=True)
+CNN.compile(optimizer=sgd, loss='binary_crossentropy', metrics=['accuracy'])
 
-# compile model
-MLP.compile(optimizer=sgd, loss='binary_crossentropy', metrics=['accuracy'])
-
-# train model
-hist = MLP.fit(x_train, y_train, batch_size=32, epochs=10, verbose=1, validation_data=(x_val, y_val))
+hist = CNN.fit(x_train, y_train, batch_size=32, epochs=10, verbose=1, validation_data=(x_val, y_val))
 
 # now make predictions
 print("evaluating model...")
-preds = MLP.predict(x_val, batch_size=1, verbose=1)
+preds = CNN.predict(x_val, batch_size=1, verbose=1)
 
 print(preds)
 print(np.unique(preds))
+
+
+
 
 # preds is an array like [[x] [x] [x]], make it into array like [x x x]
 preds = np.asarray([label for sublist in preds for label in sublist])
@@ -358,7 +376,10 @@ print(stat_ks, p_val_ks)
 absAUC = round(abs(skAUC-0.5),3)
 
 # create a savepath for results and create a sheet to avoid errors
-savefile = os.path.join(config['output_path'], 'results_shift.xlsx')
+savefile = os.path.join(config['output_path'], 'results_shift_CNN.xlsx')
+
+if not os.path.exists(config['output_path']):
+    os.makedirs(config['output_path'])
 
 # also create excel file already to avoid errors, if it doesn't exist yet
 if not os.path.exists(savefile):
