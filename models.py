@@ -16,7 +16,7 @@ class VGG16:
     def conv_bn_act(self, input_tensor, feature_channels=64):
         # function to create a stack of 3 layers, convolution + batch norm + activation
         if self.l2_rate != 0.0:
-            conv = Conv2D(feature_channels, (3, 3), padding='same', data_format='channels_last', kernel_regularizer=regularizers.l2(l2_rate))(input_tensor)
+            conv = Conv2D(feature_channels, (3, 3), padding='same', data_format='channels_last', kernel_regularizer=regularizers.l2(self.l2_rate))(input_tensor)
         else:
             conv = Conv2D(feature_channels, (3, 3), padding='same', data_format='channels_last')(input_tensor)
 
@@ -27,8 +27,6 @@ class VGG16:
         return output_tensor
 
     def get_model(self):
-        # self.dropout_rate = kwargs.get('dropout_rate', 0.3) # ??????? klopt dit ^^^ bij init ook al dropout_rate
-
         input_tensor = Input(shape=self.input_shape)
 
         output_tensor = self.conv_bn_act(input_tensor, feature_channels=64)
@@ -73,7 +71,7 @@ def get_MLP(input_shape=(150528,)):
     return model
 
 
-def get_shiftCNN(input_shape=(244, 244, 3)):
+def get_shiftCNN(input_shape=(224, 224, 3)):
     model = Sequential()
     model.add(Conv2D(32, (3, 3), input_shape=input_shape, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))

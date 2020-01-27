@@ -9,7 +9,7 @@ import random
 import sys
 
 # choose GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # set a seed for reproducability
 seed=28
@@ -18,7 +18,7 @@ seed=28
 parser = argparse.ArgumentParser()
 parser.add_argument('-d',
     '--dataset',
-    choices=['ISIC_2', 'ISIC_3', 'ISIC_4', 'ISIC_5', 'ISIC_6'],
+    choices=['ISIC_2', 'ISIC_3', 'ISIC_4', 'ISIC_5', 'ISIC_6', 'CNMC_2', 'CNMC_3', 'CNMC_4', 'CNMC_5', 'CNMC_6'],
     required=True,
     help='dataset to use')
 parser.add_argument('-m',

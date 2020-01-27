@@ -12,7 +12,7 @@ import json
 parser = argparse.ArgumentParser()
 parser.add_argument('-d',
     '--dataset',
-    choices=['isic', 'isic_2017', 'isic_2017_adj', 'cats_and_dogs'],
+    choices=['isic', 'isic_2017', 'cats_and_dogs', 'ddsm', 'CNMC'],
     required=True,
     help='dataset to use')
 args = vars(parser.parse_args())
@@ -37,6 +37,67 @@ def resize_image(image):
     resized_image = cv2.resize(cropped_image, dsize=(224, 224), interpolation=cv2.INTER_LINEAR)
 
     return resized_image
+
+if args['dataset'] == 'CNMC':
+    # percentages to split data in training, val and test set
+    split_pct = [.8, .1, .1]
+
+    trainingpath = os.path.join(config['orig_data_path'], 'C-NMC_training_data')
+
+    paths_all = glob.glob(os.path.join(trainingpath, '*/all/*.bmp'))
+    paths_hem = glob.glob(os.path.join(trainingpath, '*/hem/*.bmp'))
+
+    # get class with least amount of images
+    min = min(len(paths_all), len(paths_hem))
+
+    # shuffle all paths
+    np.random.shuffle(paths_all)
+    np.random.shuffle(paths_hem)
+
+    # get same amount of images for each class
+    paths_all = paths_all[:min]
+    paths_hem = paths_hem[:min]
+
+    splitnr_train = int(np.ceil(len(paths_all)*split_pct[0]))
+    splitnr_validation = int(np.ceil(len(paths_all)*split_pct[1]))
+    splitnr_test = int(np.ceil(len(paths_all)*split_pct[2]))
+
+    for imclass in config['classes']:
+        if imclass == 'normal':
+            paths = paths_hem
+        elif imclass == 'leukemic':
+            paths = paths_all
+
+        for split in ['training', 'validation', 'test']:
+            # create path where images in corresponding split should be saved
+            savedir = os.path.join(config['dataset_path'], split)
+
+            if split == 'training':
+                split_paths = paths[:splitnr_train]
+            if split == 'validation':
+                split_paths = paths[splitnr_train:splitnr_train+splitnr_validation]
+            if split == 'test':
+                split_paths = paths[splitnr_train+splitnr_validation:]
+
+            # create folders to save images in if it doesn't exist yet
+            target_path = os.path.join(savedir, imclass)
+            if not os.path.exists(target_path):
+                os.makedirs(target_path)
+
+            for impath in split_paths:
+                # get filename
+                filename = os.path.basename(impath)
+
+                # read image
+                image = cv2.imread(impath)
+
+                # resize image to 224x224
+                resized_image = resize_image(image)
+
+                # save image to right path
+                savepath = os.path.join(config['dataset_path'], split, imclass, filename.replace('.bmp', '.jpg'))
+                print(savepath)
+                cv2.imwrite(savepath, resized_image)
 
 # for isic dataset
 if args['dataset'] == 'isic':

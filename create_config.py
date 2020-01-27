@@ -3,6 +3,18 @@ import json
 
 # make dictionary with parameters specific to all datasets
 data = {}
+data['ddsm'] = {
+    'classes': ['positive', 'negative'],
+    'orig_path': 'ddsm-mammography',
+    'dataset_path': 'dataset_ddsm',
+    'output_path': 'output_ddsm'
+}
+data['CNMC'] = {
+    'classes': ['normal', 'leukemic'],
+    'orig_path': 'C-NMC_Leukemia',
+    'dataset_path': 'dataset_CNMC',
+    'output_path': 'output_CNMC'
+}
 data['ISIC_2'] = {
   'classes': ['benign', 'malignant'],
   'orig_path': 'ISIC_2',
@@ -2473,6 +2485,2476 @@ data['ISIC_6_imbalance_classes_f=1.0'] = {
 'output_path': 'output_ISIC_6_imbalance_classes_f=1.0'
 }
 
+data['CNMC_2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2',
+  'output_path': 'output_CNMC_2'
+  }
+data['CNMC_2_image_rot_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.1',
+  'output_path': 'output_CNMC_2_image_rot_f=0.1'
+  }
+data['CNMC_2_image_rot_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.2',
+  'output_path': 'output_CNMC_2_image_rot_f=0.2'
+  }
+data['CNMC_2_image_rot_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.3',
+  'output_path': 'output_CNMC_2_image_rot_f=0.3'
+  }
+data['CNMC_2_image_rot_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.4',
+  'output_path': 'output_CNMC_2_image_rot_f=0.4'
+  }
+data['CNMC_2_image_rot_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.5',
+  'output_path': 'output_CNMC_2_image_rot_f=0.5'
+  }
+data['CNMC_2_image_rot_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.6',
+  'output_path': 'output_CNMC_2_image_rot_f=0.6'
+  }
+data['CNMC_2_image_rot_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.7',
+  'output_path': 'output_CNMC_2_image_rot_f=0.7'
+  }
+data['CNMC_2_image_rot_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.8',
+  'output_path': 'output_CNMC_2_image_rot_f=0.8'
+  }
+data['CNMC_2_image_rot_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=0.9',
+  'output_path': 'output_CNMC_2_image_rot_f=0.9'
+  }
+data['CNMC_2_image_rot_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_rot_f=1.0',
+  'output_path': 'output_CNMC_2_image_rot_f=1.0'
+  }
+
+data['CNMC_2_image_translation_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.1',
+  'output_path': 'output_CNMC_2_image_translation_f=0.1'
+  }
+data['CNMC_2_image_translation_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.2',
+  'output_path': 'output_CNMC_2_image_translation_f=0.2'
+  }
+data['CNMC_2_image_translation_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.3',
+  'output_path': 'output_CNMC_2_image_translation_f=0.3'
+  }
+data['CNMC_2_image_translation_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.4',
+  'output_path': 'output_CNMC_2_image_translation_f=0.4'
+  }
+data['CNMC_2_image_translation_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.5',
+  'output_path': 'output_CNMC_2_image_translation_f=0.5'
+  }
+data['CNMC_2_image_translation_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.6',
+  'output_path': 'output_CNMC_2_image_translation_f=0.6'
+  }
+data['CNMC_2_image_translation_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.7',
+  'output_path': 'output_CNMC_2_image_translation_f=0.7'
+  }
+data['CNMC_2_image_translation_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.8',
+  'output_path': 'output_CNMC_2_image_translation_f=0.8'
+  }
+data['CNMC_2_image_translation_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=0.9',
+  'output_path': 'output_CNMC_2_image_translation_f=0.9'
+  }
+data['CNMC_2_image_translation_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_translation_f=1.0',
+  'output_path': 'output_CNMC_2_image_translation_f=1.0'
+  }
+
+data['CNMC_2_image_zoom_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.1',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.1'
+  }
+data['CNMC_2_image_zoom_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.2',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.2'
+  }
+data['CNMC_2_image_zoom_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.3',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.3'
+  }
+data['CNMC_2_image_zoom_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.4',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.4'
+  }
+data['CNMC_2_image_zoom_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.5',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.5'
+  }
+data['CNMC_2_image_zoom_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.6',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.6'
+  }
+data['CNMC_2_image_zoom_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.7',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.7'
+  }
+data['CNMC_2_image_zoom_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.8',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.8'
+  }
+data['CNMC_2_image_zoom_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=0.9',
+  'output_path': 'output_CNMC_2_image_zoom_f=0.9'
+  }
+data['CNMC_2_image_zoom_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_image_zoom_f=1.0',
+  'output_path': 'output_CNMC_2_image_zoom_f=1.0'
+  }
+
+data['CNMC_2_add_noise_gaussian_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.1',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.1'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.2',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.2'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.3',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.3'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.4',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.4'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.5',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.5'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.6',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.6'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.7',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.7'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.8',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.8'
+  }
+data['CNMC_2_add_noise_gaussian_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=0.9',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=0.9'
+  }
+data['CNMC_2_add_noise_gaussian_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_gaussian_f=1.0',
+  'output_path': 'output_CNMC_2_add_noise_gaussian_f=1.0'
+  }
+
+data['CNMC_2_add_noise_poisson_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.1',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.1'
+  }
+data['CNMC_2_add_noise_poisson_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.2',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.2'
+  }
+data['CNMC_2_add_noise_poisson_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.3',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.3'
+  }
+data['CNMC_2_add_noise_poisson_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.4',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.4'
+  }
+data['CNMC_2_add_noise_poisson_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.5',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.5'
+  }
+data['CNMC_2_add_noise_poisson_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.6',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.6'
+  }
+data['CNMC_2_add_noise_poisson_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.7',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.7'
+  }
+data['CNMC_2_add_noise_poisson_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.8',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.8'
+  }
+data['CNMC_2_add_noise_poisson_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=0.9',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=0.9'
+  }
+data['CNMC_2_add_noise_poisson_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_poisson_f=1.0',
+  'output_path': 'output_CNMC_2_add_noise_poisson_f=1.0'
+  }
+
+data['CNMC_2_add_noise_salt_and_pepper_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.1',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.1'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.2',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.2'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.3',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.3'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.4',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.4'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.5',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.5'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.6',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.6'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.7',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.7'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.8',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.8'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=0.9',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=0.9'
+  }
+data['CNMC_2_add_noise_salt_and_pepper_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_salt_and_pepper_f=1.0',
+  'output_path': 'output_CNMC_2_add_noise_salt_and_pepper_f=1.0'
+  }
+
+data['CNMC_2_add_noise_speckle_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.1',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.1'
+  }
+data['CNMC_2_add_noise_speckle_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.2',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.2'
+  }
+data['CNMC_2_add_noise_speckle_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.3',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.3'
+  }
+data['CNMC_2_add_noise_speckle_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.4',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.4'
+  }
+data['CNMC_2_add_noise_speckle_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.5',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.5'
+  }
+data['CNMC_2_add_noise_speckle_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.6',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.6'
+  }
+data['CNMC_2_add_noise_speckle_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.7',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.7'
+  }
+data['CNMC_2_add_noise_speckle_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.8',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.8'
+  }
+data['CNMC_2_add_noise_speckle_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=0.9',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=0.9'
+  }
+data['CNMC_2_add_noise_speckle_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_2',
+  'dataset_path': 'dataset_CNMC_2_add_noise_speckle_f=1.0',
+  'output_path': 'output_CNMC_2_add_noise_speckle_f=1.0'
+  }
+
+data['CNMC_2_imbalance_classes_f=0.1'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.1',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.1'
+}
+data['CNMC_2_imbalance_classes_f=0.2'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.2',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.2'
+}
+data['CNMC_2_imbalance_classes_f=0.3'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.3',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.3'
+}
+data['CNMC_2_imbalance_classes_f=0.4'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.4',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.4'
+}
+data['CNMC_2_imbalance_classes_f=0.5'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.5',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.5'
+}
+data['CNMC_2_imbalance_classes_f=0.6'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.6',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.6'
+}
+data['CNMC_2_imbalance_classes_f=0.7'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.7',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.7'
+}
+data['CNMC_2_imbalance_classes_f=0.8'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.8',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.8'
+}
+data['CNMC_2_imbalance_classes_f=0.9'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=0.9',
+'output_path': 'output_CNMC_2_imbalance_classes_f=0.9'
+}
+data['CNMC_2_imbalance_classes_f=1.0'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_2',
+'dataset_path': 'dataset_CNMC_2_imbalance_classes_f=1.0',
+'output_path': 'output_CNMC_2_imbalance_classes_f=1.0'
+}
+
+data['CNMC_3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3',
+  'output_path': 'output_CNMC_3'
+  }
+data['CNMC_3_image_rot_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.1',
+  'output_path': 'output_CNMC_3_image_rot_f=0.1'
+  }
+data['CNMC_3_image_rot_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.2',
+  'output_path': 'output_CNMC_3_image_rot_f=0.2'
+  }
+data['CNMC_3_image_rot_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.3',
+  'output_path': 'output_CNMC_3_image_rot_f=0.3'
+  }
+data['CNMC_3_image_rot_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.4',
+  'output_path': 'output_CNMC_3_image_rot_f=0.4'
+  }
+data['CNMC_3_image_rot_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.5',
+  'output_path': 'output_CNMC_3_image_rot_f=0.5'
+  }
+data['CNMC_3_image_rot_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.6',
+  'output_path': 'output_CNMC_3_image_rot_f=0.6'
+  }
+data['CNMC_3_image_rot_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.7',
+  'output_path': 'output_CNMC_3_image_rot_f=0.7'
+  }
+data['CNMC_3_image_rot_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.8',
+  'output_path': 'output_CNMC_3_image_rot_f=0.8'
+  }
+data['CNMC_3_image_rot_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=0.9',
+  'output_path': 'output_CNMC_3_image_rot_f=0.9'
+  }
+data['CNMC_3_image_rot_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_rot_f=1.0',
+  'output_path': 'output_CNMC_3_image_rot_f=1.0'
+  }
+
+data['CNMC_3_image_translation_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.1',
+  'output_path': 'output_CNMC_3_image_translation_f=0.1'
+  }
+data['CNMC_3_image_translation_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.2',
+  'output_path': 'output_CNMC_3_image_translation_f=0.2'
+  }
+data['CNMC_3_image_translation_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.3',
+  'output_path': 'output_CNMC_3_image_translation_f=0.3'
+  }
+data['CNMC_3_image_translation_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.4',
+  'output_path': 'output_CNMC_3_image_translation_f=0.4'
+  }
+data['CNMC_3_image_translation_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.5',
+  'output_path': 'output_CNMC_3_image_translation_f=0.5'
+  }
+data['CNMC_3_image_translation_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.6',
+  'output_path': 'output_CNMC_3_image_translation_f=0.6'
+  }
+data['CNMC_3_image_translation_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.7',
+  'output_path': 'output_CNMC_3_image_translation_f=0.7'
+  }
+data['CNMC_3_image_translation_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.8',
+  'output_path': 'output_CNMC_3_image_translation_f=0.8'
+  }
+data['CNMC_3_image_translation_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=0.9',
+  'output_path': 'output_CNMC_3_image_translation_f=0.9'
+  }
+data['CNMC_3_image_translation_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_translation_f=1.0',
+  'output_path': 'output_CNMC_3_image_translation_f=1.0'
+  }
+
+data['CNMC_3_image_zoom_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.1',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.1'
+  }
+data['CNMC_3_image_zoom_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.2',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.2'
+  }
+data['CNMC_3_image_zoom_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.3',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.3'
+  }
+data['CNMC_3_image_zoom_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.4',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.4'
+  }
+data['CNMC_3_image_zoom_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.5',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.5'
+  }
+data['CNMC_3_image_zoom_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.6',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.6'
+  }
+data['CNMC_3_image_zoom_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.7',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.7'
+  }
+data['CNMC_3_image_zoom_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.8',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.8'
+  }
+data['CNMC_3_image_zoom_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=0.9',
+  'output_path': 'output_CNMC_3_image_zoom_f=0.9'
+  }
+data['CNMC_3_image_zoom_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_image_zoom_f=1.0',
+  'output_path': 'output_CNMC_3_image_zoom_f=1.0'
+  }
+
+data['CNMC_3_add_noise_gaussian_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.1',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.1'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.2',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.2'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.3',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.3'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.4',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.4'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.5',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.5'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.6',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.6'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.7',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.7'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.8',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.8'
+  }
+data['CNMC_3_add_noise_gaussian_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=0.9',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=0.9'
+  }
+data['CNMC_3_add_noise_gaussian_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_gaussian_f=1.0',
+  'output_path': 'output_CNMC_3_add_noise_gaussian_f=1.0'
+  }
+
+data['CNMC_3_add_noise_poisson_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.1',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.1'
+  }
+data['CNMC_3_add_noise_poisson_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.2',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.2'
+  }
+data['CNMC_3_add_noise_poisson_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.3',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.3'
+  }
+data['CNMC_3_add_noise_poisson_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.4',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.4'
+  }
+data['CNMC_3_add_noise_poisson_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.5',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.5'
+  }
+data['CNMC_3_add_noise_poisson_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.6',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.6'
+  }
+data['CNMC_3_add_noise_poisson_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.7',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.7'
+  }
+data['CNMC_3_add_noise_poisson_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.8',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.8'
+  }
+data['CNMC_3_add_noise_poisson_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=0.9',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=0.9'
+  }
+data['CNMC_3_add_noise_poisson_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_poisson_f=1.0',
+  'output_path': 'output_CNMC_3_add_noise_poisson_f=1.0'
+  }
+
+data['CNMC_3_add_noise_salt_and_pepper_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.1',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.1'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.2',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.2'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.3',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.3'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.4',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.4'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.5',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.5'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.6',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.6'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.7',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.7'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.8',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.8'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=0.9',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=0.9'
+  }
+data['CNMC_3_add_noise_salt_and_pepper_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_salt_and_pepper_f=1.0',
+  'output_path': 'output_CNMC_3_add_noise_salt_and_pepper_f=1.0'
+  }
+
+data['CNMC_3_add_noise_speckle_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.1',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.1'
+  }
+data['CNMC_3_add_noise_speckle_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.2',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.2'
+  }
+data['CNMC_3_add_noise_speckle_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.3',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.3'
+  }
+data['CNMC_3_add_noise_speckle_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.4',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.4'
+  }
+data['CNMC_3_add_noise_speckle_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.5',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.5'
+  }
+data['CNMC_3_add_noise_speckle_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.6',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.6'
+  }
+data['CNMC_3_add_noise_speckle_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.7',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.7'
+  }
+data['CNMC_3_add_noise_speckle_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.8',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.8'
+  }
+data['CNMC_3_add_noise_speckle_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=0.9',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=0.9'
+  }
+data['CNMC_3_add_noise_speckle_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_3',
+  'dataset_path': 'dataset_CNMC_3_add_noise_speckle_f=1.0',
+  'output_path': 'output_CNMC_3_add_noise_speckle_f=1.0'
+  }
+
+data['CNMC_3_imbalance_classes_f=0.1'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.1',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.1'
+}
+data['CNMC_3_imbalance_classes_f=0.2'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.2',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.2'
+}
+data['CNMC_3_imbalance_classes_f=0.3'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.3',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.3'
+}
+data['CNMC_3_imbalance_classes_f=0.4'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.4',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.4'
+}
+data['CNMC_3_imbalance_classes_f=0.5'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.5',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.5'
+}
+data['CNMC_3_imbalance_classes_f=0.6'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.6',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.6'
+}
+data['CNMC_3_imbalance_classes_f=0.7'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.7',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.7'
+}
+data['CNMC_3_imbalance_classes_f=0.8'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.8',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.8'
+}
+data['CNMC_3_imbalance_classes_f=0.9'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=0.9',
+'output_path': 'output_CNMC_3_imbalance_classes_f=0.9'
+}
+data['CNMC_3_imbalance_classes_f=1.0'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_3',
+'dataset_path': 'dataset_CNMC_3_imbalance_classes_f=1.0',
+'output_path': 'output_CNMC_3_imbalance_classes_f=1.0'
+}
+
+data['CNMC_4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4',
+  'output_path': 'output_CNMC_4'
+  }
+data['CNMC_4_image_rot_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.1',
+  'output_path': 'output_CNMC_4_image_rot_f=0.1'
+  }
+data['CNMC_4_image_rot_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.2',
+  'output_path': 'output_CNMC_4_image_rot_f=0.2'
+  }
+data['CNMC_4_image_rot_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.3',
+  'output_path': 'output_CNMC_4_image_rot_f=0.3'
+  }
+data['CNMC_4_image_rot_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.4',
+  'output_path': 'output_CNMC_4_image_rot_f=0.4'
+  }
+data['CNMC_4_image_rot_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.5',
+  'output_path': 'output_CNMC_4_image_rot_f=0.5'
+  }
+data['CNMC_4_image_rot_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.6',
+  'output_path': 'output_CNMC_4_image_rot_f=0.6'
+  }
+data['CNMC_4_image_rot_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.7',
+  'output_path': 'output_CNMC_4_image_rot_f=0.7'
+  }
+data['CNMC_4_image_rot_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.8',
+  'output_path': 'output_CNMC_4_image_rot_f=0.8'
+  }
+data['CNMC_4_image_rot_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=0.9',
+  'output_path': 'output_CNMC_4_image_rot_f=0.9'
+  }
+data['CNMC_4_image_rot_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_rot_f=1.0',
+  'output_path': 'output_CNMC_4_image_rot_f=1.0'
+  }
+
+data['CNMC_4_image_translation_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.1',
+  'output_path': 'output_CNMC_4_image_translation_f=0.1'
+  }
+data['CNMC_4_image_translation_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.2',
+  'output_path': 'output_CNMC_4_image_translation_f=0.2'
+  }
+data['CNMC_4_image_translation_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.3',
+  'output_path': 'output_CNMC_4_image_translation_f=0.3'
+  }
+data['CNMC_4_image_translation_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.4',
+  'output_path': 'output_CNMC_4_image_translation_f=0.4'
+  }
+data['CNMC_4_image_translation_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.5',
+  'output_path': 'output_CNMC_4_image_translation_f=0.5'
+  }
+data['CNMC_4_image_translation_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.6',
+  'output_path': 'output_CNMC_4_image_translation_f=0.6'
+  }
+data['CNMC_4_image_translation_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.7',
+  'output_path': 'output_CNMC_4_image_translation_f=0.7'
+  }
+data['CNMC_4_image_translation_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.8',
+  'output_path': 'output_CNMC_4_image_translation_f=0.8'
+  }
+data['CNMC_4_image_translation_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=0.9',
+  'output_path': 'output_CNMC_4_image_translation_f=0.9'
+  }
+data['CNMC_4_image_translation_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_translation_f=1.0',
+  'output_path': 'output_CNMC_4_image_translation_f=1.0'
+  }
+
+data['CNMC_4_image_zoom_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.1',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.1'
+  }
+data['CNMC_4_image_zoom_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.2',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.2'
+  }
+data['CNMC_4_image_zoom_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.3',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.3'
+  }
+data['CNMC_4_image_zoom_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.4',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.4'
+  }
+data['CNMC_4_image_zoom_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.5',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.5'
+  }
+data['CNMC_4_image_zoom_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.6',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.6'
+  }
+data['CNMC_4_image_zoom_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.7',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.7'
+  }
+data['CNMC_4_image_zoom_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.8',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.8'
+  }
+data['CNMC_4_image_zoom_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=0.9',
+  'output_path': 'output_CNMC_4_image_zoom_f=0.9'
+  }
+data['CNMC_4_image_zoom_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_image_zoom_f=1.0',
+  'output_path': 'output_CNMC_4_image_zoom_f=1.0'
+  }
+
+data['CNMC_4_add_noise_gaussian_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.1',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.1'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.2',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.2'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.3',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.3'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.4',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.4'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.5',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.5'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.6',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.6'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.7',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.7'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.8',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.8'
+  }
+data['CNMC_4_add_noise_gaussian_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=0.9',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=0.9'
+  }
+data['CNMC_4_add_noise_gaussian_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_gaussian_f=1.0',
+  'output_path': 'output_CNMC_4_add_noise_gaussian_f=1.0'
+  }
+
+data['CNMC_4_add_noise_poisson_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.1',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.1'
+  }
+data['CNMC_4_add_noise_poisson_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.2',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.2'
+  }
+data['CNMC_4_add_noise_poisson_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.3',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.3'
+  }
+data['CNMC_4_add_noise_poisson_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.4',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.4'
+  }
+data['CNMC_4_add_noise_poisson_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.5',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.5'
+  }
+data['CNMC_4_add_noise_poisson_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.6',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.6'
+  }
+data['CNMC_4_add_noise_poisson_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.7',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.7'
+  }
+data['CNMC_4_add_noise_poisson_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.8',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.8'
+  }
+data['CNMC_4_add_noise_poisson_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=0.9',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=0.9'
+  }
+data['CNMC_4_add_noise_poisson_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_poisson_f=1.0',
+  'output_path': 'output_CNMC_4_add_noise_poisson_f=1.0'
+  }
+
+data['CNMC_4_add_noise_salt_and_pepper_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.1',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.1'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.2',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.2'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.3',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.3'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.4',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.4'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.5',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.5'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.6',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.6'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.7',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.7'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.8',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.8'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=0.9',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=0.9'
+  }
+data['CNMC_4_add_noise_salt_and_pepper_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_salt_and_pepper_f=1.0',
+  'output_path': 'output_CNMC_4_add_noise_salt_and_pepper_f=1.0'
+  }
+
+data['CNMC_4_add_noise_speckle_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.1',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.1'
+  }
+data['CNMC_4_add_noise_speckle_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.2',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.2'
+  }
+data['CNMC_4_add_noise_speckle_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.3',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.3'
+  }
+data['CNMC_4_add_noise_speckle_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.4',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.4'
+  }
+data['CNMC_4_add_noise_speckle_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.5',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.5'
+  }
+data['CNMC_4_add_noise_speckle_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.6',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.6'
+  }
+data['CNMC_4_add_noise_speckle_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.7',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.7'
+  }
+data['CNMC_4_add_noise_speckle_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.8',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.8'
+  }
+data['CNMC_4_add_noise_speckle_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=0.9',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=0.9'
+  }
+data['CNMC_4_add_noise_speckle_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_4',
+  'dataset_path': 'dataset_CNMC_4_add_noise_speckle_f=1.0',
+  'output_path': 'output_CNMC_4_add_noise_speckle_f=1.0'
+  }
+
+data['CNMC_4_imbalance_classes_f=0.1'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.1',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.1'
+}
+data['CNMC_4_imbalance_classes_f=0.2'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.2',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.2'
+}
+data['CNMC_4_imbalance_classes_f=0.3'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.3',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.3'
+}
+data['CNMC_4_imbalance_classes_f=0.4'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.4',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.4'
+}
+data['CNMC_4_imbalance_classes_f=0.5'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.5',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.5'
+}
+data['CNMC_4_imbalance_classes_f=0.6'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.6',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.6'
+}
+data['CNMC_4_imbalance_classes_f=0.7'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.7',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.7'
+}
+data['CNMC_4_imbalance_classes_f=0.8'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.8',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.8'
+}
+data['CNMC_4_imbalance_classes_f=0.9'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=0.9',
+'output_path': 'output_CNMC_4_imbalance_classes_f=0.9'
+}
+data['CNMC_4_imbalance_classes_f=1.0'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_4',
+'dataset_path': 'dataset_CNMC_4_imbalance_classes_f=1.0',
+'output_path': 'output_CNMC_4_imbalance_classes_f=1.0'
+}
+
+data['CNMC_5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5',
+  'output_path': 'output_CNMC_5'
+  }
+data['CNMC_5_image_rot_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.1',
+  'output_path': 'output_CNMC_5_image_rot_f=0.1'
+  }
+data['CNMC_5_image_rot_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.2',
+  'output_path': 'output_CNMC_5_image_rot_f=0.2'
+  }
+data['CNMC_5_image_rot_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.3',
+  'output_path': 'output_CNMC_5_image_rot_f=0.3'
+  }
+data['CNMC_5_image_rot_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.4',
+  'output_path': 'output_CNMC_5_image_rot_f=0.4'
+  }
+data['CNMC_5_image_rot_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.5',
+  'output_path': 'output_CNMC_5_image_rot_f=0.5'
+  }
+data['CNMC_5_image_rot_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.6',
+  'output_path': 'output_CNMC_5_image_rot_f=0.6'
+  }
+data['CNMC_5_image_rot_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.7',
+  'output_path': 'output_CNMC_5_image_rot_f=0.7'
+  }
+data['CNMC_5_image_rot_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.8',
+  'output_path': 'output_CNMC_5_image_rot_f=0.8'
+  }
+data['CNMC_5_image_rot_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=0.9',
+  'output_path': 'output_CNMC_5_image_rot_f=0.9'
+  }
+data['CNMC_5_image_rot_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_rot_f=1.0',
+  'output_path': 'output_CNMC_5_image_rot_f=1.0'
+  }
+
+data['CNMC_5_image_translation_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.1',
+  'output_path': 'output_CNMC_5_image_translation_f=0.1'
+  }
+data['CNMC_5_image_translation_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.2',
+  'output_path': 'output_CNMC_5_image_translation_f=0.2'
+  }
+data['CNMC_5_image_translation_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.3',
+  'output_path': 'output_CNMC_5_image_translation_f=0.3'
+  }
+data['CNMC_5_image_translation_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.4',
+  'output_path': 'output_CNMC_5_image_translation_f=0.4'
+  }
+data['CNMC_5_image_translation_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.5',
+  'output_path': 'output_CNMC_5_image_translation_f=0.5'
+  }
+data['CNMC_5_image_translation_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.6',
+  'output_path': 'output_CNMC_5_image_translation_f=0.6'
+  }
+data['CNMC_5_image_translation_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.7',
+  'output_path': 'output_CNMC_5_image_translation_f=0.7'
+  }
+data['CNMC_5_image_translation_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.8',
+  'output_path': 'output_CNMC_5_image_translation_f=0.8'
+  }
+data['CNMC_5_image_translation_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=0.9',
+  'output_path': 'output_CNMC_5_image_translation_f=0.9'
+  }
+data['CNMC_5_image_translation_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_translation_f=1.0',
+  'output_path': 'output_CNMC_5_image_translation_f=1.0'
+  }
+
+data['CNMC_5_image_zoom_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.1',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.1'
+  }
+data['CNMC_5_image_zoom_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.2',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.2'
+  }
+data['CNMC_5_image_zoom_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.3',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.3'
+  }
+data['CNMC_5_image_zoom_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.4',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.4'
+  }
+data['CNMC_5_image_zoom_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.5',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.5'
+  }
+data['CNMC_5_image_zoom_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.6',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.6'
+  }
+data['CNMC_5_image_zoom_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.7',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.7'
+  }
+data['CNMC_5_image_zoom_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.8',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.8'
+  }
+data['CNMC_5_image_zoom_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=0.9',
+  'output_path': 'output_CNMC_5_image_zoom_f=0.9'
+  }
+data['CNMC_5_image_zoom_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_image_zoom_f=1.0',
+  'output_path': 'output_CNMC_5_image_zoom_f=1.0'
+  }
+
+data['CNMC_5_add_noise_gaussian_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.1',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.1'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.2',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.2'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.3',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.3'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.4',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.4'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.5',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.5'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.6',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.6'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.7',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.7'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.8',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.8'
+  }
+data['CNMC_5_add_noise_gaussian_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=0.9',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=0.9'
+  }
+data['CNMC_5_add_noise_gaussian_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_gaussian_f=1.0',
+  'output_path': 'output_CNMC_5_add_noise_gaussian_f=1.0'
+  }
+
+data['CNMC_5_add_noise_poisson_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.1',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.1'
+  }
+data['CNMC_5_add_noise_poisson_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.2',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.2'
+  }
+data['CNMC_5_add_noise_poisson_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.3',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.3'
+  }
+data['CNMC_5_add_noise_poisson_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.4',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.4'
+  }
+data['CNMC_5_add_noise_poisson_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.5',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.5'
+  }
+data['CNMC_5_add_noise_poisson_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.6',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.6'
+  }
+data['CNMC_5_add_noise_poisson_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.7',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.7'
+  }
+data['CNMC_5_add_noise_poisson_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.8',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.8'
+  }
+data['CNMC_5_add_noise_poisson_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=0.9',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=0.9'
+  }
+data['CNMC_5_add_noise_poisson_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_poisson_f=1.0',
+  'output_path': 'output_CNMC_5_add_noise_poisson_f=1.0'
+  }
+
+data['CNMC_5_add_noise_salt_and_pepper_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.1',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.1'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.2',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.2'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.3',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.3'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.4',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.4'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.5',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.5'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.6',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.6'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.7',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.7'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.8',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.8'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=0.9',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=0.9'
+  }
+data['CNMC_5_add_noise_salt_and_pepper_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_salt_and_pepper_f=1.0',
+  'output_path': 'output_CNMC_5_add_noise_salt_and_pepper_f=1.0'
+  }
+
+data['CNMC_5_add_noise_speckle_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.1',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.1'
+  }
+data['CNMC_5_add_noise_speckle_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.2',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.2'
+  }
+data['CNMC_5_add_noise_speckle_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.3',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.3'
+  }
+data['CNMC_5_add_noise_speckle_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.4',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.4'
+  }
+data['CNMC_5_add_noise_speckle_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.5',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.5'
+  }
+data['CNMC_5_add_noise_speckle_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.6',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.6'
+  }
+data['CNMC_5_add_noise_speckle_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.7',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.7'
+  }
+data['CNMC_5_add_noise_speckle_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.8',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.8'
+  }
+data['CNMC_5_add_noise_speckle_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=0.9',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=0.9'
+  }
+data['CNMC_5_add_noise_speckle_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_5',
+  'dataset_path': 'dataset_CNMC_5_add_noise_speckle_f=1.0',
+  'output_path': 'output_CNMC_5_add_noise_speckle_f=1.0'
+  }
+
+data['CNMC_5_imbalance_classes_f=0.1'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.1',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.1'
+}
+data['CNMC_5_imbalance_classes_f=0.2'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.2',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.2'
+}
+data['CNMC_5_imbalance_classes_f=0.3'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.3',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.3'
+}
+data['CNMC_5_imbalance_classes_f=0.4'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.4',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.4'
+}
+data['CNMC_5_imbalance_classes_f=0.5'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.5',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.5'
+}
+data['CNMC_5_imbalance_classes_f=0.6'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.6',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.6'
+}
+data['CNMC_5_imbalance_classes_f=0.7'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.7',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.7'
+}
+data['CNMC_5_imbalance_classes_f=0.8'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.8',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.8'
+}
+data['CNMC_5_imbalance_classes_f=0.9'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=0.9',
+'output_path': 'output_CNMC_5_imbalance_classes_f=0.9'
+}
+data['CNMC_5_imbalance_classes_f=1.0'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_5',
+'dataset_path': 'dataset_CNMC_5_imbalance_classes_f=1.0',
+'output_path': 'output_CNMC_5_imbalance_classes_f=1.0'
+}
+
+data['CNMC_6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6',
+  'output_path': 'output_CNMC_6'
+  }
+data['CNMC_6_image_rot_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.1',
+  'output_path': 'output_CNMC_6_image_rot_f=0.1'
+  }
+data['CNMC_6_image_rot_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.2',
+  'output_path': 'output_CNMC_6_image_rot_f=0.2'
+  }
+data['CNMC_6_image_rot_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.3',
+  'output_path': 'output_CNMC_6_image_rot_f=0.3'
+  }
+data['CNMC_6_image_rot_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.4',
+  'output_path': 'output_CNMC_6_image_rot_f=0.4'
+  }
+data['CNMC_6_image_rot_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.5',
+  'output_path': 'output_CNMC_6_image_rot_f=0.5'
+  }
+data['CNMC_6_image_rot_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.6',
+  'output_path': 'output_CNMC_6_image_rot_f=0.6'
+  }
+data['CNMC_6_image_rot_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.7',
+  'output_path': 'output_CNMC_6_image_rot_f=0.7'
+  }
+data['CNMC_6_image_rot_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.8',
+  'output_path': 'output_CNMC_6_image_rot_f=0.8'
+  }
+data['CNMC_6_image_rot_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=0.9',
+  'output_path': 'output_CNMC_6_image_rot_f=0.9'
+  }
+data['CNMC_6_image_rot_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_rot_f=1.0',
+  'output_path': 'output_CNMC_6_image_rot_f=1.0'
+  }
+
+data['CNMC_6_image_translation_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.1',
+  'output_path': 'output_CNMC_6_image_translation_f=0.1'
+  }
+data['CNMC_6_image_translation_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.2',
+  'output_path': 'output_CNMC_6_image_translation_f=0.2'
+  }
+data['CNMC_6_image_translation_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.3',
+  'output_path': 'output_CNMC_6_image_translation_f=0.3'
+  }
+data['CNMC_6_image_translation_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.4',
+  'output_path': 'output_CNMC_6_image_translation_f=0.4'
+  }
+data['CNMC_6_image_translation_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.5',
+  'output_path': 'output_CNMC_6_image_translation_f=0.5'
+  }
+data['CNMC_6_image_translation_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.6',
+  'output_path': 'output_CNMC_6_image_translation_f=0.6'
+  }
+data['CNMC_6_image_translation_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.7',
+  'output_path': 'output_CNMC_6_image_translation_f=0.7'
+  }
+data['CNMC_6_image_translation_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.8',
+  'output_path': 'output_CNMC_6_image_translation_f=0.8'
+  }
+data['CNMC_6_image_translation_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=0.9',
+  'output_path': 'output_CNMC_6_image_translation_f=0.9'
+  }
+data['CNMC_6_image_translation_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_translation_f=1.0',
+  'output_path': 'output_CNMC_6_image_translation_f=1.0'
+  }
+
+data['CNMC_6_image_zoom_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.1',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.1'
+  }
+data['CNMC_6_image_zoom_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.2',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.2'
+  }
+data['CNMC_6_image_zoom_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.3',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.3'
+  }
+data['CNMC_6_image_zoom_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.4',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.4'
+  }
+data['CNMC_6_image_zoom_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.5',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.5'
+  }
+data['CNMC_6_image_zoom_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.6',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.6'
+  }
+data['CNMC_6_image_zoom_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.7',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.7'
+  }
+data['CNMC_6_image_zoom_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.8',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.8'
+  }
+data['CNMC_6_image_zoom_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=0.9',
+  'output_path': 'output_CNMC_6_image_zoom_f=0.9'
+  }
+data['CNMC_6_image_zoom_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_image_zoom_f=1.0',
+  'output_path': 'output_CNMC_6_image_zoom_f=1.0'
+  }
+
+data['CNMC_6_add_noise_gaussian_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.1',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.1'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.2',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.2'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.3',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.3'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.4',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.4'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.5',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.5'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.6',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.6'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.7',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.7'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.8',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.8'
+  }
+data['CNMC_6_add_noise_gaussian_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=0.9',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=0.9'
+  }
+data['CNMC_6_add_noise_gaussian_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_gaussian_f=1.0',
+  'output_path': 'output_CNMC_6_add_noise_gaussian_f=1.0'
+  }
+
+data['CNMC_6_add_noise_poisson_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.1',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.1'
+  }
+data['CNMC_6_add_noise_poisson_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.2',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.2'
+  }
+data['CNMC_6_add_noise_poisson_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.3',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.3'
+  }
+data['CNMC_6_add_noise_poisson_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.4',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.4'
+  }
+data['CNMC_6_add_noise_poisson_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.5',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.5'
+  }
+data['CNMC_6_add_noise_poisson_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.6',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.6'
+  }
+data['CNMC_6_add_noise_poisson_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.7',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.7'
+  }
+data['CNMC_6_add_noise_poisson_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.8',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.8'
+  }
+data['CNMC_6_add_noise_poisson_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=0.9',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=0.9'
+  }
+data['CNMC_6_add_noise_poisson_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_poisson_f=1.0',
+  'output_path': 'output_CNMC_6_add_noise_poisson_f=1.0'
+  }
+
+data['CNMC_6_add_noise_salt_and_pepper_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.1',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.1'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.2',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.2'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.3',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.3'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.4',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.4'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.5',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.5'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.6',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.6'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.7',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.7'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.8',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.8'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=0.9',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=0.9'
+  }
+data['CNMC_6_add_noise_salt_and_pepper_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_salt_and_pepper_f=1.0',
+  'output_path': 'output_CNMC_6_add_noise_salt_and_pepper_f=1.0'
+  }
+
+data['CNMC_6_add_noise_speckle_f=0.1'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.1',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.1'
+  }
+data['CNMC_6_add_noise_speckle_f=0.2'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.2',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.2'
+  }
+data['CNMC_6_add_noise_speckle_f=0.3'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.3',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.3'
+  }
+data['CNMC_6_add_noise_speckle_f=0.4'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.4',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.4'
+  }
+data['CNMC_6_add_noise_speckle_f=0.5'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.5',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.5'
+  }
+data['CNMC_6_add_noise_speckle_f=0.6'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.6',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.6'
+  }
+data['CNMC_6_add_noise_speckle_f=0.7'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.7',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.7'
+  }
+data['CNMC_6_add_noise_speckle_f=0.8'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.8',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.8'
+  }
+data['CNMC_6_add_noise_speckle_f=0.9'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=0.9',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=0.9'
+  }
+data['CNMC_6_add_noise_speckle_f=1.0'] = {
+  'classes': ['benign', 'malignant'],
+  'orig_path': 'CNMC_6',
+  'dataset_path': 'dataset_CNMC_6_add_noise_speckle_f=1.0',
+  'output_path': 'output_CNMC_6_add_noise_speckle_f=1.0'
+  }
+
+data['CNMC_6_imbalance_classes_f=0.1'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.1',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.1'
+}
+data['CNMC_6_imbalance_classes_f=0.2'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.2',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.2'
+}
+data['CNMC_6_imbalance_classes_f=0.3'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.3',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.3'
+}
+data['CNMC_6_imbalance_classes_f=0.4'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.4',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.4'
+}
+data['CNMC_6_imbalance_classes_f=0.5'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.5',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.5'
+}
+data['CNMC_6_imbalance_classes_f=0.6'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.6',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.6'
+}
+data['CNMC_6_imbalance_classes_f=0.7'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.7',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.7'
+}
+data['CNMC_6_imbalance_classes_f=0.8'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.8',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.8'
+}
+data['CNMC_6_imbalance_classes_f=0.9'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=0.9',
+'output_path': 'output_CNMC_6_imbalance_classes_f=0.9'
+}
+data['CNMC_6_imbalance_classes_f=1.0'] = {
+'classes': ['benign', 'malignant'],
+'orig_path': 'CNMC_6',
+'dataset_path': 'dataset_CNMC_6_imbalance_classes_f=1.0',
+'output_path': 'output_CNMC_6_imbalance_classes_f=1.0'
+}
+
 data['isic_2017'] = {
   'classes': ['melanoma', 'nevus_sk'],
   'orig_path': 'ISIC-2017',
@@ -2493,7 +4975,7 @@ data['cats_and_dogs'] = {
   }
 
 # list with all datasets; so certain paths can be added automatically to the data dictionary
-datasets = ['ISIC_2', 'ISIC_2_image_rot_f=0.1', 'ISIC_2_image_rot_f=0.2',
+datasets = ['CNMC', 'ddsm', 'ISIC_2', 'ISIC_2_image_rot_f=0.1', 'ISIC_2_image_rot_f=0.2',
         'ISIC_2_image_rot_f=0.3', 'ISIC_2_image_rot_f=0.4', 'ISIC_2_image_rot_f=0.5',
         'ISIC_2_image_rot_f=0.6', 'ISIC_2_image_rot_f=0.7', 'ISIC_2_image_rot_f=0.8',
         'ISIC_2_image_rot_f=0.9', 'ISIC_2_image_rot_f=1.0', 'ISIC_2_image_translation_f=0.1',
@@ -2637,7 +5119,152 @@ datasets = ['ISIC_2', 'ISIC_2_image_rot_f=0.1', 'ISIC_2_image_rot_f=0.2',
         'ISIC_6_add_noise_speckle_f=1.0', 'ISIC_6_imbalance_classes_f=0.1', 'ISIC_6_imbalance_classes_f=0.2',
         'ISIC_6_imbalance_classes_f=0.3', 'ISIC_6_imbalance_classes_f=0.4', 'ISIC_6_imbalance_classes_f=0.5',
         'ISIC_6_imbalance_classes_f=0.6', 'ISIC_6_imbalance_classes_f=0.7', 'ISIC_6_imbalance_classes_f=0.8',
-        'ISIC_6_imbalance_classes_f=0.9', 'ISIC_6_imbalance_classes_f=1.0']
+        'ISIC_6_imbalance_classes_f=0.9', 'ISIC_6_imbalance_classes_f=1.0',
+        'CNMC_2', 'CNMC_2_image_rot_f=0.1', 'CNMC_2_image_rot_f=0.2',
+        'CNMC_2_image_rot_f=0.3', 'CNMC_2_image_rot_f=0.4', 'CNMC_2_image_rot_f=0.5',
+        'CNMC_2_image_rot_f=0.6', 'CNMC_2_image_rot_f=0.7', 'CNMC_2_image_rot_f=0.8',
+        'CNMC_2_image_rot_f=0.9', 'CNMC_2_image_rot_f=1.0', 'CNMC_2_image_translation_f=0.1',
+        'CNMC_2_image_translation_f=0.2', 'CNMC_2_image_translation_f=0.3', 'CNMC_2_image_translation_f=0.4',
+        'CNMC_2_image_translation_f=0.5', 'CNMC_2_image_translation_f=0.6', 'CNMC_2_image_translation_f=0.7',
+        'CNMC_2_image_translation_f=0.8', 'CNMC_2_image_translation_f=0.9', 'CNMC_2_image_translation_f=1.0',
+        'CNMC_2_image_zoom_f=0.1', 'CNMC_2_image_zoom_f=0.2', 'CNMC_2_image_zoom_f=0.3',
+        'CNMC_2_image_zoom_f=0.4', 'CNMC_2_image_zoom_f=0.5', 'CNMC_2_image_zoom_f=0.6',
+        'CNMC_2_image_zoom_f=0.7', 'CNMC_2_image_zoom_f=0.8', 'CNMC_2_image_zoom_f=0.9',
+        'CNMC_2_image_zoom_f=1.0', 'CNMC_2_add_noise_gaussian_f=0.1', 'CNMC_2_add_noise_gaussian_f=0.2',
+        'CNMC_2_add_noise_gaussian_f=0.3', 'CNMC_2_add_noise_gaussian_f=0.4', 'CNMC_2_add_noise_gaussian_f=0.5',
+        'CNMC_2_add_noise_gaussian_f=0.6', 'CNMC_2_add_noise_gaussian_f=0.7', 'CNMC_2_add_noise_gaussian_f=0.8',
+        'CNMC_2_add_noise_gaussian_f=0.9', 'CNMC_2_add_noise_gaussian_f=1.0', 'CNMC_2_add_noise_poisson_f=0.1',
+        'CNMC_2_add_noise_poisson_f=0.2', 'CNMC_2_add_noise_poisson_f=0.3', 'CNMC_2_add_noise_poisson_f=0.4',
+        'CNMC_2_add_noise_poisson_f=0.5', 'CNMC_2_add_noise_poisson_f=0.6', 'CNMC_2_add_noise_poisson_f=0.7',
+        'CNMC_2_add_noise_poisson_f=0.8', 'CNMC_2_add_noise_poisson_f=0.9', 'CNMC_2_add_noise_poisson_f=1.0',
+        'CNMC_2_add_noise_salt_and_pepper_f=0.1', 'CNMC_2_add_noise_salt_and_pepper_f=0.2',
+        'CNMC_2_add_noise_salt_and_pepper_f=0.3', 'CNMC_2_add_noise_salt_and_pepper_f=0.4',
+        'CNMC_2_add_noise_salt_and_pepper_f=0.5', 'CNMC_2_add_noise_salt_and_pepper_f=0.6',
+        'CNMC_2_add_noise_salt_and_pepper_f=0.7', 'CNMC_2_add_noise_salt_and_pepper_f=0.8',
+        'CNMC_2_add_noise_salt_and_pepper_f=0.9', 'CNMC_2_add_noise_salt_and_pepper_f=1.0',
+        'CNMC_2_add_noise_speckle_f=0.1', 'CNMC_2_add_noise_speckle_f=0.2', 'CNMC_2_add_noise_speckle_f=0.3',
+        'CNMC_2_add_noise_speckle_f=0.4', 'CNMC_2_add_noise_speckle_f=0.5', 'CNMC_2_add_noise_speckle_f=0.6',
+        'CNMC_2_add_noise_speckle_f=0.7', 'CNMC_2_add_noise_speckle_f=0.8', 'CNMC_2_add_noise_speckle_f=0.9',
+        'CNMC_2_add_noise_speckle_f=1.0', 'CNMC_2_imbalance_classes_f=0.1', 'CNMC_2_imbalance_classes_f=0.2',
+        'CNMC_2_imbalance_classes_f=0.3', 'CNMC_2_imbalance_classes_f=0.4', 'CNMC_2_imbalance_classes_f=0.5',
+        'CNMC_2_imbalance_classes_f=0.6', 'CNMC_2_imbalance_classes_f=0.7', 'CNMC_2_imbalance_classes_f=0.8',
+        'CNMC_2_imbalance_classes_f=0.9', 'CNMC_2_imbalance_classes_f=1.0',
+        'CNMC_3', 'CNMC_3_image_rot_f=0.1', 'CNMC_3_image_rot_f=0.2',
+        'CNMC_3_image_rot_f=0.3', 'CNMC_3_image_rot_f=0.4', 'CNMC_3_image_rot_f=0.5',
+        'CNMC_3_image_rot_f=0.6', 'CNMC_3_image_rot_f=0.7', 'CNMC_3_image_rot_f=0.8',
+        'CNMC_3_image_rot_f=0.9', 'CNMC_3_image_rot_f=1.0', 'CNMC_3_image_translation_f=0.1',
+        'CNMC_3_image_translation_f=0.2', 'CNMC_3_image_translation_f=0.3', 'CNMC_3_image_translation_f=0.4',
+        'CNMC_3_image_translation_f=0.5', 'CNMC_3_image_translation_f=0.6', 'CNMC_3_image_translation_f=0.7',
+        'CNMC_3_image_translation_f=0.8', 'CNMC_3_image_translation_f=0.9', 'CNMC_3_image_translation_f=1.0',
+        'CNMC_3_image_zoom_f=0.1', 'CNMC_3_image_zoom_f=0.2', 'CNMC_3_image_zoom_f=0.3',
+        'CNMC_3_image_zoom_f=0.4', 'CNMC_3_image_zoom_f=0.5', 'CNMC_3_image_zoom_f=0.6',
+        'CNMC_3_image_zoom_f=0.7', 'CNMC_3_image_zoom_f=0.8', 'CNMC_3_image_zoom_f=0.9',
+        'CNMC_3_image_zoom_f=1.0', 'CNMC_3_add_noise_gaussian_f=0.1', 'CNMC_3_add_noise_gaussian_f=0.2',
+        'CNMC_3_add_noise_gaussian_f=0.3', 'CNMC_3_add_noise_gaussian_f=0.4', 'CNMC_3_add_noise_gaussian_f=0.5',
+        'CNMC_3_add_noise_gaussian_f=0.6', 'CNMC_3_add_noise_gaussian_f=0.7', 'CNMC_3_add_noise_gaussian_f=0.8',
+        'CNMC_3_add_noise_gaussian_f=0.9', 'CNMC_3_add_noise_gaussian_f=1.0', 'CNMC_3_add_noise_poisson_f=0.1',
+        'CNMC_3_add_noise_poisson_f=0.2', 'CNMC_3_add_noise_poisson_f=0.3', 'CNMC_3_add_noise_poisson_f=0.4',
+        'CNMC_3_add_noise_poisson_f=0.5', 'CNMC_3_add_noise_poisson_f=0.6', 'CNMC_3_add_noise_poisson_f=0.7',
+        'CNMC_3_add_noise_poisson_f=0.8', 'CNMC_3_add_noise_poisson_f=0.9', 'CNMC_3_add_noise_poisson_f=1.0',
+        'CNMC_3_add_noise_salt_and_pepper_f=0.1', 'CNMC_3_add_noise_salt_and_pepper_f=0.2',
+        'CNMC_3_add_noise_salt_and_pepper_f=0.3', 'CNMC_3_add_noise_salt_and_pepper_f=0.4',
+        'CNMC_3_add_noise_salt_and_pepper_f=0.5', 'CNMC_3_add_noise_salt_and_pepper_f=0.6',
+        'CNMC_3_add_noise_salt_and_pepper_f=0.7', 'CNMC_3_add_noise_salt_and_pepper_f=0.8',
+        'CNMC_3_add_noise_salt_and_pepper_f=0.9', 'CNMC_3_add_noise_salt_and_pepper_f=1.0',
+        'CNMC_3_add_noise_speckle_f=0.1', 'CNMC_3_add_noise_speckle_f=0.2', 'CNMC_3_add_noise_speckle_f=0.3',
+        'CNMC_3_add_noise_speckle_f=0.4', 'CNMC_3_add_noise_speckle_f=0.5', 'CNMC_3_add_noise_speckle_f=0.6',
+        'CNMC_3_add_noise_speckle_f=0.7', 'CNMC_3_add_noise_speckle_f=0.8', 'CNMC_3_add_noise_speckle_f=0.9',
+        'CNMC_3_add_noise_speckle_f=1.0', 'CNMC_3_imbalance_classes_f=0.1', 'CNMC_3_imbalance_classes_f=0.2',
+        'CNMC_3_imbalance_classes_f=0.3', 'CNMC_3_imbalance_classes_f=0.4', 'CNMC_3_imbalance_classes_f=0.5',
+        'CNMC_3_imbalance_classes_f=0.6', 'CNMC_3_imbalance_classes_f=0.7', 'CNMC_3_imbalance_classes_f=0.8',
+        'CNMC_3_imbalance_classes_f=0.9', 'CNMC_3_imbalance_classes_f=1.0',
+        'CNMC_4', 'CNMC_4_image_rot_f=0.1', 'CNMC_4_image_rot_f=0.2',
+        'CNMC_4_image_rot_f=0.3', 'CNMC_4_image_rot_f=0.4', 'CNMC_4_image_rot_f=0.5',
+        'CNMC_4_image_rot_f=0.6', 'CNMC_4_image_rot_f=0.7', 'CNMC_4_image_rot_f=0.8',
+        'CNMC_4_image_rot_f=0.9', 'CNMC_4_image_rot_f=1.0', 'CNMC_4_image_translation_f=0.1',
+        'CNMC_4_image_translation_f=0.2', 'CNMC_4_image_translation_f=0.3', 'CNMC_4_image_translation_f=0.4',
+        'CNMC_4_image_translation_f=0.5', 'CNMC_4_image_translation_f=0.6', 'CNMC_4_image_translation_f=0.7',
+        'CNMC_4_image_translation_f=0.8', 'CNMC_4_image_translation_f=0.9', 'CNMC_4_image_translation_f=1.0',
+        'CNMC_4_image_zoom_f=0.1', 'CNMC_4_image_zoom_f=0.2', 'CNMC_4_image_zoom_f=0.3',
+        'CNMC_4_image_zoom_f=0.4', 'CNMC_4_image_zoom_f=0.5', 'CNMC_4_image_zoom_f=0.6',
+        'CNMC_4_image_zoom_f=0.7', 'CNMC_4_image_zoom_f=0.8', 'CNMC_4_image_zoom_f=0.9',
+        'CNMC_4_image_zoom_f=1.0', 'CNMC_4_add_noise_gaussian_f=0.1', 'CNMC_4_add_noise_gaussian_f=0.2',
+        'CNMC_4_add_noise_gaussian_f=0.3', 'CNMC_4_add_noise_gaussian_f=0.4', 'CNMC_4_add_noise_gaussian_f=0.5',
+        'CNMC_4_add_noise_gaussian_f=0.6', 'CNMC_4_add_noise_gaussian_f=0.7', 'CNMC_4_add_noise_gaussian_f=0.8',
+        'CNMC_4_add_noise_gaussian_f=0.9', 'CNMC_4_add_noise_gaussian_f=1.0', 'CNMC_4_add_noise_poisson_f=0.1',
+        'CNMC_4_add_noise_poisson_f=0.2', 'CNMC_4_add_noise_poisson_f=0.3', 'CNMC_4_add_noise_poisson_f=0.4',
+        'CNMC_4_add_noise_poisson_f=0.5', 'CNMC_4_add_noise_poisson_f=0.6', 'CNMC_4_add_noise_poisson_f=0.7',
+        'CNMC_4_add_noise_poisson_f=0.8', 'CNMC_4_add_noise_poisson_f=0.9', 'CNMC_4_add_noise_poisson_f=1.0',
+        'CNMC_4_add_noise_salt_and_pepper_f=0.1', 'CNMC_4_add_noise_salt_and_pepper_f=0.2',
+        'CNMC_4_add_noise_salt_and_pepper_f=0.3', 'CNMC_4_add_noise_salt_and_pepper_f=0.4',
+        'CNMC_4_add_noise_salt_and_pepper_f=0.5', 'CNMC_4_add_noise_salt_and_pepper_f=0.6',
+        'CNMC_4_add_noise_salt_and_pepper_f=0.7', 'CNMC_4_add_noise_salt_and_pepper_f=0.8',
+        'CNMC_4_add_noise_salt_and_pepper_f=0.9', 'CNMC_4_add_noise_salt_and_pepper_f=1.0',
+        'CNMC_4_add_noise_speckle_f=0.1', 'CNMC_4_add_noise_speckle_f=0.2', 'CNMC_4_add_noise_speckle_f=0.3',
+        'CNMC_4_add_noise_speckle_f=0.4', 'CNMC_4_add_noise_speckle_f=0.5', 'CNMC_4_add_noise_speckle_f=0.6',
+        'CNMC_4_add_noise_speckle_f=0.7', 'CNMC_4_add_noise_speckle_f=0.8', 'CNMC_4_add_noise_speckle_f=0.9',
+        'CNMC_4_add_noise_speckle_f=1.0', 'CNMC_4_imbalance_classes_f=0.1', 'CNMC_4_imbalance_classes_f=0.2',
+        'CNMC_4_imbalance_classes_f=0.3', 'CNMC_4_imbalance_classes_f=0.4', 'CNMC_4_imbalance_classes_f=0.5',
+        'CNMC_4_imbalance_classes_f=0.6', 'CNMC_4_imbalance_classes_f=0.7', 'CNMC_4_imbalance_classes_f=0.8',
+        'CNMC_4_imbalance_classes_f=0.9', 'CNMC_4_imbalance_classes_f=1.0',
+        'CNMC_5', 'CNMC_5_image_rot_f=0.1', 'CNMC_5_image_rot_f=0.2',
+        'CNMC_5_image_rot_f=0.3', 'CNMC_5_image_rot_f=0.4', 'CNMC_5_image_rot_f=0.5',
+        'CNMC_5_image_rot_f=0.6', 'CNMC_5_image_rot_f=0.7', 'CNMC_5_image_rot_f=0.8',
+        'CNMC_5_image_rot_f=0.9', 'CNMC_5_image_rot_f=1.0', 'CNMC_5_image_translation_f=0.1',
+        'CNMC_5_image_translation_f=0.2', 'CNMC_5_image_translation_f=0.3', 'CNMC_5_image_translation_f=0.4',
+        'CNMC_5_image_translation_f=0.5', 'CNMC_5_image_translation_f=0.6', 'CNMC_5_image_translation_f=0.7',
+        'CNMC_5_image_translation_f=0.8', 'CNMC_5_image_translation_f=0.9', 'CNMC_5_image_translation_f=1.0',
+        'CNMC_5_image_zoom_f=0.1', 'CNMC_5_image_zoom_f=0.2', 'CNMC_5_image_zoom_f=0.3',
+        'CNMC_5_image_zoom_f=0.4', 'CNMC_5_image_zoom_f=0.5', 'CNMC_5_image_zoom_f=0.6',
+        'CNMC_5_image_zoom_f=0.7', 'CNMC_5_image_zoom_f=0.8', 'CNMC_5_image_zoom_f=0.9',
+        'CNMC_5_image_zoom_f=1.0', 'CNMC_5_add_noise_gaussian_f=0.1', 'CNMC_5_add_noise_gaussian_f=0.2',
+        'CNMC_5_add_noise_gaussian_f=0.3', 'CNMC_5_add_noise_gaussian_f=0.4', 'CNMC_5_add_noise_gaussian_f=0.5',
+        'CNMC_5_add_noise_gaussian_f=0.6', 'CNMC_5_add_noise_gaussian_f=0.7', 'CNMC_5_add_noise_gaussian_f=0.8',
+        'CNMC_5_add_noise_gaussian_f=0.9', 'CNMC_5_add_noise_gaussian_f=1.0', 'CNMC_5_add_noise_poisson_f=0.1',
+        'CNMC_5_add_noise_poisson_f=0.2', 'CNMC_5_add_noise_poisson_f=0.3', 'CNMC_5_add_noise_poisson_f=0.4',
+        'CNMC_5_add_noise_poisson_f=0.5', 'CNMC_5_add_noise_poisson_f=0.6', 'CNMC_5_add_noise_poisson_f=0.7',
+        'CNMC_5_add_noise_poisson_f=0.8', 'CNMC_5_add_noise_poisson_f=0.9', 'CNMC_5_add_noise_poisson_f=1.0',
+        'CNMC_5_add_noise_salt_and_pepper_f=0.1', 'CNMC_5_add_noise_salt_and_pepper_f=0.2',
+        'CNMC_5_add_noise_salt_and_pepper_f=0.3', 'CNMC_5_add_noise_salt_and_pepper_f=0.4',
+        'CNMC_5_add_noise_salt_and_pepper_f=0.5', 'CNMC_5_add_noise_salt_and_pepper_f=0.6',
+        'CNMC_5_add_noise_salt_and_pepper_f=0.7', 'CNMC_5_add_noise_salt_and_pepper_f=0.8',
+        'CNMC_5_add_noise_salt_and_pepper_f=0.9', 'CNMC_5_add_noise_salt_and_pepper_f=1.0',
+        'CNMC_5_add_noise_speckle_f=0.1', 'CNMC_5_add_noise_speckle_f=0.2', 'CNMC_5_add_noise_speckle_f=0.3',
+        'CNMC_5_add_noise_speckle_f=0.4', 'CNMC_5_add_noise_speckle_f=0.5', 'CNMC_5_add_noise_speckle_f=0.6',
+        'CNMC_5_add_noise_speckle_f=0.7', 'CNMC_5_add_noise_speckle_f=0.8', 'CNMC_5_add_noise_speckle_f=0.9',
+        'CNMC_5_add_noise_speckle_f=1.0', 'CNMC_5_imbalance_classes_f=0.1', 'CNMC_5_imbalance_classes_f=0.2',
+        'CNMC_5_imbalance_classes_f=0.3', 'CNMC_5_imbalance_classes_f=0.4', 'CNMC_5_imbalance_classes_f=0.5',
+        'CNMC_5_imbalance_classes_f=0.6', 'CNMC_5_imbalance_classes_f=0.7', 'CNMC_5_imbalance_classes_f=0.8',
+        'CNMC_5_imbalance_classes_f=0.9', 'CNMC_5_imbalance_classes_f=1.0',
+        'CNMC_6', 'CNMC_6_image_rot_f=0.1', 'CNMC_6_image_rot_f=0.2',
+        'CNMC_6_image_rot_f=0.3', 'CNMC_6_image_rot_f=0.4', 'CNMC_6_image_rot_f=0.5',
+        'CNMC_6_image_rot_f=0.6', 'CNMC_6_image_rot_f=0.7', 'CNMC_6_image_rot_f=0.8',
+        'CNMC_6_image_rot_f=0.9', 'CNMC_6_image_rot_f=1.0', 'CNMC_6_image_translation_f=0.1',
+        'CNMC_6_image_translation_f=0.2', 'CNMC_6_image_translation_f=0.3', 'CNMC_6_image_translation_f=0.4',
+        'CNMC_6_image_translation_f=0.5', 'CNMC_6_image_translation_f=0.6', 'CNMC_6_image_translation_f=0.7',
+        'CNMC_6_image_translation_f=0.8', 'CNMC_6_image_translation_f=0.9', 'CNMC_6_image_translation_f=1.0',
+        'CNMC_6_image_zoom_f=0.1', 'CNMC_6_image_zoom_f=0.2', 'CNMC_6_image_zoom_f=0.3',
+        'CNMC_6_image_zoom_f=0.4', 'CNMC_6_image_zoom_f=0.5', 'CNMC_6_image_zoom_f=0.6',
+        'CNMC_6_image_zoom_f=0.7', 'CNMC_6_image_zoom_f=0.8', 'CNMC_6_image_zoom_f=0.9',
+        'CNMC_6_image_zoom_f=1.0', 'CNMC_6_add_noise_gaussian_f=0.1', 'CNMC_6_add_noise_gaussian_f=0.2',
+        'CNMC_6_add_noise_gaussian_f=0.3', 'CNMC_6_add_noise_gaussian_f=0.4', 'CNMC_6_add_noise_gaussian_f=0.5',
+        'CNMC_6_add_noise_gaussian_f=0.6', 'CNMC_6_add_noise_gaussian_f=0.7', 'CNMC_6_add_noise_gaussian_f=0.8',
+        'CNMC_6_add_noise_gaussian_f=0.9', 'CNMC_6_add_noise_gaussian_f=1.0', 'CNMC_6_add_noise_poisson_f=0.1',
+        'CNMC_6_add_noise_poisson_f=0.2', 'CNMC_6_add_noise_poisson_f=0.3', 'CNMC_6_add_noise_poisson_f=0.4',
+        'CNMC_6_add_noise_poisson_f=0.5', 'CNMC_6_add_noise_poisson_f=0.6', 'CNMC_6_add_noise_poisson_f=0.7',
+        'CNMC_6_add_noise_poisson_f=0.8', 'CNMC_6_add_noise_poisson_f=0.9', 'CNMC_6_add_noise_poisson_f=1.0',
+        'CNMC_6_add_noise_salt_and_pepper_f=0.1', 'CNMC_6_add_noise_salt_and_pepper_f=0.2',
+        'CNMC_6_add_noise_salt_and_pepper_f=0.3', 'CNMC_6_add_noise_salt_and_pepper_f=0.4',
+        'CNMC_6_add_noise_salt_and_pepper_f=0.5', 'CNMC_6_add_noise_salt_and_pepper_f=0.6',
+        'CNMC_6_add_noise_salt_and_pepper_f=0.7', 'CNMC_6_add_noise_salt_and_pepper_f=0.8',
+        'CNMC_6_add_noise_salt_and_pepper_f=0.9', 'CNMC_6_add_noise_salt_and_pepper_f=1.0',
+        'CNMC_6_add_noise_speckle_f=0.1', 'CNMC_6_add_noise_speckle_f=0.2', 'CNMC_6_add_noise_speckle_f=0.3',
+        'CNMC_6_add_noise_speckle_f=0.4', 'CNMC_6_add_noise_speckle_f=0.5', 'CNMC_6_add_noise_speckle_f=0.6',
+        'CNMC_6_add_noise_speckle_f=0.7', 'CNMC_6_add_noise_speckle_f=0.8', 'CNMC_6_add_noise_speckle_f=0.9',
+        'CNMC_6_add_noise_speckle_f=1.0', 'CNMC_6_imbalance_classes_f=0.1', 'CNMC_6_imbalance_classes_f=0.2',
+        'CNMC_6_imbalance_classes_f=0.3', 'CNMC_6_imbalance_classes_f=0.4', 'CNMC_6_imbalance_classes_f=0.5',
+        'CNMC_6_imbalance_classes_f=0.6', 'CNMC_6_imbalance_classes_f=0.7', 'CNMC_6_imbalance_classes_f=0.8',
+        'CNMC_6_imbalance_classes_f=0.9', 'CNMC_6_imbalance_classes_f=1.0']
 
 for dataset in datasets:
     # path to original dataset, use parent path so data is not in same repo as code
