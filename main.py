@@ -213,7 +213,7 @@ class NeuralNetwork:
                 df = pd.read_excel(self.savefile, sheet_name=mode)
             except:
                 df = pd.DataFrame(columns=['AUC', 'skAUC', 'acc', 'training_time'])
-                
+
             df = df.append(test_results, ignore_index=True)
             # df.set_index('skAUC', inplace=True)
 
@@ -532,7 +532,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-m',
         '--mode',
-        choices=['from_scratch', 'transfer', 'SVM', 'fine_tuning', 'evaluate', 'random_search'],
+        choices=['from_scratch', 'SVM', 'fine_tuning', 'evaluate'],
         required=True,
         help='training mode')
     parser.add_argument('-d',
@@ -1038,7 +1038,8 @@ if __name__ == "__main__":
                 'CNMC_6_small_clusters_f=0.5', 'CNMC_6_small_clusters_f=0.6', 'CNMC_6_small_clusters_f=0.7',
                 'CNMC_6_small_clusters_f=0.8', 'CNMC_6_small_clusters_f=0.9', 'CNMC_6_small_clusters_f=1.0'],
         required=True,
-        help='dataset to use, when using transfer, fine_tuning or SVM, this is the target dataset')
+        help='target dataset, name should be like [dataset]_[split]_[modification]_f=[fraction], e.g. "ISIC_2_grayscale_f=0.4"',
+        metavar='target dataset, name should be like [dataset]_[split]_[modification]_f=[fraction], e.g. "ISIC_2_grayscale_f=0.4"')
     parser.add_argument('-s',
         '--source_dataset',
         choices=['ISIC_2', 'ISIC_2_image_rot_f=0.1', 'ISIC_2_image_rot_f=0.2',
@@ -1541,8 +1542,9 @@ if __name__ == "__main__":
                 'CNMC_6_small_clusters_f=0.1', 'CNMC_6_small_clusters_f=0.2', 'CNMC_6_small_clusters_f=0.3', 'CNMC_6_small_clusters_f=0.4',
                 'CNMC_6_small_clusters_f=0.5', 'CNMC_6_small_clusters_f=0.6', 'CNMC_6_small_clusters_f=0.7',
                 'CNMC_6_small_clusters_f=0.8', 'CNMC_6_small_clusters_f=0.9', 'CNMC_6_small_clusters_f=1.0'],
-        required='transfer' in sys.argv or 'fine_tuning' in sys.argv or 'SVM' in sys.argv,
-        help='source dataset to use when using transfer, fine_tuning or SVM')
+        required='fine_tuning' in sys.argv or 'SVM' in sys.argv,
+        help='source dataset, only when using fine_tuning or SVM, name should be in same format as target dataset',
+        metavar='source dataset, only when using fine_tuning or SVM, name should be in same format as target dataset')
     parser.add_argument('-bs', '--batchsize', default=32, help='batch size')
     args = vars(parser.parse_args())
 
