@@ -17,7 +17,7 @@ parser.add_argument('-d',
 parser.add_argument('-m',
     '--mode',
     choices=['acc', 'skAUC'],
-    required=True,
+    required=not 'shift' in sys.argv,
     help='mode for plotting, either acc (accuracy) of AUC (Area Under the Curve)')
 parser.add_argument('-mod',
     '--modification',
@@ -34,7 +34,7 @@ parser.add_argument('-e',
     help='error type to use for plots, either min/max (minmax), standard deviations (stds) or standard errors (ses)')
 parser.add_argument('-t',
     '--type',
-    choices=['individual', 'grouped', 'grouped_3'],
+    choices=['individual', 'grouped', 'grouped_3', 'shift'],
     default='individual',
     help='type of plot to make')
 parser.add_argument('-f',
@@ -64,6 +64,11 @@ if mode == 'acc' and dataset == 'ISIC':
 if mode == 'skAUC' and dataset == 'ISIC':
     baseline = [0.856] * 10
 
+if mode == 'acc' and dataset == 'CNMC':
+    baseline = [0.889] * 10
+if mode == 'skAUC' and dataset == 'CNMC':
+    baseline = [0.951] * 10
+
 # create a folder to store results if it doesn't exist yet
 plotpath = os.path.join(os.path.dirname(os.getcwd()), 'outputs/results/plots')
 if not os.path.exists(plotpath):
@@ -71,6 +76,120 @@ if not os.path.exists(plotpath):
 
 # create empty dictionaries to store results
 results_dict = {}
+
+if plottype == 'shift':
+    # for which modifications to plot
+    modifications = ['small_easy', 'small_random', 'small_clusters',
+    'small_hard', 'imbalance_classes', 'add_noise_speckle', 'add_noise_gaussian', 'grayscale',
+    'hsv', 'image_rot', 'image_zoom', 'image_translation']
+
+    # modifications = ['small_easy', 'small_random', 'small_clusters',
+    # 'small_hard', 'imbalance_classes']
+
+    # modifications = ['add_noise_gaussian', 'grayscale',
+    # 'hsv', 'image_rot', 'image_zoom', 'image_translation']
+
+    # create empty pandas dataframe
+    data = pd.DataFrame(columns=['modification', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'])
+
+    # initialize empty dictionaries to store minimum and maximum values in
+    min_values = {'0.1': [], '0.2': [], '0.3': [], '0.4': [], '0.5': [], '0.6': [], '0.7': [], '0.8': [], '0.9': [], '1.0': []}
+    max_values = {'0.1': [], '0.2': [], '0.3': [], '0.4': [], '0.5': [], '0.6': [], '0.7': [], '0.8': [], '0.9': [], '1.0': []}
+    std_values = {'0.1': [], '0.2': [], '0.3': [], '0.4': [], '0.5': [], '0.6': [], '0.7': [], '0.8': [], '0.9': [], '1.0': []}
+    se_values = {'0.1': [], '0.2': [], '0.3': [], '0.4': [], '0.5': [], '0.6': [], '0.7': [], '0.8': [], '0.9': [], '1.0': []}
+
+    # do for every modification
+    for mod in modifications:
+        # create empty entry in nested dictionary
+        results_dict[mod] = {}
+
+        # initialize empty dictionary to save everything in for dataframe
+        dict_df = {}
+
+        # create entries in dictionary
+        dict_df['modification'] = mod
+        # if type == 'absAUC': dict_df['type'] = 'dAUC'
+
+        # now do for every split
+        for split in splits:
+            # read results for the corresponding split
+            resultsfile = os.path.join(os.path.dirname(os.getcwd()), 'outputs/results/results_shift_{}_{}_all.xlsx'.format(args['dataset'], split))
+
+            # load the results
+            results = pd.read_excel(resultsfile, sheet_name='detect_shift')
+
+            # get the results for the modification
+            result_values = [results.query('dataset2==@dataset2')['absAUC'].item() for dataset2 in results['dataset2'] if mod in dataset2]
+
+            # store values in a dictionary
+            results_dict[mod][split] = result_values
+
+        # create an anonymous function that gets every nth value for each split and makes a list out of it
+        values = lambda n: [results_dict[mod][split][n] for split in splits]
+
+        # add the mean values for every value to dictionary
+        results_dict[mod]['means'] = np.asarray([np.round(np.mean(values(n)),3) for n in range(len(x_pct))])
+
+        # do the same for standard deviations, standard errors and min and max values (for plotting)
+        results_dict[mod]['stds'] = np.asarray([np.round(np.std(values(n)),3) for n in range(len(x_pct))])
+        results_dict[mod]['ses'] = np.asarray([np.round(np.std(values(n))/np.sqrt(len(values(n))),3) for n in range(len(x_pct))])
+        results_dict[mod]['mins'] = np.asarray([np.round(np.min(values(n)),3) for n in range(len(x_pct))])
+        results_dict[mod]['maxs'] = np.asarray([np.round(np.max(values(n)),3) for n in range(len(x_pct))])
+
+    # create figure for plotting
+    plt.figure()
+    sns.set(style="darkgrid")
+
+    palette = sns.husl_palette(len(modifications))
+    # sns.lineplot(x_pct, means, linewidth=2.5, color=palette[i])
+
+    # plt.plot(x_pct, baseline, '--', marker='', color='black', linewidth=1.5, alpha=0.6, label="baseline")
+
+    for i, mod in enumerate(modifications):
+        # create cleaner names for plotting
+        if mod == "add_noise_gaussian": plotname = "Gaussian noise"
+        if mod == "add_noise_poisson": plotname = "Poisson noise"
+        if mod == "add_noise_salt_and_pepper": plotname = "Salt & pepper noise"
+        if mod == "add_noise_speckle": plotname = "Speckle noise"
+        if mod == "image_rot": plotname = "Image rotation"
+        if mod == "image_translation": plotname = "Image translation"
+        if mod == "image_zoom": plotname = "Image zoom"
+        if mod == "imbalance_classes": plotname = "Class imbalance"
+        if mod == "grayscale": plotname = "Grayscale"
+        if mod == "hsv": plotname = "Hue, Saturation, Value"
+        if mod == "small_random": plotname = "Dataset size, random images"
+        if mod == "small_easy": plotname = "Dataset size, easy to classify images"
+        if mod == "small_hard": plotname = "Dataset size, hard to classify images"
+        if mod == "small_clusters": plotname = "Dataset size, image clusters"
+
+        # plot the mean values
+        plt.errorbar(x_pct, results_dict[mod]['means'], fmt='-o', color=palette[i], label=plotname)
+
+        # plot the right error band
+        if errortype == "minmax":
+            plt.fill_between(x_pct, results_dict[mod]['mins'], results_dict[mod]['maxs'], color=palette[i], alpha=0.2)
+        if errortype == "stds":
+            plt.fill_between(x_pct, results_dict[mod]['means']-results_dict[mod]['stds'], results_dict[mod]['means']+results_dict[mod]['stds'], color=palette[i], alpha=0.2)
+        if errortype == "ses":
+            plt.fill_between(x_pct, results_dict[mod]['means']-results_dict[mod]['ses'], results_dict[mod]['means']+results_dict[mod]['ses'], color=palette[i], alpha=0.2)
+
+    # set axis labels
+    plt.xlabel("Fraction of images modified")
+    plt.ylabel('$\Delta$AUC')
+
+    # set axes limits
+    plt.xlim(0.05, 1.05)
+    plt.ylim(0.0, 0.5)
+
+    # set plot title and legend
+    # plt.title("Shift for different modifications")
+    plt.legend(loc="upper left")
+
+    # save plot
+    plt.savefig(os.path.join(plotpath, '{}_{}_{}_{}.png'.format(dataset, args['type'], args['errortype'], len(modifications))))
+
+    plt.show()
+
 
 # for individual plots
 if plottype == 'individual':
@@ -296,9 +415,13 @@ if plottype == 'grouped_3':
         print("Creating subplot for fraction {}...".format(frac_to_plot))
 
         # get list of all modifications
+        # modifications = ['small_easy', 'small_random', 'small_clusters',
+        # 'small_hard', 'imbalance_classes', 'add_noise_speckle', 'add_noise_gaussian',
+        # 'add_noise_poisson', 'add_noise_salt_and_pepper', 'grayscale',
+        # 'hsv', 'image_rot', 'image_zoom', 'image_translation']
+
         modifications = ['small_easy', 'small_random', 'small_clusters',
-        'small_hard', 'imbalance_classes', 'add_noise_speckle', 'add_noise_gaussian',
-        'add_noise_poisson', 'add_noise_salt_and_pepper', 'grayscale',
+        'small_hard', 'imbalance_classes', 'add_noise_speckle', 'add_noise_gaussian', 'grayscale',
         'hsv', 'image_rot', 'image_zoom', 'image_translation']
 
         # create empty pandas dataframe
@@ -423,7 +546,10 @@ if plottype == 'grouped_3':
         ax.grid(True, which='major', axis='y')
 
     # set cleaner labels for x axis
-    axs[-1].set_xticklabels(['A \n Size\neasy', 'B \n Size\nrandom', 'C \n Size\nclusters', 'D \n Size\nhard', 'E \n Class imbalance', 'F \n Speckle\nnoise', 'G \n Gaussian\nnoise', 'H \n Poisson\nnoise', 'I \n Salt & pepper\nnoise', 'J \n Grayscale', 'K \n Hue,\nSaturation,\nValue', 'L \n Rotation', 'M \n Zoom', 'N \n Translation'], fontweight='bold')
+    # axs[-1].set_xticklabels(['A \n Size\neasy', 'B \n Size\nrandom', 'C \n Size\nclusters', 'D \n Size\nhard', 'E \n Class imbalance', 'F \n Speckle\nnoise', 'G \n Gaussian\nnoise', 'H \n Poisson\nnoise', 'I \n Salt & pepper\nnoise', 'J \n Grayscale', 'K \n Hue,\nSaturation,\nValue', 'L \n Rotation', 'M \n Zoom', 'N \n Translation'], fontweight='bold')
+    axs[-1].set_xticklabels(['A \n Size\neasy', 'B \n Size\nrandom', 'C \n Size\nclusters', 'D \n Size\nhard', 'E \n Class imbalance', 'F \n Speckle\nnoise', 'G \n Gaussian\nnoise', 'H \n Grayscale', 'I \n Hue,\nSaturation,\nValue', 'J \n Rotation', 'K \n Zoom', 'L \n Translation'])
+
 
     # save plot
-    plt.savefig(os.path.join(plotpath, '{}_{}_{}_grouped-3.png'.format(dataset, mode, errortype)))
+    plt.savefig(os.path.join(plotpath, '{}_{}_{}_grouped-3-2.png'.format(dataset, mode, errortype)))
+    plt.show()
