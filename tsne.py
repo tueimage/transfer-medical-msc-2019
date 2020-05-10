@@ -33,6 +33,8 @@ from sklearn.manifold import TSNE
 from PIL import Image
 import rasterfairy
 from main import NeuralNetwork
+import seaborn as sns
+from mpl_toolkits.mplot3d import Axes3D
 
 def main():
     # read parameters for wanted dataset from config file
@@ -49,7 +51,7 @@ def main():
     seed = 28
 
     # if features are not yet extracted, extract them
-    if not os.path.exists(os.path.join(config['output_path'], 'pca_features.p')):
+    if not os.path.exists(os.path.join(config['output_path'], 'pca_features_50.p')):
         # load the pre-trained source network
         print("loading network...")
         dataset = args['dataset']
@@ -74,7 +76,9 @@ def main():
 
         # fit PCA
         print("applying PCA...")
-        pca = PCA(.90)
+        # pca = PCA(.90)
+        pca = PCA(n_components=50)
+        # print('Cumulative explained variation for 50 principal components: {}'.format(np.sum(pca.explained_variance_ratio_)))
         pca.fit(train_features)
 
         # apply PCA to features and test data
@@ -89,12 +93,12 @@ def main():
 
         # save extracted features in a pickle file
         print("saving features...")
-        pickle.dump([images, pca_features, pca], open(os.path.join(config['output_path'], 'pca_features.p'), 'wb'))
+        pickle.dump([images, pca_features, pca], open(os.path.join(config['output_path'], 'pca_features_50.p'), 'wb'))
 
     else:
         # load features if they are already once extracted
         print("loading features...")
-        images, pca_features, pca = pickle.load(open(os.path.join(config['output_path'], 'pca_features.p'), 'rb'))
+        images, pca_features, pca = pickle.load(open(os.path.join(config['output_path'], 'pca_features_50.p'), 'rb'))
 
     for img, f in list(zip(images, pca_features))[0:5]:
         print("image: %s, features: %0.2f,%0.2f,%0.2f,%0.2f... "%(img, f[0], f[1], f[2], f[3]))
@@ -119,135 +123,218 @@ def main():
     # pca_features = pca_features[:num_images_to_plot]
 
     print("performing t-SNE...")
-    tsne = TSNE(n_components=2, learning_rate=150, perplexity=30, random_state=seed, angle=0.2, verbose=2).fit_transform(np.array(pca_features))
+    if args['dims'] == '2D':
+        perplexity = int(np.sqrt(num_images_to_plot))
+        tsne = TSNE(n_components=2, learning_rate=150, perplexity=perplexity, random_state=seed, angle=0.2, verbose=2).fit_transform(np.array(pca_features))
+    if args['dims'] == '3D':
+        perplexity = int(np.sqrt(num_images_to_plot))
+        tsne = TSNE(n_components=3, learning_rate=150, perplexity=perplexity, random_state=seed, angle=0.2, verbose=2).fit_transform(np.array(pca_features))
 
-    print("creating t-SNE image...")
-    # normalize the embedding
-    tx, ty = tsne[:,0], tsne[:,1]
-    tx = (tx-np.min(tx)) / (np.max(tx) - np.min(tx))
-    ty = (ty-np.min(ty)) / (np.max(ty) - np.min(ty))
+    if args['mode'] == 'images':
+        print("creating t-SNE image...")
+        # normalize the embedding
+        tx, ty = tsne[:,0], tsne[:,1]
+        tx = (tx-np.min(tx)) / (np.max(tx) - np.min(tx))
+        ty = (ty-np.min(ty)) / (np.max(ty) - np.min(ty))
 
-    width = 4000
-    height = 3000
-    max_dim = 100
+        width = 4000
+        height = 3000
+        max_dim = 100
 
-    full_image = Image.new('RGBA', (width, height))
-    for img, x, y in zip(images, tx, ty):
-        tile = Image.open(img)
-        if 'ISIC' in args['dataset']:
-            if 'malignant' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "red")
+        full_image = Image.new('RGBA', (width, height))
+        for img, x, y in zip(images, tx, ty):
+            tile = Image.open(img)
+            if 'ISIC' in args['dataset']:
+                if 'malignant' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "red")
 
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
-            if 'benign' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "green")
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
+                if 'benign' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "green")
 
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
 
-        if 'CNMC' in args['dataset']:
-            if 'leukemic' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "red")
+            if 'CNMC' in args['dataset']:
+                if 'leukemic' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "red")
 
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
-            if 'normal' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "green")
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
+                if 'normal' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "green")
 
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
 
 
-        rs = max(1, tile.width/max_dim, tile.height/max_dim)
-        tile = tile.resize((int(tile.width/rs), int(tile.height/rs)), Image.ANTIALIAS)
-        full_image.paste(tile, (int((width-max_dim)*x), int((height-max_dim)*y)), mask=tile.convert('RGBA'))
+            rs = max(1, tile.width/max_dim, tile.height/max_dim)
+            tile = tile.resize((int(tile.width/rs), int(tile.height/rs)), Image.ANTIALIAS)
+            full_image.paste(tile, (int((width-max_dim)*x), int((height-max_dim)*y)), mask=tile.convert('RGBA'))
 
-    plt.figure(figsize = (16,12))
-    plt.imshow(full_image)
+        plt.figure(figsize = (16,12))
+        plt.imshow(full_image)
 
-    full_image.save(os.path.join(config['output_path'], 'tSNE-{}.png'.format(args['dataset'])))
+        full_image.save(os.path.join(config['output_path'], 'tSNE-images-{}-{}-2D-pca_50.png'.format(args['dataset'], num_images_to_plot)))
 
-    print("creating t-SNE grid image...")
-    # get dimensions for the raster that is closest to a square, where all the images fit
-    max_side = int(num_images_to_plot**(1/2.0))
-    for ny in range(2, max_side+1)[::-1]:
-        nx = num_images_to_plot // ny
-        if (ny * nx) == num_images_to_plot:
-            break
+        print("creating t-SNE grid image...")
+        # get dimensions for the raster that is closest to a square, where all the images fit
+        max_side = int(num_images_to_plot**(1/2.0))
+        for ny in range(2, max_side+1)[::-1]:
+            nx = num_images_to_plot // ny
+            if (ny * nx) == num_images_to_plot:
+                break
 
-    # assign to grid
-    grid_assignment = rasterfairy.transformPointCloud2D(tsne, target=(nx, ny))
+        # assign to grid
+        grid_assignment = rasterfairy.transformPointCloud2D(tsne, target=(nx, ny))
 
-    tile_width = 70
-    tile_height = 70
+        tile_width = 70
+        tile_height = 70
 
-    full_width = tile_width * nx
-    full_height = tile_height * ny
-    aspect_ratio = float(tile_width) / tile_height
+        full_width = tile_width * nx
+        full_height = tile_height * ny
+        aspect_ratio = float(tile_width) / tile_height
 
-    grid_image = Image.new('RGB', (full_width, full_height))
+        grid_image = Image.new('RGB', (full_width, full_height))
 
-    for img, grid_pos in zip(images, grid_assignment[0]):
-        idx_x, idx_y = grid_pos
-        x, y = tile_width * idx_x, tile_height * idx_y
-        # tile = Image.open(img)
-        tile = Image.open(img)
-        if 'ISIC' in args['dataset']:
-            if 'malignant' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "red")
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
-            if 'benign' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "green")
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
+        for img, grid_pos in zip(images, grid_assignment[0]):
+            idx_x, idx_y = grid_pos
+            x, y = tile_width * idx_x, tile_height * idx_y
+            # tile = Image.open(img)
+            tile = Image.open(img)
+            if 'ISIC' in args['dataset']:
+                if 'malignant' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "red")
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
+                if 'benign' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "green")
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
 
-        if 'CNMC' in args['dataset']:
-            if 'leukemic' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "red")
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
-            if 'normal' in img:
-                old_size = tile.size
-                new_size = (old_size[0]+20, old_size[1]+20)
-                new_im = Image.new("RGB", new_size, "green")
-                new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
-                tile = new_im
+            if 'CNMC' in args['dataset']:
+                if 'leukemic' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "red")
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
+                if 'normal' in img:
+                    old_size = tile.size
+                    new_size = (old_size[0]+20, old_size[1]+20)
+                    new_im = Image.new("RGB", new_size, "green")
+                    new_im.paste(tile, (int((new_size[0]-old_size[0])/2),int((new_size[1]-old_size[1])/2)))
+                    tile = new_im
 
-        tile_ar = float(tile.width) / tile.height  # center-crop the tile to match aspect_ratio
-        if (tile_ar > aspect_ratio):
-            margin = 0.5 * (tile.width - aspect_ratio * tile.height)
-            tile = tile.crop((margin, 0, margin + aspect_ratio * tile.height, tile.height))
-        else:
-            margin = 0.5 * (tile.height - float(tile.width) / aspect_ratio)
-            tile = tile.crop((0, margin, tile.width, margin + float(tile.width) / aspect_ratio))
-        tile = tile.resize((tile_width, tile_height), Image.ANTIALIAS)
-        grid_image.paste(tile, (int(x), int(y)))
+            tile_ar = float(tile.width) / tile.height  # center-crop the tile to match aspect_ratio
+            if (tile_ar > aspect_ratio):
+                margin = 0.5 * (tile.width - aspect_ratio * tile.height)
+                tile = tile.crop((margin, 0, margin + aspect_ratio * tile.height, tile.height))
+            else:
+                margin = 0.5 * (tile.height - float(tile.width) / aspect_ratio)
+                tile = tile.crop((0, margin, tile.width, margin + float(tile.width) / aspect_ratio))
+            tile = tile.resize((tile_width, tile_height), Image.ANTIALIAS)
+            grid_image.paste(tile, (int(x), int(y)))
 
-    plt.figure(figsize = (16,12))
-    plt.imshow(grid_image)
+        plt.figure(figsize = (16,12))
+        plt.imshow(grid_image)
 
-    grid_image.save(os.path.join(config['output_path'], 'tSNE-grid-{}.png'.format(args['dataset'])))
+        grid_image.save(os.path.join(config['output_path'], 'tSNE-grid-{}-{}-pca_50.png'.format(args['dataset'], num_images_to_plot)))
 
+    # for plotting points
+    if args['mode'] == 'points':
+        if args['dims'] == '2D':
+            print("creating t-SNE image...")
+
+            plt.figure(figsize=(16,10))
+
+            tx, ty = tsne[:,0], tsne[:,1]
+            y = []
+
+            # create labels for color coding
+            for img in images:
+                if 'ISIC' in args['dataset']:
+                    if 'malignant' in img:
+                        y.append(0)
+                    if 'benign' in img:
+                        y.append(1)
+
+                if 'CNMC' in args['dataset']:
+                    if 'leukemic' in img:
+                        y.append(0)
+                    if 'normal' in img:
+                        y.append(1)
+
+            # set red and green color palette for the classes
+            palette = sns.color_palette(['#00FF00', '#FF0000'])
+
+            # plot the data
+            sns.scatterplot(tx, ty, hue=y, legend='full', palette=palette)
+
+            # set legend
+            if 'ISIC' in args['dataset']:
+                plt.legend(labels=['malignant', 'benign'], loc="upper right")
+            if 'CNMC' in args['dataset']:
+                plt.legend(labels=['leukemic', 'normal'], loc="upper right")
+
+            # save the t-SNE plot
+            plt.savefig(os.path.join(config['output_path'], 'tSNE-points-{}-{}-2D-pca_50.png'.format(args['dataset'], num_images_to_plot)))
+
+        if args['dims'] == '3D':
+            print("creating t-SNE image...")
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+
+            tx, ty, tz = tsne[:,0], tsne[:,1], tsne[:,2]
+            y = []
+
+            # create labels for color coding
+            for img in images:
+                if 'ISIC' in args['dataset']:
+                    if 'malignant' in img:
+                        y.append(0)
+                    if 'benign' in img:
+                        y.append(1)
+
+                if 'CNMC' in args['dataset']:
+                    if 'leukemic' in img:
+                        y.append(0)
+                    if 'normal' in img:
+                        y.append(1)
+
+            ax.scatter(tx, ty, tz, c=y, cmap="RdYlGn_r", alpha=1.0)
+
+            # plot the data
+            # sns.scatterplot(tx, ty, hue=y, legend='full', palette=palette)
+
+            # set legend
+            if 'ISIC' in args['dataset']:
+                plt.legend(labels=['benign', 'malignant'], loc="upper right")
+            if 'CNMC' in args['dataset']:
+                plt.legend(labels=['normal', 'leukemic'], loc="upper right")
+
+            # plt.show()
+
+            # save the t-SNE plot
+            plt.savefig(os.path.join(config['output_path'], 'tSNE-points-{}-{}-3D-pca_50.png'.format(args['dataset'], num_images_to_plot)))
 
 if __name__ == "__main__":
     # choose GPU for training
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
     # construct argument parser and parse the arguments
     parser = argparse.ArgumentParser()
@@ -761,6 +848,16 @@ if __name__ == "__main__":
         type=int,
         default=0,
         help='number of images to use for t-SNE plotting, if no number is given, all images are used')
+    parser.add_argument('-m',
+        '--mode',
+        choices=['images', 'points'],
+        default='images',
+        help='what to plot, images or points. Default are images')
+    parser.add_argument('-di',
+        '--dims',
+        choices=['2D', '3D'],
+        default='2D',
+        help='how many dimensions to plot. default is 2D')
     args = vars(parser.parse_args())
 
     main()

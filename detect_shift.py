@@ -21,7 +21,7 @@ from scipy.stats import binom_test, kstest, ks_2samp
 from openpyxl import load_workbook, Workbook
 
 # choose GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -731,7 +731,7 @@ print(stat_ks, p_val_ks)
 absAUC = round(abs(skAUC-0.5),3)
 
 # create a savepath for results and create a sheet to avoid errors
-savefile = os.path.join(config['output_path'], 'results_shift_CNN_2.xlsx')
+savefile = os.path.join(config['output_path'], 'results_shift_CNN_3.xlsx')
 
 if not os.path.exists(config['output_path']):
     os.makedirs(config['output_path'])

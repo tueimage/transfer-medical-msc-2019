@@ -99,7 +99,7 @@ class NeuralNetwork:
 
         # check which optimizer should be used
         if self.optimizer == 'adam':
-            self.optimizer = Adam(lr=self.learning_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+            self.optimizer = Adam(lr=self.learning_rate)
         elif self.optimizer == 'rmsprop':
             self.optimizer = RMSprop(lr=self.learning_rate)
         elif self.optimizer == 'sgd':
@@ -185,17 +185,17 @@ class NeuralNetwork:
         print("mode: {}".format(mode))
 
         # initialize image generators
-        self.gen_validation.reset()
+        self.gen_test.reset()
         self.init_generators(shuffle_training=False, shuffle_validation=False, shuffle_test=False, batchsize=1)
 
         # make predictions
-        preds = self.model.predict_generator(self.gen_validation, verbose=1)
+        preds = self.model.predict_generator(self.gen_test, verbose=1)
 
         # preds is an array like [[x] [x] [x]], make it into array like [x x x]
         preds = np.asarray([label for sublist in preds for label in sublist])
 
         # get true labels
-        true_labels = self.gen_validation.classes
+        true_labels = self.gen_test.classes
 
         # calculate AUC and sklearn AUC
         fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels)
@@ -310,8 +310,8 @@ def main():
         os.environ['PYTHONHASHSEED'] = str(seed)
         np.random.seed(seed)
         random.seed(seed)
-        tf.set_random_seed(seed)
-        # tf.random.set_seed(seed)
+        # tf.set_random_seed(seed)
+        tf.random.set_seed(seed)
 
         # set parameters for training
         learning_rate = 5e-6
