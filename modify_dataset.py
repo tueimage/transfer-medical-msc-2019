@@ -410,7 +410,7 @@ if args['modification'] == 'small_easy':
     malignant_paths_sorted = [label for pred,label in szip_malignant]
 
     # now find out how many image names should be removed from both sides of the list
-    # both sides because lost and highest prediction values correspond to most confident predictions
+    # both sides because lowest and highest prediction values correspond to most confident predictions
     toremove = int(np.ceil((len(benign_paths_sorted) - int(np.ceil(args['fraction']*len(benign_paths_sorted))))/2))
     # not completely right, 0.1 will be 0.9, 0.2 will be 0.8 etc..
 
@@ -817,8 +817,8 @@ if args['modification'] == 'hsv':
         # convert image to HSV values
         HSV_image = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
 
-        # multiple hue value with random number between 0.9 and 1.1,
-        # multiple saturation and brightness with random number between 0.7 and 1.3
+        # multiple hue value with random number between 0.8 and 1.2,
+        # multiple saturation and brightness with random number between 0.5 and 1.5
         HSV_image = HSV_image.astype('float32')
         HSV_image[:,:,0] *= np.random.uniform(0.8,1.2)
         HSV_image[:,:,1] *= np.random.uniform(0.5,1.5)
