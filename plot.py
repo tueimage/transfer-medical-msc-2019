@@ -35,7 +35,7 @@ parser.add_argument('-e',
     help='error type to use for plots, either min/max (minmax), standard deviations (stds) or standard errors (ses)')
 parser.add_argument('-t',
     '--type',
-    choices=['individual', 'grouped', 'grouped_3', 'shift', 'shift_size', 'grouped_type', 'shift_AUC', 'heatmap'],
+    choices=['individual', 'grouped', 'grouped_3', 'shift', 'shift_size', 'grouped_type', 'shift_AUC', 'heatmap', 'heatmap_3'],
     default='individual',
     help='type of plot to make')
 parser.add_argument('-tt',
@@ -82,6 +82,7 @@ if not os.path.exists(plotpath):
 
 # create empty dictionaries to store results
 results_dict = {}
+
 if plottype == 'heatmap':
     # get list of all modifications
     modifications = ['small_easy', 'small_random', 'small_clusters',
@@ -166,25 +167,38 @@ if plottype == 'heatmap':
     data = data.set_index('modification')
 
     # create cleaner plot labels
-    data.rename(index={'add_noise_gaussian': 'Gaussian noise', 'image_rot': 'Image rotation',
-        'image_translation': 'Image translation', 'image_zoom': 'Image zoom',
-        'imbalance_classes': 'Class imbalance', 'grayscale': 'Grayscale',
-        'hsv': 'Hue, Saturation, Value', 'small_random': 'Size, random',
-        'small_easy': 'Size, easy', 'small_hard': 'Size, hard',
-        'small_clusters': 'Size, clusters'}, inplace=True)
+    # data.rename(index={'add_noise_gaussian': 'Gaussian noise', 'image_rot': 'Image rotation',
+    #     'image_translation': 'Image translation', 'image_zoom': 'Image zoom',
+    #     'imbalance_classes': 'Class imbalance', 'grayscale': 'Grayscale',
+    #     'hsv': 'Hue, Saturation, Value', 'small_random': 'Size, random',
+    #     'small_easy': 'Size, easy', 'small_hard': 'Size, hard',
+    #     'small_clusters': 'Size, clusters'}, inplace=True)
 
-    fig, (ax1, ax2) = plt.subplots(2,1)
+    data.rename(index={'add_noise_gaussian': 'img_gauss', 'image_rot': 'img_rot',
+        'image_translation': 'img_trans', 'image_zoom': 'img_zoom',
+        'imbalance_classes': 'class_imbalance', 'grayscale': 'img_grayscale',
+        'hsv': 'img_hsv', 'small_random': 'size_random',
+        'small_easy': 'size_easy', 'small_hard': 'size_hard',
+        'small_clusters': 'size_clusters'}, inplace=True)
+
+    fig, (ax1, ax2) = plt.subplots(2,1, figsize=(8,5))
 
     # create some space between subplots for x-axis title
     fig.tight_layout(pad=1.5)
+
+    if type != 'fine_tuning':
+        fig.subplots_adjust(left=0.5)
 
     # create heatmaps
     im = sns.heatmap(data[:5], annot=True, cmap='RdYlGn', vmin=0.5, vmax=1.0, cbar=False, ax=ax1)
     sns.heatmap(data[5:], annot=True, cmap='RdYlGn', vmin=0.5, vmax=1.0, cbar=False, ax=ax2)
 
-    # created shared colorbar
-    mappable = im.get_children()[0]
-    plt.colorbar(mappable, ax=[ax1,ax2], orientation='vertical', drawedges=False, label='AUC')
+    if type == 'fine_tuning':
+        fig.subplots_adjust(left=0.4)
+
+        # created shared colorbar
+        mappable = im.get_children()[0]
+        fig.colorbar(mappable, ax=[ax1,ax2], orientation='vertical', drawedges=False, label='AUC')
 
     # set cleaner name for title
     if type == 'SVM':
@@ -199,8 +213,9 @@ if plottype == 'heatmap':
     if dataset == 'CNMC':
         datasetname = 'C-NMC'
 
-    # set plot title
-    plt.suptitle('{}, {}'.format(datasetname, plottitle))
+    # set plot title, in the middel of x-axis
+    mid = (fig.subplotpars.right + fig.subplotpars.left)/2
+    plt.suptitle('{}, {}'.format(datasetname, plottitle), x=mid)
 
     # set plot axes
     ax1.set_ylabel('')
@@ -208,6 +223,20 @@ if plottype == 'heatmap':
     ax1.set_xticklabels(['1.0', '0.9', '0.8', '0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'])
     ax2.set_ylabel('')
     ax2.set_xlabel('Fraction of dataset images modified')
+    # ax1.set_yticks(style='italic')
+    # ax2.set_yticks(style='italic')
+
+    # locs, labels = plt.yticks()
+    # plt.yticks(locs, labels, style='italic')
+
+    # locs, labels = ax2.get_yticks()
+
+    ax1.set_yticklabels(ax1.get_yticklabels(), style='italic')
+    ax2.set_yticklabels(ax2.get_yticklabels(), style='italic')
+
+    if type != 'SVM':
+        ax1.set_yticks([])
+        ax2.set_yticks([])
 
     # save figure
     plt.savefig(os.path.join(plotpath, 'heatmap_NOOUTL_{}_{}.png'.format(dataset, type)), bbox_inches='tight')
