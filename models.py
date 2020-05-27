@@ -1,12 +1,15 @@
 from keras.models import Model, Sequential
 from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
-from keras.layers import Reshape, Activation, Dropout, BatchNormalization
+from keras.layers import Activation, Dropout, BatchNormalization
 from keras.optimizers import *
 from keras import regularizers
-import keras
+
 
 class VGG16:
-    def __init__(self, dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224,224,3)):
+    """Create VGG16 model."""
+
+    def __init__(self, dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224, 224, 3)):
+        """Initialize class."""
         self.dropout_rate = dropout_rate
         self.l2_rate = l2_rate
         self.batchnorm = batchnorm
@@ -14,7 +17,7 @@ class VGG16:
         self.input_shape = input_shape
 
     def conv_bn_act(self, input_tensor, feature_channels=64):
-        # function to create a stack of 3 layers, convolution + batch norm + activation
+        """Create a stack of 3 layers, convolution + batch norm + activation."""
         if self.l2_rate != 0.0:
             conv = Conv2D(feature_channels, (3, 3), padding='same', data_format='channels_last', kernel_regularizer=regularizers.l2(self.l2_rate))(input_tensor)
         else:
@@ -27,6 +30,7 @@ class VGG16:
         return output_tensor
 
     def get_model(self):
+        """Create the model architecture."""
         input_tensor = Input(shape=self.input_shape)
 
         output_tensor = self.conv_bn_act(input_tensor, feature_channels=64)
@@ -62,7 +66,9 @@ class VGG16:
         model = Model(inputs=input_tensor, outputs=predictions)
         return model
 
+
 def get_MLP(input_shape=(150528,)):
+    """Create MLP."""
     model = Sequential()
     model.add(Dense(256, activation='relu', input_shape=input_shape))
     model.add(Dense(256, activation='relu'))
@@ -72,6 +78,7 @@ def get_MLP(input_shape=(150528,)):
 
 
 def get_shiftCNN(input_shape=(224, 224, 3)):
+    """Create shift detection model."""
     model = Sequential()
     model.add(Conv2D(32, (3, 3), input_shape=input_shape, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))

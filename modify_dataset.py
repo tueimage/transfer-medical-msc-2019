@@ -7,22 +7,18 @@ import cv2
 import itertools
 import random
 import sys
-import keras
 import pickle
 from keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator
 from utils import *
 from main import NeuralNetwork
-from scipy.stats import entropy
 import time
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
 
 # choose GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # set a seed for reproducability
-seed=28
+seed = 28
 
 # construct argument parser and parse the arguments
 parser = argparse.ArgumentParser()
@@ -75,7 +71,6 @@ for classname in config['classes']:
     val_savedir = os.path.join(validationpath, classname)
     test_savedir = os.path.join(testpath, classname)
 
-
     if args['modification'] == 'add_noise':
         train_savedir2 = train_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
         val_savedir2 = val_savedir.replace(datasetpath, '{}_{}_{}_f={}'.format(datasetpath, args['modification'], args['noise'], args['fraction']))
@@ -123,7 +118,7 @@ if args['modification'] == 'change_split':
         allpaths[key] = val
 
     # percentages to split data in training, val and test set
-    split_pct = {'training': .8, 'validation': .1, 'test':.1}
+    split_pct = {'training': .8, 'validation': .1, 'test': .1}
 
     # split the shuffled images and save in right directories
     for key, val in allpaths.items():
@@ -285,7 +280,7 @@ if args['modification'] == 'small_hard':
     gen_training = gen_obj_training.flow_from_directory(
         trainingpath,
         class_mode="binary",
-        target_size=(224,224),
+        target_size=(224, 224),
         color_mode="rgb",
         shuffle=False,
         batch_size=1)
@@ -320,8 +315,8 @@ if args['modification'] == 'small_hard':
     szip_malignant = sorted(zip(malignant_preds, malignant_gen_paths))
 
     # create a list of only the image names, these will now be ordered in the order of the corresponding prediction values
-    benign_paths_sorted = [label for pred,label in szip_benign]
-    malignant_paths_sorted = [label for pred,label in szip_malignant]
+    benign_paths_sorted = [label for pred, label in szip_benign]
+    malignant_paths_sorted = [label for pred, label in szip_malignant]
 
     # now find out how many image names should be removed from both sides of the list
     # both sides because lost and highest prediction values correspond to most confident predictions
@@ -371,7 +366,7 @@ if args['modification'] == 'small_easy':
     gen_training = gen_obj_training.flow_from_directory(
         trainingpath,
         class_mode="binary",
-        target_size=(224,224),
+        target_size=(224, 224),
         color_mode="rgb",
         shuffle=False,
         batch_size=1)
@@ -406,8 +401,8 @@ if args['modification'] == 'small_easy':
     szip_malignant = sorted(zip(malignant_preds, malignant_gen_paths))
 
     # create a list of only the image names, these will now be ordered in the order of the corresponding prediction values
-    benign_paths_sorted = [label for pred,label in szip_benign]
-    malignant_paths_sorted = [label for pred,label in szip_malignant]
+    benign_paths_sorted = [label for pred, label in szip_benign]
+    malignant_paths_sorted = [label for pred, label in szip_malignant]
 
     # now find out how many image names should be removed from both sides of the list
     # both sides because lowest and highest prediction values correspond to most confident predictions
@@ -494,55 +489,19 @@ if args['modification'] == 'small_clusters':
             # save from all the feature channels the index, lower bound and upper bound
             # for now, just use first image
             # im_index = 0
-            feat_map = train_features[im_index,:,:,:]
+            feat_map = train_features[im_index, :, :, :]
             # feat_map = train_features[im_index,:]
 
             bounds = []
             pdfs = []
 
             for channel_id in range(feat_map.shape[-1]):
-            # for channel_id in [0,1]:
                 # take only one of the feature channels and flatten it
-                feat_channel = feat_map[:,:,channel_id].flatten()
-                # feat_channel = feat_map
-                # print(len(feat_channel))
-                # print(feat_channel)
-
-                # find the lower and upper bound for this feature channel
-                # lower_bound = np.min(feat_channel)
-                # upper_bound = np.max(feat_channel)
-                #
-                # # save the channel index along with the lower and upper bounds in a list
-                # bounds.append([channel_id, lower_bound, upper_bound])
-                # print(bounds)
-
-                # get the histogram edges when each bin should contain an equal amount of pixels
-                # histedges_equal = np.interp(np.linspace(0, len(feat_channel), n_bins+1), np.arange(len(feat_channel)), np.sort(feat_channel))
-                # print(histedges_equal)
-
-                # ignore the possible division by zero warning
-                # if we want every bin to have roughly equal number of pixels, sometimes
-                # a bin has only 0's, and width of this bin will be 0
-                # with np.errstate(divide='ignore',invalid='ignore'):
-                # create a histogram of the feat_channel
-                # density=True makes it a density function, because we want the distribution
-                # n, bins, patches = plt.hist(feat_channel, histedges_equal, density=True, edgecolor='black', linewidth=1.2)
-
-                # f = plt.figure()
-
-                # n, bins, patches = plt.hist(feat_channel, density=True, edgecolor='black', linewidth=1.2, histtype='step')
-                #
-                # print(n)
-                # print(bins)
-
-
+                feat_channel = feat_map[:, :, channel_id].flatten()
                 n, bins = np.histogram(feat_channel, density=True)
 
                 # add the pdf to a list
                 pdfs.append(n * np.diff(bins))
-                # pdfs.append(pdf)
-
-
 
             # convert the pdfs to an array and concatenate them
             pdfs = np.concatenate(np.asarray(pdfs))
@@ -560,9 +519,7 @@ if args['modification'] == 'small_clusters':
         pdfs_images = np.genfromtxt(os.path.join(config['output_path'], 'pdfs.csv'), delimiter=',')
 
     # add a small smoothing factor to avoid dealing with zero values and KL values of inf
-    pdfs_images = pdfs_images +  0.00001
-
-    print(pdfs_images.shape)
+    pdfs_images = pdfs_images + 0.00001
 
     # the filenames from the generator are for both classes
     # we want to split them up, along with the pdfs values to keep the class balance
@@ -571,17 +528,17 @@ if args['modification'] == 'small_clusters':
         if args['dataset'] in ['ISIC_2', 'ISIC_3', 'ISIC_4', 'ISIC_5', 'ISIC_6']:
             if "malignant" in filename:
                 malignant_paths.append(filename)
-                malignant_pdfs.append(pdfs_images[i,:])
+                malignant_pdfs.append(pdfs_images[i, :])
             if "benign" in filename:
                 benign_paths.append(filename)
-                benign_pdfs.append(pdfs_images[i,:])
+                benign_pdfs.append(pdfs_images[i, :])
         if args['dataset'] in ['CNMC_2', 'CNMC_3', 'CNMC_4', 'CNMC_5', 'CNMC_6']:
             if "leukemic" in filename:
                 malignant_paths.append(filename)
-                malignant_pdfs.append(pdfs_images[i,:])
+                malignant_pdfs.append(pdfs_images[i, :])
             if "normal" in filename:
                 benign_paths.append(filename)
-                benign_pdfs.append(pdfs_images[i,:])
+                benign_pdfs.append(pdfs_images[i, :])
 
     malignant_pdfs = np.array(malignant_pdfs)
     benign_pdfs = np.array(benign_pdfs)
@@ -611,24 +568,24 @@ if args['modification'] == 'small_clusters':
             random_id = np.random.randint(pdfs.shape[0])
 
             # take the image pdf belonging to the random id
-            random_pdf = pdfs[random_id,:]
+            random_pdf = pdfs[random_id, :]
 
             KLs = []
             # now calculate the KL divergence of the random pdf with all the other pdfs
             print("Calculating distance between image {} and all other images".format(random_id))
             for i in range(pdfs.shape[0]):
                 # calculate the distance between the distributions, two times because KL divergence is not symmetric
-                distance = KL_divergence(random_pdf, pdfs[i,:]) + KL_divergence(pdfs[i,:], random_pdf)
+                distance = KL_divergence(random_pdf, pdfs[i, :]) + KL_divergence(pdfs[i, :], random_pdf)
                 KLs.append(distance)
 
             # sort the distances and the image paths in the same way
             distances_paths = sorted(zip(KLs, pdfs_paths))
 
             # create a list of only the sorted image paths
-            pdfs_paths_sorted = [pdfs_path for dist,pdfs_path in distances_paths]
+            pdfs_paths_sorted = [pdfs_path for dist, pdfs_path in distances_paths]
 
             pdfs_paths = pdfs_paths[nn:]
-            pdfs = pdfs[nn:,:]
+            pdfs = pdfs[nn:, :]
 
             print("amount of images left: {}".format(len(pdfs_paths)))
 
@@ -702,7 +659,7 @@ if args['modification'] == 'image_translation':
         trans_pct = 0.1
         x_trans = trans_pct * w
         y_trans = trans_pct * h
-        mat = np.float32([[1,0,x_trans], [0,1,y_trans]])
+        mat = np.float32([[1, 0, x_trans], [0, 1, y_trans]])
 
         # translate the image
         translated_image = cv2.warpAffine(image, mat, (h, w))
@@ -733,8 +690,8 @@ if args['modification'] == 'image_zoom':
         ymax = int((h/2)+(zoom_pct*h/2))
 
         # zoom images
-        zoomed_image = cv2.resize(image,None,fx=zoom_pct, fy=zoom_pct, interpolation=cv2.INTER_LINEAR)
-        zoomed_image = zoomed_image[xmin:xmax,ymin:ymax]
+        zoomed_image = cv2.resize(image, None, fx=zoom_pct, fy=zoom_pct, interpolation=cv2.INTER_LINEAR)
+        zoomed_image = zoomed_image[xmin:xmax, ymin:ymax]
 
         # save image in the new path
         print("Writing image {} ...".format(newpath))
@@ -775,7 +732,7 @@ if args['modification'] == 'add_noise':
             noisy_image[tuple(coords)] = 255
 
             # pepper
-            num_pepper = np.ceil(amount* image.size * (1. - salt_vs_pepper))
+            num_pepper = np.ceil(amount * image.size * (1. - salt_vs_pepper))
             coords = [np.random.randint(0, i - 1, int(num_pepper)) for i in image.shape]
             noisy_image[tuple(coords)] = 0
 
@@ -815,28 +772,28 @@ if args['modification'] == 'hsv':
         newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
         # convert image to HSV values
-        HSV_image = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+        HSV_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
         # multiple hue value with random number between 0.8 and 1.2,
         # multiple saturation and brightness with random number between 0.5 and 1.5
         HSV_image = HSV_image.astype('float32')
-        HSV_image[:,:,0] *= np.random.uniform(0.8,1.2)
-        HSV_image[:,:,1] *= np.random.uniform(0.5,1.5)
-        HSV_image[:,:,2] *= np.random.uniform(0.5,1.5)
+        HSV_image[:, :, 0] *= np.random.uniform(0.8, 1.2)
+        HSV_image[:, :, 1] *= np.random.uniform(0.5, 1.5)
+        HSV_image[:, :, 2] *= np.random.uniform(0.5, 1.5)
 
         # sometimes values get bigger than 255, uint8 cant hold that,
         # so make these values equal to 255 to avoid these values getting low values
         # (and thus black colors instead of white) when converting the image back
         # for hue values greater than 360, make them continue at 0
-        HSV_image[:,:,0][HSV_image[:,:,0] > 360] -= 360
-        HSV_image[:,:,1][HSV_image[:,:,1] > 255] = 255
-        HSV_image[:,:,2][HSV_image[:,:,2] > 255] = 255
+        HSV_image[:, :, 0][HSV_image[:, :, 0] > 360] -= 360
+        HSV_image[:, :, 1][HSV_image[:, :, 1] > 255] = 255
+        HSV_image[:, :, 2][HSV_image[:, :, 2] > 255] = 255
 
         # convert image back to uint8
         HSV_image = HSV_image.astype('uint8')
 
         # convert image back to BGR colors
-        modified_image = cv2.cvtColor(HSV_image,cv2.COLOR_HSV2BGR)
+        modified_image = cv2.cvtColor(HSV_image, cv2.COLOR_HSV2BGR)
 
         # save image in the new path
         print("Writing image {} ...".format(newpath))
@@ -851,7 +808,7 @@ if args['modification'] == 'blur':
         newpath = imagepath.replace(datasetpath, '{}_{}_f={}'.format(datasetpath, args['modification'], args['fraction']))
 
         # modify the image to grayscale
-        blurred_image = cv2.GaussianBlur(image,(3,3),3.0)
+        blurred_image = cv2.GaussianBlur(image, (3, 3), 3.0)
 
         # save image in the new path
         print("Writing image {} ...".format(newpath))

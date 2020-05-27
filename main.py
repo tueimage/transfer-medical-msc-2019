@@ -1,16 +1,10 @@
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, roc_curve, confusion_matrix, roc_auc_score
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Model, load_model, Sequential
-from keras.layers.core import Flatten, Dense, Dropout
-from keras.layers import Input
+from keras.models import Model, load_model
+from keras.layers.core import Dense
 from keras.optimizers import SGD, RMSprop, Adam
-from keras.callbacks import TensorBoard, EarlyStopping
 from keras import backend as K
-import keras
 import tensorflow as tf
 import json
 import argparse
@@ -23,15 +17,17 @@ import glob
 from models import VGG16
 import random
 import pandas as pd
-import cv2
-import gc
 from time import time
 from openpyxl import load_workbook, Workbook
 from utils import *
 from sklearn import svm
 
+
 class NeuralNetwork:
+    """Create Neural Network instance."""
+
     def __init__(self, model, config, **kwargs):
+        """Initialize class variables."""
         self.model = model
         self.config = config
         self.trainingpath = config['trainingpath']
@@ -52,7 +48,7 @@ class NeuralNetwork:
 
         self.num_training = len(glob.glob(os.path.join(self.trainingpath, '**/*.jpg')))
         self.num_validation = len(glob.glob(os.path.join(self.validationpath, '**/*.jpg')))
-        self.num_test= len(glob.glob(os.path.join(self.testpath, '**/*.jpg')))
+        self.num_test = len(glob.glob(os.path.join(self.testpath, '**/*.jpg')))
 
         # create a savepath for results and create a sheet to avoid errors
         self.savefile = os.path.join(self.config['output_path'], 'results_g.xlsx')
@@ -62,6 +58,7 @@ class NeuralNetwork:
             Workbook().save(self.savefile)
 
     def init_generators(self, shuffle_training, shuffle_validation, shuffle_test, **kwargs):
+        """Initialize image generators."""
         for attribute, value in kwargs.items():
             setattr(self, attribute, value)
 
@@ -69,7 +66,7 @@ class NeuralNetwork:
         self.gen_training = self.gen_obj_training.flow_from_directory(
             self.trainingpath,
             class_mode="binary",
-            target_size=(224,224),
+            target_size=(224, 224),
             color_mode="rgb",
             shuffle=shuffle_training,
             batch_size=self.batchsize)
@@ -77,7 +74,7 @@ class NeuralNetwork:
         self.gen_validation = self.gen_obj_test.flow_from_directory(
             self.validationpath,
             class_mode="binary",
-            target_size=(224,224),
+            target_size=(224, 224),
             color_mode="rgb",
             shuffle=shuffle_validation,
             batch_size=self.batchsize)
@@ -85,12 +82,13 @@ class NeuralNetwork:
         self.gen_test = self.gen_obj_test.flow_from_directory(
             self.testpath,
             class_mode="binary",
-            target_size=(224,224),
+            target_size=(224, 224),
             color_mode="rgb",
             shuffle=shuffle_test,
             batch_size=self.batchsize)
 
     def compile_network(self, learning_rate, **kwargs):
+        """Compile network."""
         # compile model
         self.optimizer = kwargs.get('optimizer', 'adam')
         self.loss = kwargs.get('loss', "binary_crossentropy")
@@ -110,22 +108,20 @@ class NeuralNetwork:
         self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=self.metrics)
 
     def train(self, epochs):
+        """Train the Neural Network."""
         # initialize image generators
         self.init_generators(shuffle_training=True, shuffle_validation=False, shuffle_test=False, batchsize=32)
 
         # determine how much time passes
         start = time()
 
-        # early_stopping = EarlyStopping(monitor='val_acc', patience=12, verbose=0, mode='auto', baseline=None, restore_best_weights=True)
-
         # train the model
         hist = self.model.fit_generator(self.gen_training,
-            steps_per_epoch = self.num_training // self.batchsize,
-            validation_data = self.gen_validation,
-            validation_steps = self.num_validation // self.batchsize,
+            steps_per_epoch=self.num_training // self.batchsize,
+            validation_data=self.gen_validation,
+            validation_steps=self.num_validation // self.batchsize,
             epochs=epochs,
             verbose=1)
-            # callbacks=[early_stopping])
 
         # determine how much time passed
         end = time()
@@ -134,6 +130,7 @@ class NeuralNetwork:
         return hist.history
 
     def save_history(self, history):
+        """Save training history."""
         # save history
         with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
             writer.book = load_workbook(self.savefile)
@@ -145,11 +142,13 @@ class NeuralNetwork:
             pickle.dump(history, file)
 
     def save_model(self):
+        """Save trained model."""
         # save trained model
         savepath = os.path.join(self.config['model_savepath'], "{}_model.h5".format(args['dataset']))
         self.model.save(savepath)
 
     def plot_training(self, history):
+        """Save plots of training progress."""
         # get the number of epochs the model was trained for
         epochs = len(history['loss'])
 
@@ -159,7 +158,7 @@ class NeuralNetwork:
         fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, sharex=True)
 
         ax1.set_ylabel('Loss')
-        ax1.set_xlim([1,epochs])
+        ax1.set_xlim([1, epochs])
         ax1.plot(np.arange(0, epochs), history["loss"], label="train")
         ax1.plot(np.arange(0, epochs), history["val_loss"], label="validation")
         ax1.legend(loc="upper right")
@@ -177,12 +176,10 @@ class NeuralNetwork:
         plt.savefig(plotpath)
 
     def evaluate(self, **kwargs):
+        """Evaluate Neural Network."""
         mode = kwargs.get('mode', 'from_scratch')
         source_dataset = kwargs.get('source_dataset', None)
         savepath = kwargs.get('savepath', os.path.join(self.config['plot_path'], "ROC.png"))
-        sksavepath = kwargs.get('sksavepath', os.path.join(self.config['plot_path'], "skROC.png"))
-
-        print("mode: {}".format(mode))
 
         # initialize image generators
         self.gen_test.reset()
@@ -199,44 +196,42 @@ class NeuralNetwork:
 
         # calculate AUC and sklearn AUC
         fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels)
-        skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels)
 
         # calculate accuracy score
         acc = accuracy(preds, true_labels)
 
         if mode == 'from_scratch':
             # create dataframe out of results
-            test_results = pd.DataFrame([{'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': self.training_time}])
+            test_results = pd.DataFrame([{'AUC': AUC, 'acc': acc, 'training_time': self.training_time}])
 
             # read existing rows and add test results
             try:
                 df = pd.read_excel(self.savefile, sheet_name=mode)
             except:
-                df = pd.DataFrame(columns=['AUC', 'skAUC', 'acc', 'training_time'])
+                df = pd.DataFrame(columns=['AUC', 'acc', 'training_time'])
 
             df = df.append(test_results, ignore_index=True)
-            # df.set_index('skAUC', inplace=True)
+            # df.set_index('AUC', inplace=True)
 
             # save results in excel file
             with pd.ExcelWriter(self.savefile, engine='openpyxl') as writer:
                 writer.book = load_workbook(self.savefile)
                 writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
-                # df.index.name = 'skAUC'
+                # df.index.name = 'AUC'
                 test_results.to_excel(writer, sheet_name='from_scratch')
 
             # plot AUC plots
             plot_AUC(fpr, tpr, AUC, savepath)
-            plot_skAUC(skfpr, sktpr, skAUC, sksavepath)
 
         if mode in ['fc', 'fine_tuning']:
             # save in path for target dataset
-            test_results = pd.Series({'source_dataset': source_dataset, 'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': self.training_time})
+            test_results = pd.Series({'source_dataset': source_dataset, 'AUC': AUC, 'acc': acc, 'training_time': self.training_time})
 
             # read existing rows and add test results
             try:
                 df = pd.read_excel(self.savefile, sheet_name=mode)
             except:
-                df = pd.DataFrame(columns=['source_dataset', 'AUC', 'skAUC', 'acc', 'training_time'])
+                df = pd.DataFrame(columns=['source_dataset', 'AUC', 'acc', 'training_time'])
 
             df = df.append(test_results, ignore_index=True)
             df.set_index('source_dataset', inplace=True)
@@ -248,13 +243,14 @@ class NeuralNetwork:
                 df.index.name = 'source_dataset'
                 df.to_excel(writer, sheet_name=mode)
 
-        return AUC, skAUC, acc
+        return AUC, acc
 
     def set_bottleneck_model(self, outputlayer='flatten_1'):
-        # create a bottleneck model until given output layer
+        """Create a bottleneck model until given output layer."""
         self.model = Model(inputs=self.model.input, outputs=self.model.get_layer(outputlayer).output)
 
     def extract_bottleneck_features(self):
+        """Extract bottleneck features using the bottleneck model."""
         # don't shuffle when extracting features
         self.init_generators(shuffle_training=False, shuffle_validation=False, shuffle_test=False, batchsize=1)
 
@@ -269,6 +265,7 @@ class NeuralNetwork:
         return bn_features_train, bn_features_test, true_labels_train, true_labels_test
 
     def set_ft_model(self):
+        """Create fully connected layers for transfer learning."""
         # build classification model
         top_model = Dense(128, activation="relu")(self.model.output)
         # top_model = Dropout(0.3)(top_model)
@@ -277,10 +274,12 @@ class NeuralNetwork:
         top_model = Dense(1, activation="sigmoid")(top_model)
 
         # add model on top of base model
-        self.model =  Model(inputs=self.model.input, outputs=top_model)
+        self.model = Model(inputs=self.model.input, outputs=top_model)
         return self.model
 
+
 def main():
+    """Execute main function."""
     # read parameters for wanted dataset from config file
     with open('config.json') as json_file:
         config_json = json.load(json_file)
@@ -303,7 +302,7 @@ def main():
     batchsize = int(args['batchsize'])
 
     # set a random seed
-    seed=28
+    seed = 28
 
     if args['mode'] == 'from_scratch':
         # set random seed for result reproducability
@@ -318,7 +317,7 @@ def main():
         epochs = 100
 
         # load VGG16 model architecture
-        model = VGG16(dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224,224,3)).get_model()
+        model = VGG16(dropout_rate=0.3, l2_rate=0.0, batchnorm=True, activation='relu', input_shape=(224, 224, 3)).get_model()
         model.summary()
 
         # create network instance
@@ -397,7 +396,6 @@ def main():
         # calculate AUC and sklearn AUC
         print("evaluating results...")
         fpr, tpr, thresholds, AUC = AUC_score(preds, true_labels_test)
-        skfpr, sktpr, skthresholds, skAUC = skAUC_score(preds, true_labels_test)
 
         # calculate accuracy score
         acc = accuracy(preds, true_labels_test)
@@ -410,13 +408,13 @@ def main():
             Workbook().save(savefile)
 
         # save in path for target dataset
-        test_results = pd.Series({'source_dataset': source_dataset, 'AUC': AUC, 'skAUC': skAUC, 'acc': acc, 'training_time': training_time})
+        test_results = pd.Series({'source_dataset': source_dataset, 'AUC': AUC, 'acc': acc, 'training_time': training_time})
 
         # read existing results if they exist, else create empty dataframe
         try:
             df = pd.read_excel(savefile, sheet_name='SVM')
         except:
-            df = pd.DataFrame(columns=['source_dataset', 'AUC', 'skAUC', 'acc', 'training_time'])
+            df = pd.DataFrame(columns=['source_dataset', 'AUC', 'acc', 'training_time'])
 
         df = df.append(test_results, ignore_index=True)
         df.set_index('source_dataset', inplace=True)
