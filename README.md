@@ -32,3 +32,5 @@ Then, different scripts exist to run experiments:
 * `detect_shift.py`: Detect shift between two datasets, or between the training and test set of a dataset.
 * `main.py`: Run deep learning experiments. Training mode can either be 'from_scratch', 'SVM', 'fc' or 'fine_tuning'. 
 * `parsearch.py`: Script to perform randomized hyperparameter search to find optimal hyperparameters.
+
+Possible command-line arguments can be found by running the help argument for each script, e.g. `python main.py -h`
